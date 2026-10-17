@@ -1,0 +1,1684 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Demi-fond">
+<meta name="theme-color" content="#f59e0b">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cycles Demi-fond · ancienne version</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Mise en page : bandeau de boutons (cycles, outils, séances) puis une fiche détaillée à la fois, comme un classeur de gymnase. */
+:root{
+  --bg:#f2f4f7; --surface:#ffffff; --surface-2:#e8edf3; --fg:#14202e; --muted:#566476; --line:#ccd5df;
+  --court:#2e7d57; --court-line:#ffffff; --net:#14202e;
+  --accent:#1f4fa8; --accent-fg:#ffffff; --ball:#d18a00; --team-b:#c2410c; --team-n:#6b7787;
+  --ok:#1f7a4d; --ok-bg:#dff3e8; --warn:#9a5b00; --warn-bg:#fdf0d5; --done:#6b7787; --done-bg:#e6eaef;
+  --cy-p:#7a3db8; --cy-p-bg:#f1e8fb; --cy-t:#1f4fa8; --cy-t-bg:#e3ebf8;
+  --font-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --font-body:"Source Sans 3","Segoe UI",Roboto,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1620; --surface:#17212d; --surface-2:#1f2b3a; --fg:#e6edf5; --muted:#9aa8ba; --line:#2d3b4d;
+  --court:#1d5a3e; --court-line:#cfe0f0; --net:#e6edf5;
+  --accent:#7aa5f0; --accent-fg:#0f1620; --ball:#f2b544; --team-b:#f08a55; --team-n:#9aa8ba;
+  --cy-p:#c39bf0; --cy-p-bg:#2c1f3f; --cy-t:#7aa5f0; --cy-t-bg:#1b2a44; --ok:#6fd39f; --ok-bg:#163327; --warn:#f2c46b; --warn-bg:#3a2d12; --done:#9aa8ba; --done-bg:#223042; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1620; --surface:#17212d; --surface-2:#1f2b3a; --fg:#e6edf5; --muted:#9aa8ba; --line:#2d3b4d;
+  --court:#1d5a3e; --court-line:#cfe0f0; --net:#e6edf5;
+  --accent:#7aa5f0; --accent-fg:#0f1620; --ball:#f2b544; --team-b:#f08a55; --team-n:#9aa8ba;
+  --cy-p:#c39bf0; --cy-p-bg:#2c1f3f; --cy-t:#7aa5f0; --cy-t-bg:#1b2a44; --ok:#6fd39f; --ok-bg:#163327; --warn:#f2c46b; --warn-bg:#3a2d12; --done:#9aa8ba; --done-bg:#223042; color-scheme:dark}
+*{box-sizing:border-box}
+a{color:var(--accent);font-weight:600}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.5;margin:0}
+.wrap{max-width:1040px;margin:0 auto;padding-inline:16px;padding-block:20px 48px}
+header h1{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,5vw,42px);line-height:1.05;margin:0;letter-spacing:.01em;text-wrap:balance}
+header p{margin:.4rem 0 0;color:var(--muted);max-width:70ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.tag{font-size:13px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--surface-2);color:var(--fg)}
+nav{margin-top:20px;display:grid;gap:10px}
+.navrow{display:flex;flex-wrap:wrap;gap:8px}
+.navlabel{font-family:var(--font-display);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+button.tab{font:inherit;cursor:pointer;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:8px 12px;display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:92px;text-align:left}
+button.tab b{font-family:var(--font-display);font-size:20px;font-weight:700;line-height:1}
+button.tab span{font-size:12.5px;color:var(--muted);line-height:1.2}
+button.tab.done{background:var(--done-bg)}
+button.tab.today{border-color:var(--ball)}
+button.tab.today span{color:var(--warn)}
+button.tab.eval{border-style:dashed}
+button.tab.cycle{min-width:170px;padding:10px 16px;border-width:2px}
+button.tab.cycle.cp{border-color:var(--cy-p);background:var(--cy-p-bg)} button.tab.cycle.cp b{color:var(--cy-p)}
+button.tab.cycle.ct{border-color:var(--cy-t);background:var(--cy-t-bg)} button.tab.cycle.ct b{color:var(--cy-t)}
+button.tab.cycle.cp[aria-selected="true"]{background:var(--cy-p);border-color:var(--cy-p)} button.tab.cycle.ct[aria-selected="true"]{background:var(--cy-t);border-color:var(--cy-t)}
+button.tab.cycle[aria-selected="true"] b{color:var(--accent-fg)}
+:root[data-cycle="p"]{--accent:var(--cy-p)} :root[data-cycle="t"]{--accent:var(--cy-t)}
+.cyband{display:inline-block;font-family:var(--font-display);font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-fg);background:var(--accent);padding:4px 14px;border-radius:8px 8px 0 0;margin-left:14px}
+main .panel{border-top:6px solid var(--accent);border-top-left-radius:0}
+button.tab.cycle b{font-size:24px}
+button.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+button.tab[aria-selected="true"] span{color:var(--accent-fg);opacity:.85}
+button.tab:focus-visible{outline:3px solid var(--ball);outline-offset:2px}
+main{margin-top:22px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px clamp(14px,3vw,28px) 26px}
+.panel h2{font-family:var(--font-display);font-size:32px;line-height:1.05;margin:0;text-wrap:balance}
+.lead{color:var(--muted);margin:.4rem 0 0;max-width:72ch}
+.status{display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:6px;margin-bottom:6px}
+.st-done{background:var(--done-bg);color:var(--done)} .st-today{background:var(--warn-bg);color:var(--warn)} .st-next{background:var(--surface-2);color:var(--muted)} .st-eval{background:var(--ok-bg);color:var(--ok)}
+.evalbox{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--ok-bg);color:var(--fg)}
+.evalbox h4{margin:0 0 4px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--ok)}
+.evalbox ul{margin:0;padding-left:18px}
+.timeline{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.timeline span{font-size:13px;padding:4px 10px;border-radius:6px;background:var(--surface-2)}
+.timeline span b{font-variant-numeric:tabular-nums}
+.ex{margin-top:22px;border-top:1px solid var(--line);padding-top:18px}
+.ex-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.ex h3{font-family:var(--font-display);font-size:24px;margin:0;line-height:1.1}
+.dur{font-size:13px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.kind{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.ex-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px 24px;margin-top:10px}
+.ex-body.noschema{grid-template-columns:minmax(0,1fr)}
+@media (max-width:760px){.ex-body{grid-template-columns:minmax(0,1fr)}}
+.ex-body>figure{grid-column:2;grid-row:1} .ex-body>dl{grid-column:1;grid-row:1}
+@media (max-width:760px){.ex-body>figure{grid-column:1;grid-row:2}}
+dl.card{margin:0;display:grid;gap:8px}
+dl.card dt{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+dl.card dd{margin:0}
+dl.card dt.four{color:var(--accent)} dl.card dd.four{padding:6px 10px;border-left:3px solid var(--accent);background:var(--surface-2);border-radius:0 6px 6px 0}
+dl.card ul{margin:2px 0 0;padding-left:18px}
+dl.card li{margin:2px 0}
+.var{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 8px}
+.var .m,.var .p{font-weight:700;font-family:var(--font-display);font-size:16px;width:20px;text-align:center;border-radius:4px}
+.var .m{background:var(--surface-2)} .var .p{background:var(--surface-2)}
+figure{margin:0}
+.schema{background:var(--surface-2);border-radius:10px;padding:8px;overflow-x:auto}
+.schema svg{display:block;width:100%;height:auto;min-width:300px}
+figcaption{font-size:13px;color:var(--muted);margin-top:6px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);margin-top:4px}
+.legend i{display:inline-block;vertical-align:middle;margin-right:4px}
+.dot{width:10px;height:10px;border-radius:50%}
+.lineb{width:22px;border-top:2px dashed var(--ball)}
+.liner{width:22px;border-top:2px solid var(--fg)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+.tablewrap{overflow-x:auto;margin-top:12px}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;white-space:nowrap}
+.chip.ok{background:var(--ok-bg);color:var(--ok)} .chip.warn{background:var(--warn-bg);color:var(--warn)}
+.note{margin-top:14px;padding:12px 14px;border-left:4px solid var(--ball);background:var(--warn-bg);border-radius:0 10px 10px 0}
+.note b{color:var(--warn)}
+.panel h3.sec{font-family:var(--font-display);font-size:22px;margin:24px 0 0}
+.panel p{max-width:75ch}
+.foot{margin-top:28px;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.panel{animation:in .18s ease-out}@keyframes in{from{transform:translateY(4px)}to{transform:none}}}
+/* schéma */
+.c-floor{fill:var(--court)} .c-line{stroke:var(--court-line);stroke-width:2;fill:none}
+.c-att{stroke:var(--court-line);stroke-width:1.5;stroke-dasharray:6 5;fill:none}
+.c-net{stroke:var(--net);stroke-width:4}
+.c-zone{fill:var(--accent);fill-opacity:.12;stroke:var(--accent);stroke-opacity:.5;stroke-dasharray:4 4}
+.c-zonet{fill:var(--accent);font:600 11px var(--font-body)}
+.c-target{fill:var(--ball);fill-opacity:.25;stroke:var(--ball);stroke-width:1.5}
+.c-cone{fill:var(--ball)}
+.c-pa{fill:var(--accent)} .c-pb{fill:var(--team-b)} .c-pn{fill:var(--team-n)}
+.c-pt{fill:#ffffff;font:700 12px var(--font-body);text-anchor:middle;dominant-baseline:central}
+.c-ball{stroke:var(--ball);stroke-width:2;stroke-dasharray:6 4;fill:none}
+.c-run{stroke:var(--fg);stroke-width:2;fill:none}
+.c-head-b{fill:var(--ball)} .c-head-r{fill:var(--fg)}
+.c-label{fill:var(--fg);font:600 12px var(--font-body)}
+.c-say{fill:var(--fg);font:italic 600 12px var(--font-body)}
+.c-shadow{fill:var(--fg);fill-opacity:.08}
+.tgform{display:flex;flex-wrap:wrap;gap:12px 16px;margin:16px 0 6px;padding:14px;background:var(--surface-2);border-radius:10px}
+.tgform label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+.tgform input[type=number]{font:inherit;font-size:20px;font-weight:700;width:96px;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)}
+.tgform label.chk{flex-direction:row;align-items:center;gap:8px;align-self:flex-end;padding-bottom:10px;color:var(--fg)}
+.tgform input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.kpis div{border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column}
+.kpis b{font-family:var(--font-display);font-size:28px;color:var(--accent);line-height:1.1}
+.kpis span{font-size:13px;color:var(--muted)}
+table.tg td{vertical-align:top} table.tg small{color:var(--muted)} table.tg tr.over td{opacity:.4}
+.tb{font:inherit;font-size:15px;font-weight:600;cursor:pointer;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:9px 14px;min-height:44px;display:inline-flex;align-items:center;gap:6px}
+.tb:disabled{opacity:.4;cursor:default} .tb.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)} .tb.big{font-size:18px;padding:12px 20px}
+.tb.mini{min-height:32px;padding:4px 10px;font-size:13px} .tb.danger{background:var(--team-b);border-color:var(--team-b);color:#fff}
+.tzgo{margin:14px 0 4px}
+.tgform label.wide{flex:1 1 180px;min-width:0} .tgform label.full{flex:1 1 100%}
+.tgform input[type=text],.tgform textarea{font:inherit;font-size:17px;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.tgform textarea{resize:vertical;line-height:1.4}
+.muted{color:var(--muted)} .small{font-size:13px}
+.tzitem{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.tzbtns{display:flex;flex-wrap:wrap;gap:8px;align-items:center} .tzbtns.center{justify-content:center} .tzbtns.nav{justify-content:space-between;margin:16px 0}
+.tzok{color:var(--ok);font-weight:600} .tzwarn{color:var(--warn);font-weight:600}
+.tzbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:8px 0 14px}
+.tzround{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px;font-family:var(--font-display);font-size:24px}
+.timer{margin:10px 0 16px;padding:14px;border-radius:14px;background:var(--surface-2);text-align:center;border:2px solid transparent}
+.tm{font-family:var(--font-display);font-weight:700;font-size:clamp(64px,18vw,128px);line-height:1;font-variant-numeric:tabular-nums;margin:4px 0 12px}
+.tm-lab{font-size:14px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.timer.last{border-color:var(--ball)} .timer.last .tm{color:var(--ball)}
+.timer.over{border-color:var(--team-b)} .timer.over .tm{color:var(--team-b)} .timer.chg .tm{color:var(--muted)}
+.courts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.court-card{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px}
+.cc-h{font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:6px}
+.cc-row{display:grid;grid-template-columns:1fr 48px 56px 48px;align-items:center;gap:6px;padding:4px 0}
+.cc-n{font-weight:600;font-size:17px;overflow-wrap:anywhere} .cc-row.lead .cc-n{color:var(--accent)}
+.cc-s{font-family:var(--font-display);font-size:36px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums}
+.sb{font:inherit;font-size:26px;font-weight:700;width:48px;height:48px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;touch-action:manipulation}
+.sb.plus{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+table.rank td,table.rank th{text-align:center} table.rank td:nth-child(2),table.rank th:nth-child(2){text-align:left}
+.tzbox{margin:14px 0;padding:12px 14px;border-radius:10px;border:1.5px solid var(--ball);background:var(--warn-bg)} .tzbox summary{cursor:pointer;min-height:32px} .tzbox.done{border-color:var(--ok);background:var(--ok-bg)}
+.mlist{display:flex;flex-direction:column;gap:6px} .mrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:4px;border-radius:8px} .mrow.now{background:var(--surface-2)}
+.mchip{font-size:13.5px;padding:4px 10px;border-radius:999px;border:1px solid var(--line)} .mchip.ok{background:var(--ok-bg)} .mchip.todo i{color:var(--warn)}
+.teq-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:flex-start}
+.teq-btns{display:flex;flex-wrap:wrap;gap:8px} a.tb{text-decoration:none}
+.teq-id{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 10px;font-weight:600} .teq-id span{display:inline-block;min-width:150px;border-bottom:1.5px solid var(--fg);height:1.1em} .teq-id span.s{min-width:70px}
+.teq-tl{display:flex;gap:4px;margin:6px 0 16px} .teq-tl div{background:var(--surface-2);border-radius:6px;padding:6px 8px;font-size:13px;line-height:1.2;min-width:0} .teq-tl b{display:block;font-family:var(--font-display);font-size:17px} .teq-tl .hi{background:var(--accent);color:var(--accent-fg)}
+.teq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.teq-grid section{border:1.5px solid var(--line);border-radius:12px;padding:10px 14px} .teq-grid section.hi{border-color:var(--accent);border-width:2px}
+.teq-grid h3,.teq-axis h3{margin:0 0 6px;font-family:var(--font-display);font-size:19px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.teq-grid ul,.teq-grid ol{margin:.3rem 0;padding-left:1.2rem} .teq-grid p{margin:.3rem 0}
+.teq-step{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-fg);font-size:15px;flex:none}
+.teq-rule{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;text-align:center;font-size:14px} .teq-rule div{border-radius:8px;padding:6px;background:var(--surface-2)} .teq-rule div:first-child{background:var(--ok-bg)} .teq-rule div:last-child{background:var(--warn-bg)}
+.teq-axes{margin:16px 0 8px} .teq-axes h3{margin:0 0 6px;font-family:var(--font-display);font-size:19px}
+.teq-axrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px} .teq-axrow div{border-left:4px solid var(--accent);padding:4px 10px;background:var(--surface-2);border-radius:0 8px 8px 0} .teq-axrow span{display:block;font-size:13.5px;color:var(--muted)}
+.teq-org{margin:10px 0;font-size:14.5px}
+table.teq-log td{height:34px} table.teq-log th{font-size:12px}
+.teq-reph{margin-top:28px;padding-top:16px;border-top:2px solid var(--line)}
+.teq-axis{margin-top:18px} .teq-axis small{font-family:var(--font-body,inherit);font-size:13.5px;font-weight:400;color:var(--muted)}
+.teq-exs{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
+.teq-ex{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14.5px;break-inside:avoid} .teq-ex p{margin:.3rem 0}
+.teq-exh{display:flex;align-items:baseline;gap:8px} .teq-exh h4{margin:0;font-size:16.5px} .teq-num{font-family:var(--font-display);font-weight:700;color:var(--accent)}
+.teq-sch{margin:6px 0} .teq-sch svg{width:100%;height:auto} .teq-sch .c-label,.teq-sch .c-say{font-size:23px;font-weight:700} .teq-sch .c-pt{font-size:20px}
+.teq-var{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0} .teq-var div{border-radius:8px;padding:6px 8px;font-size:13.5px} .teq-var b{display:block} .teq-var .m{background:var(--warn-bg)} .teq-var .p{background:var(--ok-bg)}
+.teq-coach{font-size:13.5px;color:var(--muted)}
+@media print{
+ @page{size:A4;margin:10mm}
+ :root{--bg:#fff;--surface:#fff;--surface-2:#eef1f5;--fg:#111;--muted:#444;--line:#999}
+ body{background:#fff!important;font-size:10.5pt}
+ header,nav,.cyband,.noprint,footer,.foot{display:none!important}
+ main .panel{border:0!important;padding:0!important;box-shadow:none!important}
+ .tb{display:none!important}
+ .teq-grid{grid-template-columns:1fr 1fr;gap:6px} .teq-grid section{padding:6px 9px} .teq-grid h3,.teq-axis h3{font-size:14pt}
+ .teq-exs{grid-template-columns:repeat(3,1fr);gap:6px} .teq-ex{font-size:8.6pt;padding:6px 7px} .teq-exh h4{font-size:10.5pt} .teq-var div,.teq-coach{font-size:8.2pt}
+ .teq-rep{break-before:page} .teq-reph{border:0;margin-top:0;padding-top:0;font-size:16pt} .teq-axis{margin-top:8px;break-inside:avoid}
+ .teq-tl div,.teq-step,.teq-rule div,.teq-var div,.teq-axrow div{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ table.teq-log td{height:40px} .teq-leg{margin:2px 0 4px}
+}
+.teq-lvl{margin-left:auto;color:var(--accent);letter-spacing:1px;font-size:13px}
+.teq-axrow span.who{color:var(--fg);font-weight:600;margin-top:2px}
+.teq-am{border-radius:8px;padding:6px 8px;font-size:13.5px;background:var(--warn-bg);margin:6px 0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@media print{.teq-am{font-size:8.2pt}}
+.printbar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.print-cover{margin-bottom:16px}
+@media print{
+ .print-page{break-before:page}
+ .print-cover{break-after:auto}
+ main .panel{font-size:9.5pt} main h2{font-size:17pt} .ex h3{font-size:13pt}
+ .ex{margin-top:12px;padding-top:10px} .ex-head,dt,h3{break-after:avoid} figure,.schema,dd,li,.evalbox,.note{break-inside:avoid} main p,main .lead{max-width:none}
+ .ex-body{display:block} .ex-body figure{float:right;width:43%;margin:0 0 6px 12px} .ex-body::after{content:'';display:block;clear:both} .legend{display:none}
+ .schema{padding:4px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .legend{font-size:7.5pt}
+ .evalbox,.note,.timeline span,.status,dd.four{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .tablewrap{overflow:visible}
+ a{color:inherit;text-decoration:none}
+}
+/* ---- spécifique badminton ---- */
+.c-mid{stroke:var(--court-line);stroke-width:1.3;stroke-dasharray:5 4;fill:none;opacity:.8}
+.c-edge{fill:var(--fg);opacity:.12}
+.c-netpost{fill:var(--net)}
+.c-zone{fill:#ffffff;fill-opacity:.16;stroke:#ffd166;stroke-width:1.6;stroke-dasharray:5 3}
+.c-zone.no{fill:#e5484d;fill-opacity:.28;stroke:#e5484d}
+.c-zonet{fill:#ffe9a8;font:700 11px var(--font-body)}
+.c-labt{fill:#ffffff;font:600 12px var(--font-body)}
+.c-bounce{fill:var(--ball);stroke:#fff;stroke-width:1.2}
+.c-basket{fill:var(--surface);stroke:var(--fg);stroke-width:1.6}
+.c-sheet{fill:var(--surface);stroke:var(--muted);stroke-width:1.2}
+.c-tbl{fill:var(--court)} .c-tbll{stroke:var(--court-line);stroke-width:1.5;fill:none}
+.c-move{stroke:var(--ok);stroke-width:2.2;fill:none} .c-head-g{fill:var(--ok)}
+.c-down{stroke:var(--team-b);stroke-width:2.2;fill:none} .c-head-o{fill:var(--team-b)}
+.c-tnum{fill:var(--fg);font:700 13px var(--font-display)}
+.lineo{width:22px;border-top:2px dashed var(--ball)}
+/* banque */
+.bank-cat{margin-top:22px;border-top:1px solid var(--line);padding-top:14px}
+.bank-cat h3{font-family:var(--font-display);font-size:24px;margin:0}
+.bank-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:10px}
+.bank-ex{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14.5px;break-inside:avoid}
+.bank-ex h4{margin:0;font-size:16.5px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.bank-ex p{margin:.35rem 0}
+.lvl{display:inline-block;font-size:12px;font-weight:700;padding:1px 7px;border-radius:6px;background:var(--accent);color:var(--accent-fg);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.repl{font-size:13px;color:var(--muted)}
+.bank-sch{margin:6px 0}
+.bank-sch svg{width:100%;height:auto;display:block}
+/* tournoi montante-descendante */
+.mdtables{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.mdt{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px}
+.mdt.warn{border-color:var(--ball)}
+.mdt-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-family:var(--font-display);font-size:19px;font-weight:700;margin-bottom:4px}
+.mdt-h small{font-family:var(--font-body);font-size:12.5px;font-weight:600;color:var(--muted)}
+.mdm{border-top:1px dashed var(--line);padding:6px 0 4px}
+.mdm:first-of-type{border-top:0}
+.mdm-ref{font-size:12.5px;color:var(--muted);margin-bottom:2px}
+.mdm .cc-row{grid-template-columns:1fr 44px 50px 44px;padding:2px 0}
+.mdm .cc-s{font-size:30px}
+.mdm .sb{width:44px;height:44px;font-size:24px}
+.mdm.now{background:var(--surface-2);border-radius:8px;padding-inline:6px}
+.mdres{font-size:13px;margin-top:6px;color:var(--muted)}
+.mdres b{color:var(--fg)}
+.mvup{color:var(--ok);font-weight:700} .mvdn{color:var(--team-b);font-weight:700}
+.relais{font-size:12.5px;color:var(--muted);margin:2px 0 4px}
+.tgform select{max-width:100%;font:inherit;font-size:17px;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)}
+@media print{.bank-grid{grid-template-columns:1fr 1fr;gap:6px}.bank-ex{font-size:8.8pt;padding:6px 8px}.bank-ex h4{font-size:10.5pt}.bank-cat{break-inside:auto;margin-top:10px;padding-top:6px}.bank-cat h3{font-size:14pt;break-after:avoid}}
+@media print{ main dd{break-inside:auto} main dd li{break-inside:avoid} .ex{break-inside:auto} }
+@media print{
+ .ex-body figure{float:none!important;width:100%!important;margin:0 0 6px!important;display:flex;gap:12px;align-items:flex-start;break-inside:avoid}
+ .ex-body figure .schema{flex:0 0 50%} .ex-body figure figcaption{flex:1;margin-top:0;font-size:8.5pt}
+}
+.evalfig{max-width:560px} @media print{.evalfig{max-width:55%}}
+.seg{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}
+select.roster{display:block;margin:4px 0 6px;font:inherit;font-size:15px;padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)}
+.atp-form select{min-width:0;width:100%}
+.atp-prev{margin:8px 0;padding:8px 10px;border-radius:8px;background:var(--surface-2)}
+table.atp-big{font-size:clamp(18px,2.6vw,30px)} table.atp-big td,table.atp-big th{padding:10px 14px}
+.evgrid{margin-top:12px}
+table.evtab{font-size:13.5px} table.evtab td:first-child{width:19%} table.evtab td{width:20%}
+table.evtab tr.evsec td{background:var(--accent);color:var(--accent-fg);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+table.evtab tr.evpts td{background:var(--surface-2);font-weight:700;font-variant-numeric:tabular-nums;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.evrules{font-size:14px;margin-top:8px} .evrules p{margin:.35rem 0;max-width:none}
+table.evfill td{height:30px}
+.evbin{margin-top:18px;border-top:2px solid var(--line);padding-top:12px}
+.evb-h{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:8px}
+.evb-h>b{font-family:var(--font-display);font-size:22px}
+.evptsin{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600}
+.evptsin input{font:inherit;font-size:18px;font-weight:700;width:80px;padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)}
+.evcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}
+.evc{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px}
+.evc-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:18px;margin-bottom:4px}
+.evtot{font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--accent)}
+.evrow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 8px;padding:5px 0;border-top:1px dashed var(--line)}
+.evrow>span{font-size:13.5px;font-weight:600} .evrow small{color:var(--muted);font-weight:600}
+.evbtns{display:flex;flex-wrap:wrap;gap:4px} .evbtns .tb.mini{min-width:44px;justify-content:center;min-height:38px}
+@media print{
+ body.print-grid main .panel>*:not(.evgrid):not(.teq-top){display:none!important}
+ table.evtab{font-size:8.2pt} table.evtab td,table.evtab th{padding:4px 6px} .evrules{font-size:8.5pt} table.evfill td{height:22px}
+}
+/* entrées */
+button.tab.entry{min-width:230px;padding:10px 16px;border-width:2px;border-style:solid}
+button.tab.entry b{font-size:20px}
+:root[data-entry="a"] .cyband{background:repeating-linear-gradient(135deg,var(--accent),var(--accent) 10px,color-mix(in srgb,var(--accent) 80%,#000) 10px,color-mix(in srgb,var(--accent) 80%,#000) 20px)}
+/* GAREEPS */
+.ga-theme{margin-top:24px;border-top:3px solid var(--accent);padding-top:12px}
+.ga-th-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px}
+.ga-th-h h3{font-family:var(--font-display);font-size:26px;margin:0}
+.ga-fam{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent)}
+.ga-top{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:10px}
+.ga-match,.ga-prob{border-radius:10px;padding:10px 12px;font-size:14.5px}
+.ga-match{background:var(--surface-2)} .ga-prob{background:var(--warn-bg)}
+.ga-match h4,.ga-prob h4,.ga-exh{margin:0 0 4px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.ga-exh{margin-top:14px}
+.ga-prob ul{list-style:none;margin:0;padding:0} .ga-prob li{margin:2px 0}
+.ga-match p{margin:0}
+.ga-msch svg{width:100%;height:auto;display:block}
+.ga-cr{font-size:13.5px}
+.ga-nv{display:flex;flex-direction:column;gap:3px;margin-top:4px}
+.ga-n{font-size:13px;padding:3px 8px;border-radius:6px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ga-n.n0{background:#fff4c2;color:#5c4a00} .ga-n.n1{background:var(--ok-bg);color:var(--fg)} .ga-n.n2{background:var(--ok);color:#fff}
+.gacode{display:inline-grid;place-items:center;min-width:26px;height:26px;border-radius:6px;background:var(--accent);color:var(--accent-fg);margin-right:6px}
+.gacnt{display:flex;align-items:center;gap:6px;justify-content:center} .gacnt span{font-family:var(--font-display);font-size:24px;font-weight:700;min-width:24px;text-align:center}
+.gacnt .sb{width:40px;height:40px;font-size:22px}
+table.gaobs td:first-child{min-width:220px}
+.ga-star{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:760px){.ga-star{grid-template-columns:minmax(0,1fr)}}
+.ga-radar svg{width:100%;height:auto} .ga-ring{fill:none;stroke:var(--line)} .ga-ax{stroke:var(--line)} .ga-lab{fill:var(--fg);font:600 12px var(--font-body)}
+.ga-val{fill:var(--accent);fill-opacity:.25;stroke:var(--accent);stroke-width:2} .ga-dot{fill:var(--accent)}
+.ga-deg{font:inherit;font-size:12.5px;text-align:left;width:100%;min-height:44px;padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);cursor:pointer}
+.ga-deg.on{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+table.ga-startab td{min-width:110px}
+.ga-line{display:inline-block;min-width:min(220px,90%);border-bottom:1.5px solid var(--fg);height:1.1em;vertical-align:bottom;margin-left:6px} .ga-line.s{min-width:70px}
+.ga-cars{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:12px}
+.ga-car{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;break-inside:avoid}
+.ga-car h3{margin:0 0 6px;font-family:var(--font-display);font-size:20px}
+.ga-car-g{display:flex;flex-direction:column;gap:8px;margin:6px 0;font-size:14px}
+.ga-car8{margin-top:12px}
+@media print{
+ .ga-theme{break-before:page;border-top:0} .ga-theme:first-of-type{break-before:auto}
+ .ga-top{grid-template-columns:1fr 1fr 0.9fr;gap:6px} .ga-match,.ga-prob{font-size:8.6pt;padding:6px 8px}
+ .ga-th-h h3{font-size:16pt} .ga-cr,.ga-n{font-size:8pt}
+ body.print-poster main .panel>*:not(.ga-theme){display:none!important} body.print-poster .ga-theme:not(.poster-on){display:none!important} body.print-poster .ga-theme{break-before:auto}
+ .ga-star{grid-template-columns:40% 60%} .ga-deg{font-size:7.8pt;min-height:0;padding:3px 4px} table.gaobs .sb{display:none}
+ .ga-cars{grid-template-columns:1fr 1fr;gap:6px} .ga-car{font-size:8.5pt;padding:6px 8px} .ga-car h3{font-size:12pt} .ga-car-g{gap:5px}
+ table.ga-index{display:none}
+}
+select.roster{max-width:100%;width:100%}
+@media print{.ga-star{display:block} .ga-radar{width:50%;margin:0 auto 6px} table.ga-startab td{min-width:0} .ga-deg{font-size:7.5pt}}
+button.tab.entry{min-width:150px;border-style:dashed;border-width:1.5px;padding:8px 12px} button.tab.entry b{font-size:18px}
+details.about{margin-top:.4rem} details.about summary{cursor:pointer;color:var(--muted);font-size:14px;list-style:revert}
+details.prep summary{cursor:pointer;padding:6px 0;list-style:revert} details.prep[open] summary{margin-bottom:8px}
+button.tab.today-btn:not([aria-selected="true"]){border-color:var(--ball);background:var(--warn-bg)}
+.tb.today-on{background:var(--warn-bg);border-color:var(--ball);color:var(--warn);cursor:default}
+.timeline .tl-b{font:inherit;font-size:13px;padding:4px 10px;border-radius:6px;background:var(--surface-2);border:1.5px solid transparent;color:var(--fg);cursor:pointer;min-height:34px;display:inline-flex;gap:6px;align-items:center}
+.timeline .tl-b:hover,.timeline .tl-b:focus-visible{border-color:var(--accent)} .timeline .tl-b i{font-style:normal;color:var(--accent);font-size:11px}
+.legend-once{margin-top:18px;padding-top:10px;border-top:1px solid var(--line)}
+.ex.tv .tv-fig{margin:10px 0 8px;max-width:760px}
+.tv-card{gap:6px;max-width:760px} .tv-card dd.four{font-size:16px} .tv-reus{font-weight:600}
+details.tv-more{margin-top:8px;max-width:760px} details.tv-more summary{cursor:pointer;color:var(--accent);font-weight:600;min-height:32px;list-style:revert} details.tv-more[open] summary{margin-bottom:8px}
+.tv-help{margin-top:16px}
+.btimer{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;display:flex;align-items:center;gap:10px;background:var(--surface);border:2px solid var(--accent);border-radius:14px;padding:8px 12px;box-shadow:0 6px 24px rgba(0,0,0,.18);max-width:calc(100vw - 24px)}
+.bt-lab{font-size:14px;font-weight:600;max-width:42vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bt-t{font-family:var(--font-display);font-size:34px;font-variant-numeric:tabular-nums;line-height:1}
+.btimer.last{border-color:var(--ball)} .btimer.last .bt-t{color:var(--ball)} .btimer.over{border-color:var(--team-b)} .btimer.over .bt-t{color:var(--team-b)}
+@media print{.btimer{display:none!important} details.tv-more{display:block} details.tv-more>summary{display:none}}
+/* ---- spécifique demi-fond ---- */
+:root{--track:#c8553d;--track-line:#ffffff;--grass:#3f8f5c;--plot10:#ffffff;--plot25r:#e5484d;--plot50:#f2c200;--cy-s:#0f7a62;--cy-s-bg:#dcf2ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--track:#9c3f2c;--grass:#245a3a;--cy-s:#5fd0ae;--cy-s-bg:#13312a}}
+:root[data-theme="dark"]{--track:#9c3f2c;--grass:#245a3a;--cy-s:#5fd0ae;--cy-s-bg:#13312a}
+:root[data-cycle="s"]{--accent:var(--cy-s)}
+button.tab.cycle.cs{border-color:var(--cy-s);background:var(--cy-s-bg)} button.tab.cycle.cs b{color:var(--cy-s)}
+button.tab.cycle.cs[aria-selected="true"]{background:var(--cy-s);border-color:var(--cy-s)} button.tab.cycle.cs[aria-selected="true"] b{color:var(--accent-fg)}
+.p-grass{fill:var(--grass)}
+.p-track{fill:none;stroke:var(--track)}
+.p-lane{fill:none;stroke:var(--track-line);stroke-width:.8;opacity:.55} .p-lane.e{stroke-width:1.6;opacity:.9}
+.p-finish{stroke:#fff;stroke-width:4}
+.p-c10{fill:var(--plot10);stroke:#555;stroke-width:.6}
+.p-c25{fill:var(--plot50);stroke:#333;stroke-width:.6} .p-c25b{fill:var(--plot25r)}
+.p-c50{fill:var(--plot50);stroke:#333;stroke-width:.7}
+.p-cup{fill:#ff8c1a;stroke:#fff;stroke-width:1}
+.p-cone{fill:#1f6feb;stroke:#fff;stroke-width:1} .p-cone.o{fill:#ff8c1a} .p-cone.r{fill:#e5484d} .p-cone.g{fill:#7a3db8}
+.p-run{fill:none;stroke:var(--fg);stroke-width:2.4} .p-run.o{stroke:var(--team-b);stroke-dasharray:6 4} .p-run.b{stroke:#1f6feb}
+.p-head-b{fill:#1f6feb}
+.p-seg{fill:none;opacity:.55;stroke:#ffd166} .p-seg.blue{stroke:#5aa9ff} .p-seg.vio{stroke:#c39bf0} .p-seg.red{stroke:#ff6b6b}
+.p-zone{fill:none;opacity:.9} .p-zone.z1{stroke:#e5484d} .p-zone.z2{stroke:#f2c200} .p-zone.z3{stroke:#8fd16a} .p-zone.z4{stroke:#16a34a}
+.p-zt{fill:#111;font:700 10px var(--font-body)}
+.p-lab{fill:var(--fg);font:600 11.5px var(--font-body)} .p-lab.w{fill:#fff} .p-lab.big{font:700 13px var(--font-body)}
+.p-small{fill:var(--fg);font:600 10px var(--font-body)}
+.p-pt{font-size:10.5px}
+.schema svg.pv{min-width:280px}
+/* tableaux d’allures */
+.vt-wrap{overflow-x:auto;margin-top:10px}
+table.vt{font-size:13.5px;border:1px solid var(--line)} table.vt th,table.vt td{text-align:center;padding:4px 6px;border:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap}
+table.vt th{font-size:11.5px;text-transform:none;letter-spacing:0;color:var(--fg);background:var(--surface-2);white-space:normal;vertical-align:bottom}
+table.vt td:first-child,table.vt th:first-child{font-weight:700;background:var(--surface-2)}
+table.vt tr:nth-child(even) td{background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+table.vt tr.me td{background:var(--warn-bg)!important;font-weight:700}
+.vt-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-top:22px}
+.vt-h h3{font-family:var(--font-display);font-size:22px;margin:0}
+.vt-note{font-size:13px;color:var(--muted);margin:4px 0 0;max-width:80ch}
+.calc{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end;margin:12px 0;padding:12px 14px;background:var(--surface-2);border-radius:10px}
+.calc label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+.calc input,.calc select{font:inherit;font-size:20px;font-weight:700;width:110px;padding:7px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)}
+.calc select{font-size:17px;width:auto}
+.calc .out{font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--accent)}
+.mycards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:10px}
+.mycard{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;break-inside:avoid}
+.mycard h4{margin:0 0 6px;font-family:var(--font-display);font-size:19px}
+.mycard table{font-size:14px} .mycard td{padding:3px 6px} .mycard td.num{font-weight:700;color:var(--accent);text-align:right;white-space:normal;max-width:55%}
+.lvl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:12px}
+.lvl-card{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14.5px}
+.lvl-card h4{margin:0 0 4px;font-family:var(--font-display);font-size:19px;display:flex;gap:8px;align-items:center}
+.lvl-card p{margin:.3rem 0}
+.wu-tl{display:flex;gap:4px;margin:10px 0 14px} .wu-tl div{background:var(--surface-2);border-radius:6px;padding:6px 8px;font-size:13px;line-height:1.2;min-width:0} .wu-tl b{display:block;font-family:var(--font-display);font-size:17px}
+.wu-tl .hi{background:var(--accent);color:var(--accent-fg)}
+.crit{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin:8px 0}
+.crit div{border-left:4px solid var(--accent);padding:4px 10px;background:var(--surface-2);border-radius:0 8px 8px 0;font-size:14px}
+table.grid4 td{font-size:13.5px} table.grid4 td:first-child{font-weight:700;width:18%}
+.zonebar{display:flex;margin:8px 0 2px;border-radius:6px;overflow:hidden;font-size:12.5px;font-weight:700;text-align:center;max-width:640px}
+.zonebar div{padding:6px 2px;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.zl{display:flex;max-width:640px;font-size:11.5px;color:var(--muted)} .zl span{flex:1;text-align:center}
+.evres{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:10px 0}
+.evres div{border:1.5px solid var(--line);border-radius:10px;padding:8px 12px} .evres b{display:block;font-family:var(--font-display);font-size:28px;color:var(--accent)} .evres span{font-size:13px;color:var(--muted)}
+.tabs-sess{margin-top:26px;border-top:2px solid var(--line);padding-top:12px}
+@media print{
+ table.vt{font-size:8.6pt} table.vt th{font-size:7.6pt} table.vt th,table.vt td{padding:1.5px 3px}
+ .vt-block{break-inside:avoid} .tabs-sess{break-before:page;border:0;padding-top:0;margin-top:0}
+ .calc{display:none} .mycard{font-size:9pt} .lvl-card{font-size:9pt;padding:6px 8px} .lvl-card h4{font-size:12pt}
+ .crit div{font-size:9pt} .wu-tl div{font-size:8.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .p-grass,.p-track,.p-zone,.p-seg{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .schema{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .wu-print .lvl-grid{grid-template-columns:1fr 1fr}
+}
+
+.jeu{margin:10px 0;padding:10px 12px;border-radius:10px;border:2px solid var(--ball);background:var(--warn-bg);display:flex;flex-direction:column;gap:3px;max-width:760px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.jeu b{font-family:var(--font-display);font-size:18px;color:var(--warn)} .jeu .jeu-p{font-size:13.5px;font-weight:600}
+@media print{.jeu{font-size:9pt;padding:6px 8px;break-inside:avoid}.jeu b{font-size:11pt}}
+
+input.chin{width:48px;font:inherit;font-size:16px;padding:4px 6px;border:1.5px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg)}
+.print-only-blank{display:none} @media print{.print-only-blank{display:block}}
+</style>
+
+<style id="appicon-css">.appicon{width:40px;height:40px;border-radius:9px;vertical-align:middle;margin:0 10px 0 0;box-shadow:0 1px 3px rgba(0,0,0,.25);flex:none;display:inline-block;object-fit:cover}
+.appicon.big{width:72px;height:72px;border-radius:16px;margin:0 auto 10px;display:block}
+.appicon.fill{width:100%;height:100%;margin:0;border-radius:inherit;box-shadow:none;display:block}
+.appicon.logoimg{width:46px;height:46px;margin:0;border-radius:12px}
+.test-banner{background:#facc15;color:#111;font:700 15px/1.3 system-ui,sans-serif;text-align:center;padding:8px 12px;position:relative;z-index:99999}
+@media print{.appicon,.test-banner{display:none!important}}</style>
+</head>
+<body><div style="background:#facc15;color:#111;font:700 15px/1.3 system-ui,sans-serif;text-align:center;padding:8px 12px">Ancienne version (avant le 17/10/2026) · <a href="./" style="color:#111">ouvrir la version actuelle</a></div>
+<div class="wrap">
+  <header>
+    <h1><img class="appicon" src="icon-192.png" alt="" width="40" height="40">Cycles demi-fond · Seconde et Terminale</h1>
+    <details class="about"><summary>À propos de l’outil</summary>
+    <p>Huit séances de 90 min de pratique (accès direct à la piste) pour une classe de Seconde de 35 élèves sur la piste de 200 m du lycée Georges Pompidou. Trois objectifs : courir au temps de façon régulière, annoncer et tenir un projet de distance, s’échauffer seul et coacher son binôme. Deux fils rouges à chaque séance : le 36’’/36’’ au plot cible, le 3’ et le 1’30 avec projet. Épreuve de Seconde : 3’ au plot, 10 min, 1’30 avec projet (blanche en S6, évaluation en S8) ; elle prépare la C3 de l’épreuve de Terminale sans reprendre les 500 m. Le cycle de Terminale (9 séances) suit ton carnet de course de Terminale 2025 : leçons 1 à 6, épreuve blanche en T7, séance construite par l’élève en T8 (AFL2), épreuve CCF en T9.</p>
+    <div class="meta"><span class="tag">Piste 200 m</span><span class="tag">35 élèves · binômes coureur / coach</span><span class="tag">90 min · échauffement + 2 exercices + situation finale</span><span class="tag">CA1 · AFL1 /12 · AFL2+AFL3 /8</span></div>
+    </details>
+  </header>
+  <nav aria-label="Cycle, séances et outils">
+    <div class="navlabel">Cycle</div>
+    <div class="navrow" role="tablist" id="nav-cycles"></div>
+    <div class="navlabel">En cours</div>
+    <div class="navrow" role="tablist" id="nav-tools"></div>
+    <div class="navlabel">Séances</div>
+    <div class="navrow" role="tablist" id="nav-sessions"></div>
+    <details class="prep" id="nav-prep-d"><summary class="navlabel">Préparer et évaluer</summary><div class="navrow" role="tablist" id="nav-prep"></div></details>
+  </nav>
+  <main id="main"></main>
+  <p class="foot">Construit à partir de tes dossiers Athlétisme 2023 à 2026 (référentiel CA1 du lycée, carnets de course Seconde et Terminale, cours « Demi-fond Pompidou », fiches AFL2-AFL3, piste et plots) et de la fiche d’échauffement GAREEPS de septembre. Les seuils de réussite sont des repères de départ : ajuste-les après la séance.</p>
+</div>
+<script>
+/* ---------- Moteur de schémas : piste de 200 m vue de dessus ----------
+   s = distance en mètres parcourue depuis la ligne d’arrivée, dans le sens de course (sens inverse des aiguilles d’une montre).
+   La ligne d’arrivée est au bout de la ligne droite du bas, à droite. */
+let SID=0;
+const PR=17, PL=(200-2*Math.PI*PR)/2, PS=3.6, PMX=58, PMY=30; /* rayon, longueur des lignes droites, px par mètre, marges */
+const PCX0=PMX+PR*PS, PCX1=PCX0+PL*PS, PCY=PMY+PR*PS+18; /* centres des virages */
+const PW=PCX1+PR*PS+PMX, PH=PCY+PR*PS+PMY+18;
+function pPt(s,off){ /* off : décalage vers l’extérieur, en mètres (0 = corde) */
+  s=((s%200)+200)%200; const r=(PR+(off||0))*PS, bend=Math.PI*PR;
+  if(s<bend){const a=s/PR;return [PCX1+r*Math.sin(a),PCY+r*Math.cos(a)]}            /* virage de droite, on monte */
+  if(s<bend+PL){const d=(s-bend)*PS;return [PCX1-d,PCY-r]}                          /* ligne droite du haut, vers la gauche */
+  if(s<2*bend+PL){const a=(s-bend-PL)/PR;return [PCX0-r*Math.sin(a),PCY-r*Math.cos(a)]} /* virage de gauche, on descend */
+  const d=(s-2*bend-PL)*PS;return [PCX0+d,PCY+r];                                    /* ligne droite du bas, vers la droite */
+}
+function pPath(a,b,off,rev){ /* chemin le long de la piste de a à b (b>a), échantillonné ; rev : parcouru de b vers a */
+  const n=Math.max(4,Math.ceil((b-a)/2)),P=[];for(let i=0;i<=n;i++)P.push(pPt(a+(b-a)*i/n,off));if(rev)P.reverse();
+  return P.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join('');
+}
+function pDefs(id){return `<defs><marker id="${id}r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="c-head-r"/></marker><marker id="${id}b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="p-head-b"/></marker><marker id="${id}o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="c-head-o"/></marker></defs>`}
+/* sp : {alt, plots:'10'|'50'|'all' (10 + 50)|'cup20'|false, segs:[{a,b,cls,off,t}], runs:[{a,b,off,cls}], cones:[{s,t,cls,off}], runners:[{s,l,team,off}],
+        texts:[{x,y,t,a,cls}] (coordonnées en px), stxt:[{s,off,t,a}] (texte posé sur la piste), finish:true|false, zones:true, cap} */
+function piste(sp){
+  const id='p'+(++SID);
+  let g=`<svg viewBox="0 0 ${PW.toFixed(0)} ${PH.toFixed(0)}" role="img" aria-label="${sp.alt||'Schéma de piste'}" xmlns="http://www.w3.org/2000/svg">${pDefs(id)}`;
+  /* pelouse puis piste (4 couloirs de 1,2 m dessinés larges pour la lisibilité) */
+  g+=`<path class="p-grass" d="${pPath(0,200,-0.4)}Z"/>`;
+  g+=`<path class="p-track" d="${pPath(0,200,3)}Z" style="stroke-width:${(6.6*PS).toFixed(1)}"/>`;
+  [0,2,4,6].forEach(o=>{g+=`<path class="p-lane${o===0||o===6?' e':''}" d="${pPath(0,200,o)}Z"/>`});
+  /* zones d’arrivée du 1’30 (référentiel Pompidou) */
+  if(sp.zones){
+    [[-30,-15,'z1'],[-15,-5,'z2'],[-5,0,'z4'],[0,5,'z4'],[5,15,'z3'],[15,30,'z1']].forEach(z=>{g+=`<path class="p-zone ${z[2]}" d="${pPath(200+z[0],200+z[1],3)}" style="stroke-width:${(6*PS).toFixed(1)}"/>`});
+    [['−15',-15],['−5',-5],['+5',5],['+15',15]].forEach(z=>{const p=pPt(z[1],7.6);g+=`<text class="p-small" x="${p[0].toFixed(1)}" y="${(p[1]+4).toFixed(1)}" text-anchor="middle">${z[0]}</text>`});
+    const zl=[['Z1',-22],['Z2',-10],['Z4',0],['Z3',10],['Z1',22]];zl.forEach(z=>{const p=pPt(z[1],3);g+=`<text class="p-zt" x="${p[0].toFixed(1)}" y="${(p[1]+4).toFixed(1)}" text-anchor="middle">${z[0]}</text>`});
+  }
+  (sp.segs||[]).forEach(z=>{g+=`<path class="p-seg ${z.cls||''}" d="${pPath(z.a,z.b,z.off===undefined?3:z.off)}" style="stroke-width:${((z.w||5)*PS).toFixed(1)}"/>`;if(z.t){const p=pPt((z.a+z.b)/2,z.toff===undefined?9.5:z.toff);g+=`<text class="p-lab" x="${p[0].toFixed(1)}" y="${(p[1]+4).toFixed(1)}" text-anchor="middle">${z.t}</text>`}});
+  /* plots */
+  const pl=sp.plots===undefined?'all':sp.plots;
+  if(pl){
+    for(let s=0;s<200;s+=5){
+      const p=pPt(s,-0.9);
+      if(pl==='cup20'){if(s%20===0)g+=`<circle class="p-cup" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.6"/>`;continue}
+      if(s%50===0&&(pl==='all'||pl==='50'||pl==='25')){g+=`<path class="p-c50" d="M${p[0].toFixed(1)},${(p[1]-7).toFixed(1)} l5,11 h-10z"/>`;continue}
+      if(false){g+=`<path class="p-c25" d="M${p[0].toFixed(1)},${(p[1]-6).toFixed(1)} l4.5,10 h-9z"/><path class="p-c25b" d="M${(p[0]-2.3).toFixed(1)},${(p[1]-1).toFixed(1)} h4.6 l1.2,2.6 h-7z"/>`;continue}
+      if(s%10===0&&(pl==='all'||pl==='10'))g+=`<ellipse class="p-c10" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" rx="3.2" ry="2.2"/>`;
+    }
+  }
+  if(sp.finish!==false){const a=pPt(0,-0.3),b=pPt(0,6.3);g+=`<line class="p-finish" x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}"/>`;
+    if(sp.finishLab!==false){g+=`<text class="p-lab" x="${(a[0]).toFixed(1)}" y="${(b[1]+13).toFixed(1)}" text-anchor="middle">${sp.finishLab||'ligne d’arrivée'}</text>`}}
+  (sp.runs||[]).forEach(r=>{const m=r.cls==='o'?'o':r.cls==='b'?'b':'r';g+=`<path class="p-run ${r.cls||''}" d="${pPath(r.a,r.b,r.off===undefined?1.6:r.off,r.rev)}" marker-end="url(#${id}${m})"/>`});
+  (sp.cones||[]).forEach(c=>{const p=pPt(c.s,c.off===undefined?1.6:c.off);g+=`<path class="p-cone ${c.cls||''}" d="M${p[0].toFixed(1)},${(p[1]-8).toFixed(1)} l6,13 h-12z"/>`;if(c.t){const q=pPt(c.s,c.toff===undefined?-6.5:c.toff);g+=`<text class="p-lab" x="${q[0].toFixed(1)}" y="${(q[1]+4).toFixed(1)}" text-anchor="${c.a||'middle'}">${c.t}</text>`}});
+  (sp.runners||[]).forEach(p0=>{const p=pPt(p0.s,p0.off===undefined?1.6:p0.off);const cls=p0.team==='b'?'c-pb':p0.team==='n'?'c-pn':'c-pa';g+=`<circle class="${cls}" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${p0.l&&p0.l.length>1?10:8.5}"/><text class="c-pt p-pt" x="${p[0].toFixed(1)}" y="${p[1].toFixed(1)}">${p0.l||''}</text>`});
+  (sp.stxt||[]).forEach(t=>{const p=pPt(t.s,t.off===undefined?-7:t.off);g+=`<text class="p-lab ${t.cls||''}" x="${p[0].toFixed(1)}" y="${(p[1]+4).toFixed(1)}" text-anchor="${t.a||'middle'}">${t.t}</text>`});
+  (sp.texts||[]).forEach(t=>{g+=`<text class="p-lab ${t.cls||''}" x="${t.x}" y="${t.y}" text-anchor="${t.a||'middle'}">${t.t}</text>`});
+  g+='</svg>';return g;
+}
+/* emplacement en px du centre de la pelouse, pour les textes */
+const PIN={x:(PCX0+PCX1)/2,y:PCY};
+/* ---------- Calculs d’allure ---------- */
+const VMAS=[];for(let v=8;v<=20.001;v+=0.5)VMAS.push(Math.round(v*10)/10);
+function tSec(d,v){return d*3.6/v}                       /* secondes pour d mètres à v km/h */
+function dist(sec,v){return v/3.6*sec}                    /* mètres parcourus en sec secondes */
+function fT(sec){sec=Math.round(sec);const m=Math.floor(sec/60),s=sec%60;return m?`${m}’${String(s).padStart(2,'0')}’’`:`${s}’’`}
+function fV(v){return (Math.round(v*10)/10).toFixed(1).replace('.',',')}
+function fD(m,step){step=step||5;return Math.round(m/step)*step+' m'}
+function fP(n){const r=Math.round(n*2)/2;return String(r).replace('.',',')}   /* nombre de plots au demi-plot près */
+function startS(d){return ((-d%200)+200)%200}             /* position du départ (m après la ligne) pour finir sur la ligne */
+function plotPlace(d){const r=Math.round(d)%200;const k=Math.floor(Math.round(d)/200);return r===0?`sur la ligne d’arrivée, ${k} tour${k>1?'s':''}`:`${r} m avant la ligne d’arrivée`+(k?`, puis ${k} tour${k>1?'s':''} complet${k>1?'s':''}`:'')}
+
+/* ---------- Schémas de piste ---------- */
+const SCH={
+ piste:{alt:'Piste de 200 m et ses plots',plots:'all',
+  texts:[{x:PIN.x,y:PIN.y-26,t:'piste de 200 m',cls:'w big'},{x:PIN.x,y:PIN.y-6,t:'plots plats : tous les 10 m',cls:'w'},{x:PIN.x,y:PIN.y+12,t:'coupelles orange : tous les 20 m (si besoin)',cls:'w'},{x:PIN.x,y:PIN.y+30,t:'grands plots jaunes : tous les 50 m',cls:'w'}],
+  cap:'Sens de course : la corde à gauche. 36’’ de course : 1 plot plat franchi = 1 km/h. 1’12 : 1 coupelle (20 m) = 1 km/h. 3’ : 1 grand plot jaune (50 m) = 1 km/h. 1’30 : vitesse = distance ÷ 25 (325 m = 13 km/h).'},
+ anneaux:{alt:'Les anneaux : 6 minutes autour de la piste',plots:'cup20',
+  runners:[{s:12,l:'A'},{s:48,l:'A'},{s:92,l:'A'},{s:138,l:'A'},{s:176,l:'A'}],
+  runs:[{a:14,b:44}],texts:[{x:PIN.x-40,y:PIN.y-18,t:'coupelles orange tous les 20 m',cls:'w'},{x:PIN.x,y:PIN.y+26,t:'les B au centre comptent les coupelles',cls:'w'}],
+  cap:'Vague A : 6 min sans marcher. Chaque observateur B reste au centre de la pelouse, compte les coupelles franchies par son coureur et note le total à chaque top de minute. Distance = coupelles × 20 m ; distance ÷ 100 = vitesse moyenne en km/h.'},
+ allures4:{alt:'Les 4 allures : toute la classe sur la piste',plots:'50',
+  runners:[{s:6,l:'1'},{s:30,l:'2'},{s:58,l:'3'},{s:85,l:'4'},{s:120,l:'5'},{s:150,l:'6'},{s:178,l:'7'}],runs:[{a:88,b:112}],
+  texts:[{x:PIN.x,y:PIN.y-4,t:'grands plots jaunes tous les 50 m',cls:'w'},{x:PIN.x,y:PIN.y+14,t:'en 3 min : plots franchis = km/h',cls:'w'}],
+  cap:'Toute la classe court en même temps ; chacun compte les grands plots jaunes qu’il franchit pendant 3 min, en repartant de 0 à chaque allure. 12 plots en 3 min = 600 m en 3 min = 12 km/h.'},
+ relais:{alt:'Le relais du binôme',plots:false,
+  runners:[{s:196,l:'B',team:'b',off:-0.2},{s:130,l:'A'}],runs:[{a:132,b:190}],cones:[{s:195,t:'zone de relais',cls:'o',toff:-6.5}],
+  texts:[{x:PIN.x,y:PIN.y,t:'A fait 1 tour, tape la main de B',cls:'w'},{x:PIN.x,y:PIN.y+18,t:'qui repart ; A récupère et compte',cls:'w'}],
+  cap:'Le binôme est une équipe : un coureur sur la piste, son partenaire attend dans la zone de relais (couloir extérieur). 1 tour = 200 m chacun son tour, pendant 10 min.'},
+ test:{alt:'Test 36’’/24’’ sur les plots plats',plots:'10',
+  runners:[{s:20,l:'A'},{s:150,l:'A'},{s:56,l:'B',team:'n',off:-7}],runs:[{a:22,b:142}],
+  segs:[{a:20,b:140,cls:'blue',t:'36’’ à 12 km/h = 120 m = 12 plots',toff:10}],
+  texts:[{x:PIN.x,y:PIN.y,t:'24’’ de marche, puis on repart',cls:'w'},{x:PIN.x,y:PIN.y+18,t:'du plot plat où l’on s’est arrêté',cls:'w'}],
+  cap:'Chaque minute : 36’’ de course, 24’’ de marche. Le coureur part d’un plot plat et compte ses plots ; au sifflet il s’arrête et annonce son chiffre. Le coach, au centre de la pelouse, l’a suivi des yeux et vérifie (demi-plot = 0,5). Plots franchis = vitesse en km/h.'},
+ ra:{alt:'Récupération active à 70 % de la VMA',plots:'50',
+  runners:[{s:10,l:'1'},{s:45,l:'2'},{s:90,l:'3'},{s:130,l:'4'},{s:170,l:'5'}],runs:[{a:92,b:126}],
+  texts:[{x:PIN.x,y:PIN.y-4,t:'3 min à 70 % : grands plots jaunes',cls:'w'},{x:PIN.x,y:PIN.y+14,t:'cible = 0,7 × VMA (VMA 12 → 8,5 plots)',cls:'w'}],
+  cap:'Toute la classe en même temps, chacun à son allure. En 3 min, les grands plots jaunes (50 m) franchis donnent la vitesse en km/h : on vise 70 % de sa VMA, on doit pouvoir parler en phrases.'},
+ i3636:{alt:'Intermittent 36’’/36’’ en aller-retour',plots:'10',
+  cones:[{s:0,t:'départ commun',cls:'o',toff:-7},{s:100,t:'VMA 10',toff:10.5},{s:120,t:'VMA 12',toff:11},{s:150,t:'VMA 15',toff:10.5}],
+  runs:[{a:2,b:117,off:1.2},{a:4,b:117,off:4.8,rev:true,cls:'o'}],runners:[{s:108,l:'A',off:3},{s:126,l:'B',team:'n',off:-5.5}],
+  texts:[{x:PIN.x,y:PIN.y-4,t:'aller en 36’’, 36’’ de marche,',cls:'w'},{x:PIN.x,y:PIN.y+14,t:'retour en 36’’ : tout le monde dans le même sens',cls:'w'}],
+  cap:'Plot cible = plot plat n° (VMA × %) compté depuis le départ. À 100 % pour une VMA de 12 : 12e plot plat (120 m). Allers puis retours : toute la vague court dans le même sens. Le coach se tient au plot cible de son coureur.'},
+ p130:{alt:'Le 1’30 mesuré avec les plots de 10 et 50 m',plots:'all',
+  runners:[{s:2,l:'A'},{s:75,l:'B',team:'n',off:-7}],runs:[{a:4,b:196}],
+  texts:[{x:PIN.x,y:PIN.y+6,t:'1’30 : distance lue sur les plots',cls:'w'},{x:PIN.x,y:PIN.y+24,t:'vitesse = distance ÷ 25',cls:'w'}],stxt:[{s:76,t:'45’’ : le coach annonce la mi-course',off:10}],
+  cap:'Départ de la ligne. À 45’’, le coach crie « mi-course » et repère le plot ; à 1’30 (sifflet), le coureur s’arrête. Distance = tours complets × 200 m + position lue sur les plots (grands jaunes tous les 50 m, plats tous les 10 m) ; vitesse en km/h = distance ÷ 25. Réussi si la 2e moitié est au moins aussi longue que la 1re.'},
+ projet:{alt:'1’30 avec projet de distance et zones d’arrivée',plots:'10',zones:true,finishLab:false,
+  cones:[{s:startS(300),t:'projet 300 m',cls:'o',toff:10.5},{s:startS(330),t:'330 m',cls:'o',toff:10.5},{s:startS(355),t:'355 m',cls:'o',toff:10.5}],
+  runners:[{s:startS(300),l:'A',off:3.8},{s:startS(330),l:'A',off:3.8},{s:startS(355),l:'A',off:3.8},{s:182,l:'B',team:'n',off:-6}],
+  texts:[{x:PIN.x,y:PIN.y-6,t:'chacun part de son plot,',cls:'w'},{x:PIN.x,y:PIN.y+12,t:'tous visent la ligne d’arrivée à 1’30',cls:'w'}],
+  cap:'Le coureur place son plot de départ à sa distance projet avant la ligne d’arrivée. Au sifflet de 1’30, il s’arrête : la zone donne les points d’efficacité (référentiel du lycée) : Z4 à ±5 m = 4 pts ; Z3 de +5 à +15 m = 3 ; Z2 de −5 à −15 m = 2 ; Z1 au-delà de 15 m = 1 (trop loin) ou 0,5 (trop court).'},
+ d500:{alt:'500 m : départ, passage au 250 m, arrivée',plots:'50',
+  cones:[{s:100,t:'départ 500 m',cls:'o',toff:-7},{s:150,t:'250 m',cls:'',toff:10.5},{s:0,t:'',cls:'r'}],
+  runners:[{s:102,l:'A'},{s:150,l:'B',team:'n',off:-6}],runs:[{a:104,b:196}],
+  texts:[{x:PIN.x,y:PIN.y-4,t:'2 tours et demi',cls:'w'},{x:PIN.x,y:PIN.y+14,t:'passage au 250 m : plot bleu',cls:'w'}],
+  cap:'Départ en face de la ligne (100 m après elle). Le coach démarre son chrono au départ, se place à l’intérieur au plot bleu (250 m, au 1er passage) et annonce le temps de passage, puis va à l’arrivée.'},
+ pyramide:{alt:'Départs des distances 500, 400, 300 et 200 m',plots:'50',
+  cones:[{s:100,t:'500 m · 300 m',cls:'o',toff:-7},{s:0,t:'',cls:'o'},{s:150,t:'passage 250 du 500',toff:10.5},{s:50,t:'passage 150 du 300',toff:10.5}],
+  runners:[{s:102,l:'A'},{s:120,l:'B',team:'n',off:-7}],runs:[{a:104,b:196}],
+  texts:[{x:PIN.x,y:PIN.y-4,t:'400 m et 200 m : départ sur la ligne',cls:'w'},{x:PIN.x,y:PIN.y+14,t:'toutes les courses finissent sur la ligne',cls:'w'}],
+  cap:'500 m et 300 m partent en face de la ligne, 400 m et 200 m de la ligne. Le coach donne le temps de passage à mi-course (plot bleu) et note le temps final.'},
+ d250:{alt:'2 × 250 m',plots:'50',
+  cones:[{s:150,t:'départ 250 m',cls:'o',toff:-7},{s:75,t:'125 m',toff:10.5}],runners:[{s:152,l:'A'},{s:75,l:'B',team:'n',off:-7}],runs:[{a:154,b:196}],
+  texts:[{x:PIN.x,y:PIN.y-4,t:'1 tour + 50 m',cls:'w'},{x:PIN.x,y:PIN.y+14,t:'1’ de récupération entre les deux 250 m',cls:'w'}],
+  cap:'Départ 50 m avant le début de la ligne droite opposée (150 m après la ligne). Temps visé sur 250 m = moitié du temps visé sur 500 m.'},
+ c100:{alt:'Prise d’allure sur 100 m',plots:'10',
+  cones:[{s:100,t:'départ 100 m',cls:'o',toff:-7}],runners:[{s:102,l:'A'},{s:160,l:'A'},{s:196,l:'B',team:'n',off:-6}],runs:[{a:104,b:196}],
+  texts:[{x:PIN.x,y:PIN.y,t:'temps visé = temps du 500 m ÷ 5',cls:'w'}],
+  cap:'Virage puis ligne droite : 100 m jusqu’à la ligne. Le coach chronomètre à l’arrivée et annonce l’écart à l’allure du 500 m.'},
+ epreuve:{alt:'L’épreuve : 500 m, 500 m, 1’30',plots:'10',zones:true,finishLab:false,
+  cones:[{s:100,t:'départ des 500 m',cls:'o',toff:-7},{s:150,t:'250 m',toff:10.5},{s:startS(340),t:'plot 1’30 (projet 340 m)',cls:'g',toff:-6.5}],
+  runners:[{s:102,l:'A'},{s:150,l:'B',team:'n',off:-6}],
+  texts:[{x:PIN.x,y:PIN.y-6,t:'C1 500 m · 10’ · C2 500 m · 10’ · C3 1’30',cls:'w'},{x:PIN.x,y:PIN.y+12,t:'arrivée de toutes les courses sur la ligne',cls:'w'}],
+  cap:'Référentiel du lycée : 3 courses, 10 min de récupération entre chaque. 500 m avec passage au 250 m donné par le binôme ; 1’30 avec plot de départ placé à la distance projet, arrivée jugée par zones.'}
+};
+
+/* ---------- Tableaux de vitesse (« tablettes ») : une ligne par VMA de 8 à 20 km/h ---------- */
+function colT(d,p,h){return {h:h||`${d} m à ${Math.round(p*100)} %`,f:v=>fT(tSec(d,v*p))}}
+function colTP(d,p){return {h:`${d} m à ${Math.round(p*100)} %<br><small>passage ${d/2} m</small>`,f:v=>fT(tSec(d,v*p))+' · '+fT(tSec(d/2,v*p))}}
+function colD(sec,p,h,step){return {h:h,f:v=>fD(dist(sec,v*p),step)}}
+const TABS={
+ vit:{t:'Repères de vitesse',rows:'v',rowh:'Vitesse (km/h)',note:'Pour la séance 1 : on ne connaît pas encore sa VMA. Lire la ligne de la vitesse mesurée.',
+  cols:[{h:'grands plots jaunes en 3’',f:v=>fP(v)},{h:'distance en 3’',f:v=>fD(dist(180,v),10)},{h:'distance en 6’ (anneaux)',f:v=>fD(dist(360,v),10)},{h:'coupelles (20 m) en 6’',f:v=>fP(dist(360,v)/20)},{h:'temps au tour (200 m)',f:v=>fT(tSec(200,v))}]},
+ vma:{t:'Mon tableau d’allures (km/h)',note:'VMA = somme des 10 répétitions ÷ 10. Chaque élève recopie sa ligne dans le carnet. Un test intermittent donne sans doute une VMA un peu haute : on la vérifie avec le 500 m de T4.',
+  cols:[0.6,0.7,0.8,0.9,1,1.05,1.1,1.15,1.2].map(p=>({h:Math.round(p*100)+' %',f:v=>fV(v*p)}))},
+ s3:{t:'Séance 3 · courir à un temps',note:'36’’ : n° du plot plat cible compté depuis le départ (1 plot = 10 m). 1’30 : distance à parcourir (vitesse = distance ÷ 25) ; mi-course à 45’’.',
+  cols:[{h:'36’’ à 95 %<br><small>plot plat</small>',f:v=>fP(v*0.95)},{h:'36’’ à 100 %<br><small>plot plat</small>',f:v=>fP(v)},{h:'36’’ à 105 %<br><small>plot plat</small>',f:v=>fP(v*1.05)},{h:'1’30 à 100 %<br><small>distance</small>',f:v=>fD(dist(90,v))},{h:'1’30 à 105 %',f:v=>fD(dist(90,v*1.05))},{h:'1’30 à 110 %',f:v=>fD(dist(90,v*1.1))},{h:'45’’ à 110 %<br><small>mi-course</small>',f:v=>fD(dist(45,v*1.1))}]},
+ s4:{t:'Séance 4 · courir une distance à un % de VMA',note:'Temps à viser et, entre parenthèses, temps de passage à mi-course. Récupération active : grands plots jaunes (50 m) à franchir en 3’.',
+  cols:[colTP(500,0.9),colTP(400,0.95),colTP(300,1),colTP(200,1.1),{h:'3’ à 70 %<br><small>plots 50 m · distance</small>',f:v=>fP(v*0.7)+' · '+fD(dist(180,v*0.7),10)},{h:'1’30 à 110 %<br><small>distance</small>',f:v=>fD(dist(90,v*1.1))}]},
+ s5:{t:'Séance 5 · une même allure, trois réglages',note:'36’’ : plot plat cible. 250 m et 500 m : allure visée en % de VMA ; le 2 × 250 m se court à l’allure du 500 m choisi.',
+  cols:[{h:'36’’ à 110 %<br><small>plot plat</small>',f:v=>fP(v*1.1)},colT(250,1.0),colT(250,1.05),colT(250,1.1),colTP(500,1.0),colTP(500,1.05),colTP(500,1.1)]},
+ s6:{t:'Séance 6 · maintenir ses allures, travail du 1’30',note:'Pyramide du carnet 2025 (200 m 100 %, 300 m 105 %, 400 m 110 %, puis retour). 1’30 : distance et position du plot de départ dans le carnet.',
+  cols:[colT(200,1),colT(300,1.05),colT(400,1.1),{h:'3’ à 70 %<br><small>plots 50 m</small>',f:v=>fP(v*0.7)},{h:'1’30 à 110 %',f:v=>fD(dist(90,v*1.1))},{h:'1’30 à 115 %',f:v=>fD(dist(90,v*1.15))},{h:'45’’ à 115 %',f:v=>fD(dist(45,v*1.15))}]},
+ s7:{t:'Séance 7 · construire son projet',note:'Choisir l’intensité du 500 m à partir du 500 m réel de S5 (vitesse = 1 800 ÷ temps en secondes). 100 m = temps du 500 m ÷ 5.',
+  cols:[{h:'500 m à 100 %<br><small>100 m · 250 m</small>',f:v=>fT(tSec(500,v))+' ('+fT(tSec(100,v))+' · '+fT(tSec(250,v))+')'},{h:'500 m à 105 %',f:v=>fT(tSec(500,v*1.05))+' ('+fT(tSec(100,v*1.05))+' · '+fT(tSec(250,v*1.05))+')'},{h:'500 m à 110 %',f:v=>fT(tSec(500,v*1.1))+' ('+fT(tSec(100,v*1.1))+' · '+fT(tSec(250,v*1.1))+')'},{h:'1’30 à 110 %<br><small>distance</small>',f:v=>fD(dist(90,v*1.1))},{h:'1’30 à 115 %',f:v=>fD(dist(90,v*1.15))},{h:'1’30 à 120 %',f:v=>fD(dist(90,v*1.2))}]},
+ /* tableaux généraux */
+ g100:{t:'100 m',gen:100},g200:{t:'200 m',gen:200},g250:{t:'250 m',gen:250},g300:{t:'300 m',gen:300},g400:{t:'400 m',gen:400},g500:{t:'500 m',gen:500},
+ g130:{t:'Distance en 1’30 selon le % de VMA',note:'Distance arrondie à 5 m. À l’épreuve, le plot de départ se place à cette distance avant la ligne d’arrivée.',cols:[0.95,1,1.05,1.1,1.15,1.2,1.25].map(p=>({h:Math.round(p*100)+' %',f:v=>fD(dist(90,v*p))}))},
+ g36:{t:'Plot plat cible en 36’’ selon le % de VMA',note:'Plots plats tous les 10 m : n° du plot compté depuis le départ. 1 plot = 1 km/h.',cols:[0.9,0.95,1,1.05,1.1,1.15,1.2].map(p=>({h:Math.round(p*100)+' %',f:v=>fP(v*p)}))},
+ g3:{t:'Distance en 3’ et en 6’ (récupération active, endurance)',note:'Grands plots jaunes (50 m) en 3’ = km/h.',cols:[[180,0.6],[180,0.7],[180,0.8],[360,0.6],[360,0.7],[360,0.8]].map(x=>({h:(x[0]===180?'3’':'6’')+' à '+Math.round(x[1]*100)+' %',f:v=>fD(dist(x[0],v*x[1]),10)}))}
+};
+['g100','g200','g250','g300','g400','g500'].forEach(k=>{const d=TABS[k].gen;TABS[k].t='Temps sur '+d+' m selon le % de VMA';TABS[k].cols=[0.7,0.8,0.85,0.9,0.95,1,1.05,1.1,1.15,1.2,1.3].map(p=>({h:Math.round(p*100)+' %',f:v=>fT(tSec(d,v*p))}))});
+const SPEEDS=[];for(let v=6;v<=20.001;v+=0.5)SPEEDS.push(Math.round(v*10)/10);
+
+/* ---------- Référentiel du lycée Pompidou (CA1 demi-fond, version 2026) ---------- */
+const BAR={
+ notes:[0.3,0.6,1,1.3,1.6,2,2.3,2.6,3,3.3,3.6,4,4.3,4.6,5,5.3,5.6,6,6.3,6.6,7,7.3,7.6,8],
+ F500:['3’30','3’16','3’13','2’54','2’51','2’44','2’39','2’34','2’30','2’27','2’23','2’20','2’15','2’12','2’09','2’07','2’05','2’02','2’00','1’58','1’55','1’53','1’51','1’50'],
+ G500:['2’40','2’36','2’32','2’28','2’24','2’20','2’16','2’12','2’08','2’02','1’58','1’52','1’48','1’44','1’41','1’38','1’36','1’34','1’32','1’30','1’28','1’26','1’25','1’23'],
+ F130:[243,250,258,265,273,280,288,295,303,310,318,325,332,340,347,355,362,370,377,385,392,400,407,415],
+ G130:[315,325,335,345,355,365,375,385,395,405,415,425,435,445,455,465,475,485,495,505,515,525,535,545]
+};
+function secOf(s){const m=/^(\d+)\s*[’'′:h]\s*(\d{1,2})?/.exec(String(s).trim());if(m)return (+m[1])*60+(+(m[2]||0));const n=parseFloat(String(s).replace(',','.'));return isNaN(n)?null:n}
+function note500(sexe,sec){const L=BAR[sexe+'500'].map(secOf);let n=0;L.forEach((t,i)=>{if(sec!=null&&sec<=t)n=BAR.notes[i]});return n}
+function note130(sexe,m){const L=BAR[sexe+'130'];let n=0;L.forEach((d,i)=>{if(m!=null&&m>=d)n=BAR.notes[i]});return n}
+function zonePts(ecart){if(ecart==null||isNaN(ecart))return null;if(Math.abs(ecart)<=5)return [4,'Zone 4'];if(ecart>5&&ecart<=15)return [3,'Zone 3'];if(ecart<-5&&ecart>=-15)return [2,'Zone 2'];if(ecart>15)return [1,'Zone 1 (trop loin)'];return [0.5,'Zone 1 (trop court)']}
+
+/* ---------- Textes communs ---------- */
+const BIN='35 élèves : 17 binômes coureur / coach et 1 trio (le 3e élève chronomètre et juge). La vague A court pendant que la vague B coache, puis on inverse : la course de l’autre vague sert de récupération.';
+const COACH='Coach : chronomètre, annonce le temps de passage, note dans le carnet de son coureur (prévu, réalisé, ♥, ressenti) et donne un conseil après la course. Coureur : annonce son projet avant, dit son ressenti après.';
+const EVAL_SHORT={afl1:'AFL1 · performance (/8) et efficacité du projet sur 1’30 (/4)',afl2:'AFL2 · s’entraîner : carnet, préparation, projet de course',afl3:'AFL3 · coach, chronométreur, juge'};
+
+/* ---------- Échauffement : 4 niveaux d’autonomie (fiche GAREEPS « Rendez-vous dans 25 min » de septembre) ---------- */
+const WU_LV={
+ 1:{k:'Niveau 1 · guidé',who:'Le professeur mène, les élèves suivent la fiche.',sup:'Fiche d’échauffement en binôme (recto) + démonstration des gammes.',obs:'Les 3 critères de passage à la partie 2 sont vérifiés par le binôme.'},
+ 2:{k:'Niveau 2 · semi-guidé',who:'Le binôme suit la fiche ; le professeur ne donne que les tops de changement de partie.',sup:'Fiche + carte des gammes.',obs:'Le binôme choisit ses 4 exercices de renforcement et son allure de fin d’échauffement.'},
+ 3:{k:'Niveau 3 · autonome avec fiche',who:'Le binôme construit son échauffement de 15 min et l’écrit dans le carnet avant de courir.',sup:'Fiche en consultation, carnet.',obs:'La fin d’échauffement est adaptée à la séance (accélérations à l’allure du jour).'},
+ 4:{k:'Niveau 4 · autonome sans fiche',who:'Chacun s’échauffe seul, sans fiche ; le professeur observe.',sup:'Aucun support, le carnet seulement après coup.',obs:'Grille d’observation (AFL2 · préparation), comme le jour de l’épreuve en Terminale.'}
+};
+function warmText(lv,extra){const L=WU_LV[lv];return `<b>${L.k}.</b> ${L.who} ${extra||''} <span class="small muted">Support : ${L.sup}</span>`}
+
+/* ---------- Terminale : schémas et tableaux supplémentaires ---------- */
+Object.assign(SCH,{
+ relais5:{alt:'Relais 5 km à deux',plots:'50',
+  runners:[{s:196,l:'B',team:'b',off:-0.2},{s:120,l:'A'}],runs:[{a:122,b:190}],cones:[{s:195,t:'zone de relais',cls:'o',toff:-6.5}],
+  texts:[{x:PIN.x,y:PIN.y,t:'25 tours à deux, relais de 1 à 3 tours',cls:'w'},{x:PIN.x,y:PIN.y+18,t:'le partenaire note distance et temps',cls:'w'}],
+  cap:'Le binôme couvre 5 km (25 tours) en relais. Chacun annonce la longueur de son relais (1 à 3 tours) ; le partenaire chronomètre, note, puis prend le relais dans la zone.'},
+ tours:{alt:'Varier les allures tour par tour',plots:'50',
+  runners:[{s:4,l:'A'},{s:80,l:'B',team:'n',off:-7}],runs:[{a:6,b:194}],cones:[{s:100,t:'100 m',toff:10.5}],
+  texts:[{x:PIN.x,y:PIN.y+8,t:'1 tour = 200 m · vitesse + 2 km/h à chaque tour',cls:'w'}],
+  cap:'Tours enchaînés sans arrêt : 8, 10, 12, 14 km/h, puis + 1 km/h. Le coach annonce le temps au passage du 100 m (en face) et à la ligne. On s’arrête au premier tour manqué de plus de 3 secondes.'},
+ i112:{alt:'Intermittent 1’12/1’12 en aller-retour',plots:'cup20',
+  cones:[{s:100,t:'départ commun',cls:'o',toff:-7,a:'start'},{s:260,t:'VMA 10',toff:10.5},{s:292,t:'VMA 12',toff:10.5}],
+  runs:[{a:102,b:289,off:1.2},{a:104,b:289,off:4.8,rev:true,cls:'o'}],runners:[{s:286,l:'A',off:3},{s:250,l:'B',team:'n',off:-6}],
+  texts:[{x:PIN.x,y:PIN.y-4,t:'1’12 à 80 % : coupelle n° 0,8 × VMA',cls:'w'},{x:PIN.x,y:PIN.y+14,t:'aller, 1’12 de récupération, retour',cls:'w'}],
+  cap:'Départ commun en face de la ligne ; coupelles tous les 20 m : en 1’12, 1 coupelle = 1 km/h. Coupelle cible n° 0,8 × VMA (VMA 12 → 9,5e coupelle, 190 m environ, presque un tour). Tous les allers ensemble, tous les retours ensemble. Le coach juge les allers au plot cible.'},
+ pyrT4:{alt:'Départs de la pyramide 250 à 500 m',plots:'50',
+  cones:[{s:150,t:'250 m',cls:'o',toff:-7},{s:25,t:'375 m',cls:'o',toff:10.5},{s:100,t:'500 m',cls:'o',toff:10.5},{s:75,t:'125 m',cls:'o',toff:10.5}],
+  runners:[{s:152,l:'A'},{s:120,l:'B',team:'n',off:-7}],runs:[{a:154,b:196}],
+  texts:[{x:PIN.x,y:PIN.y-4,t:'chaque course finit sur la ligne',cls:'w'},{x:PIN.x,y:PIN.y+14,t:'départ = distance avant la ligne',cls:'w'}],
+  cap:'250 m : départ 150 m après la ligne ; 375 m : 25 m après (un plot de départ entre les plots plats 20 et 30) ; 500 m : en face (100 m) ; 125 m : 75 m après (entre 70 et 80). Toutes les arrivées sur la ligne, le coach y chronomètre.'},
+ pyrT6:{alt:'Départs de la séance de résistance',plots:'50',
+  cones:[{s:100,t:'100 · 300 m',cls:'o',toff:10.5},{s:150,t:'250 m',cls:'o',toff:10.5},{s:0,t:'',cls:'o'}],
+  runners:[{s:102,l:'A'},{s:60,l:'B',team:'n',off:-7}],runs:[{a:104,b:196}],
+  texts:[{x:PIN.x,y:PIN.y-4,t:'200 et 400 m : départ sur la ligne',cls:'w'},{x:PIN.x,y:PIN.y+14,t:'arrivées sur la ligne',cls:'w'}],
+  cap:'100 m et 300 m partent en face de la ligne, 250 m à 150 m après la ligne, 200 et 400 m de la ligne.'}
+});
+Object.assign(TABS,{
+ t7:{t:'T7 · épreuve blanche : choisir son projet',note:'Choisir l’intensité du 500 m à partir du 500 m à 110 % de T4 et du 300 m de T5 (vitesse réelle = 1 800 ÷ temps du 500 m en secondes). 1’30 : distance à placer avant la ligne.',
+  cols:[colTP(500,1.05),colTP(500,1.1),colTP(500,1.15),{h:'1’30 à 110 %',f:v=>fD(dist(90,v*1.1))},{h:'1’30 à 115 %',f:v=>fD(dist(90,v*1.15))},{h:'1’30 à 120 %',f:v=>fD(dist(90,v*1.2))}]},
+ t1:{t:'T1 · repères de vitesse',rows:'v',rowh:'Vitesse (km/h)',note:'Pas encore de VMA : lire la ligne de sa vitesse. Le 500 m de référence situe chacun dans le barème.',
+  cols:[{h:'temps au tour (200 m)',f:v=>fT(tSec(200,v))},{h:'500 m',f:v=>fT(tSec(500,v))},{h:'1 000 m',f:v=>fT(tSec(1000,v))},{h:'2,5 km<br><small>(sa part du 5 km)</small>',f:v=>fT(tSec(2500,v))},{h:'5 km à deux',f:v=>fT(tSec(5000,v))}]},
+ t3:{t:'T3 · travail du 1er 500 m',note:'Leçon 3 du carnet de Terminale 2025. Temps à viser (passage à mi-course). 36’’ : plot plat cible.',
+  cols:[colTP(500,0.9),colTP(400,0.95),colT(300,1),colT(200,1.1),colT(100,1.2),colT(100,1.3),{h:'36’’ à 110 %<br><small>plot plat</small>',f:v=>fP(v*1.1)},{h:'36’’ à 120 %<br><small>plot plat</small>',f:v=>fP(v*1.2)}]},
+ t4:{t:'T4 · intermittent long et pyramide',note:'Leçon 4 du carnet. 1’12 : distance du plot cible. Pyramide : temps à viser.',
+  cols:[{h:'1’12 à 80 %<br><small>coupelle n° · distance</small>',f:v=>fP(v*0.8)+' · '+fD(dist(72,v*0.8))},{h:'2’ à 50 %<br><small>distance</small>',f:v=>fD(dist(120,v*0.5),10)},colT(250,0.95),colT(375,1),colT(500,1.1),colT(375,1.15),colT(250,1.2),colT(125,1.3)]},
+ t5:{t:'T5 · travail du 2e 500 m et du 1’30',note:'Leçon 5 du carnet. 300 m à 110 % ; 1’30 : distance et moitié à 45’’.',
+  cols:[colT(300,1.1),{h:'3’ à 70 %<br><small>plots 50 m</small>',f:v=>fP(v*0.7)},{h:'1’30 à 110 %',f:v=>fD(dist(90,v*1.1))},{h:'1’30 à 115 %',f:v=>fD(dist(90,v*1.15))},{h:'45’’ à 115 %',f:v=>fD(dist(45,v*1.15))},{h:'1’30 à 120 %',f:v=>fD(dist(90,v*1.2))}]},
+ t6:{t:'T6 · travail du dernier 500 m (résistance)',note:'Leçon 6 du carnet (sans le 500 m à 130 %). Colonne « 115 % » pour la variable « − ».',
+  cols:[colT(100,1),colT(200,1.05),colT(250,1.1),colT(300,1.2),colT(400,1.25),colT(400,1.15),{h:'1’30 à 115 %',f:v=>fD(dist(90,v*1.15))},{h:'1’30 à 120 %',f:v=>fD(dist(90,v*1.2))}]},
+ t8:{t:'T8 · construire sa séance',note:'Puissance : 6’ au plot (distance). Capacité : 36’’/36’’ (plot plat). Allure spécifique : 500 m et ses fractions.',
+  cols:[{h:'6’ à 90 %',f:v=>fD(dist(360,v*0.9),10)},{h:'6’ à 95 %',f:v=>fD(dist(360,v*0.95),10)},{h:'36’’ à 100 %',f:v=>fP(v)},{h:'36’’ à 110 %',f:v=>fP(v*1.1)},{h:'36’’ à 120 %',f:v=>fP(v*1.2)},{h:'500 m à 110 %<br><small>100 m · 250 m</small>',f:v=>fT(tSec(500,v*1.1))+' ('+fT(tSec(100,v*1.1))+' · '+fT(tSec(250,v*1.1))+')'},{h:'500 m à 115 %',f:v=>fT(tSec(500,v*1.15))}]}
+});
+
+/* ---------- Seconde : épreuve 3’ + 1’30 ---------- */
+const BAR2={notes:[0.5,1,1.5,2,2.5,3,3.5,4],
+ F3:[440,480,510,550,590,630,660,700],G3:[540,590,630,680,720,760,810,850],
+ F130:[258,280,303,325,347,370,392,415],G130:[335,365,395,425,455,485,515,545]};
+function noteS(arr,m){let n=0;BAR2[arr].forEach((d,i)=>{if(m!=null&&m>=d)n=BAR2.notes[i]});return n}
+function zoneS(ecart){if(ecart==null||isNaN(ecart))return null;if(Math.abs(ecart)<=5)return [3,'Zone 4'];if(ecart>5&&ecart<=15)return [2,'Zone 3'];if(ecart<-5&&ecart>=-15)return [1,'Zone 2'];return [0,'Zone 1']}
+Object.assign(SCH,{
+ s3min:{alt:'Le 3’ au plot',plots:'all',
+  runners:[{s:4,l:'A'},{s:60,l:'B',team:'n',off:-7}],runs:[{a:6,b:194}],cones:[{s:120,t:'mi-course (1’30)',cls:'g',toff:-6.5}],
+  texts:[{x:PIN.x,y:PIN.y+8,t:'3’ : grands plots jaunes franchis = km/h',cls:'w'},{x:PIN.x,y:PIN.y+26,t:'distance = tours × 200 m + plot d’arrêt',cls:'w'}],
+  cap:'Départ de la ligne, tous ensemble. Le coach compte les tours ; au top de 1’30 il pose un plot violet à l’endroit où passe son coureur (mi-course) ; au sifflet de 3’ il relève le plot plat d’arrêt. Régularité : la 2e moitié au moins aussi longue que la 1re, à 10 m près.'},
+ epreuve2:{alt:'L’épreuve de Seconde : 3’ puis 1’30',plots:'all',zones:true,finishLab:false,
+  cones:[{s:startS(340),t:'plot du 1’30 (projet 340 m)',cls:'g',toff:-6.5}],
+  runners:[{s:4,l:'A'},{s:startS(340),l:'A',off:3.8},{s:150,l:'B',team:'n',off:-6}],
+  texts:[{x:PIN.x,y:PIN.y-6,t:'C1 : 3’ depuis la ligne · 10’ · C2 : 1’30 avec projet',cls:'w'},{x:PIN.x,y:PIN.y+12,t:'le coach compte, marque la mi-course, juge la zone',cls:'w'}],
+  cap:'Épreuve de Seconde. 3’ : départ de la ligne, distance relevée au plot d’arrêt, mi-course marquée à 1’30. 10 min de récupération. 1’30 : plot de départ à la distance projet avant la ligne, arrivée jugée par zones.'}
+});
+Object.assign(TABS,{
+ ref1:{t:'S1 · mon 3’ rapide donne ma VMA de travail',rows:'v',rowh:'Grands plots en 3’ (= km/h)',note:'Les grands plots jaunes (50 m) franchis en 3’ donnent la vitesse : c’est la VMA de travail du cycle. On lit ensuite sur sa ligne ses premières cibles.',
+  cols:[{h:'distance en 3’',f:v=>fD(dist(180,v),10)},{h:'70 % : grands plots en 3’',f:v=>fP(v*0.7)},{h:'36’’ à 100 %<br><small>plot plat cible</small>',f:v=>fP(v)},{h:'1’30 à 105 %<br><small>distance</small>',f:v=>fD(dist(90,v*1.05))},{h:'temps au tour',f:v=>fT(tSec(200,v))}]},
+ cour:{t:'Mes cibles (VMA de travail = vitesse du 3’ de S1)',note:'36’’ : n° du plot plat cible. 3’ : distance visée et, entre parenthèses, distance à la mi-course (1’30). 1’30 : distance projet, à placer avant la ligne.',
+  cols:[{h:'36’’ à 100 %',f:v=>fP(v)},{h:'36’’ à 105 %',f:v=>fP(v*1.05)},{h:'36’’ à 110 %',f:v=>fP(v*1.1)},{h:'3’ à 95 %',f:v=>fD(dist(180,v*0.95),10)+' ('+fD(dist(90,v*0.95),10)+')'},{h:'3’ à 100 %',f:v=>fD(dist(180,v),10)+' ('+fD(dist(90,v),10)+')'},{h:'1’30 à 105 %',f:v=>fD(dist(90,v*1.05))},{h:'1’30 à 110 %',f:v=>fD(dist(90,v*1.1))},{h:'1’30 à 115 %',f:v=>fD(dist(90,v*1.15))}]}
+});
+/* ---------- Le cycle de Seconde : 8 séances de 90 min (accès direct à la piste) ----------
+   Épreuve de Seconde : 3’ au plot, 10 min, 1’30 avec projet de distance.
+   Deux fils rouges : le 36’’/36’’ au plot cible, le 3’ et le 1’30 de l’épreuve. */
+const S_ACC={t:'Accueil, règles et binômes',k:'Organisation',disp:'Sens de course, sécurité, rôle du coach, matériel du binôme (chrono, crayon, carnet). Présentation de l’épreuve de fin de cycle : 3’ puis 1’30 avec projet.',four:'Les binômes se forment (coureur et coach) et récupèrent leur carnet.',reus:'Chaque binôme a son matériel avant l’échauffement.'};
+const S_RA={t:'Récupération active : 3 min à 70 %',k:'Mode « temps »',sch:'ra',disp:'Toute la classe, grands plots jaunes (50 m) : cible = 0,7 × VMA de travail en 3 min.',four:'Chacun pour soi, le coach note le nombre de plots.',deroul:['3 min puis 1 min de marche.'],reus:'À 1 grand plot de la cible.'};
+function S_I36(pct,n,extra){return Object.assign({t:`36’’/36’’ au plot cible à ${pct} %`,k:'Fil rouge 1 · courir au temps',sch:'i3636',
+  disp:`Plots plats tous les 10 m depuis la ligne. Plot cible = plot n° ${pct===100?'VMA':(pct/100).toFixed(2).replace('.',',')+' × VMA'} (VMA de travail ${pct===100?'12 → 12e plot, 120 m':'12 → '+fP(12*pct/100)+'e plot'}). ${n} répétitions en aller-retour : 36’’ de course, 36’’ de marche ; toute la vague court dans le même sens (tous à l’aller, puis tous au retour).`,
+  four:'Coureur : arrive à son plot cible au sifflet, ni avant ni après ; aux retours, il regarde la ligne au sifflet et s’annonce lui-même. Coach : au plot cible, juge les allers (« tôt », « pile », « tard ») et coche les résultats. Puis on inverse.',
+  deroul:[`Vague A : ${n} × 36’’/36’’, 2 min de transition, vague B.`],
+  cons:['Les 10 premiers mètres décident de tout : se caler tout de suite, ne pas sprinter.','Tôt deux fois : je ralentis. Tard deux fois : j’accélère.'],
+  reus:`${Math.ceil(n*0.75)} répétitions sur ${n} à 1 plot près (10 m).`,moins:`Plot cible à ${pct-5} %.`,plus:`Les ${Math.floor(n/2)} dernières à ${pct+5} %.`},extra||{})}
+function S_3MIN(extra){return Object.assign({t:'Le 3’ au plot',k:'Fil rouge 2 · course C1 de l’épreuve',sch:'s3min',
+  disp:'Grands plots jaunes (50 m) et plots plats (10 m). Départ de la ligne, tous ensemble ; mi-course à 1’30 ; arrêt au sifflet de 3’. Vague A puis vague B.',
+  four:'Coureur : vise une distance (tableau : 3’ à 95 ou 100 % de sa VMA de travail) et une allure régulière. Coach : compte les tours, pose un plot violet à la mi-course (1’30), relève le plot plat d’arrêt et calcule la distance.',
+  deroul:['Distance = tours × 200 m + plot d’arrêt ; vitesse = grands plots franchis (ou distance ÷ 50).','Régularité : distance de la 2e moitié = distance totale − distance à la mi-course.'],
+  cons:['Partir à l’allure de la fin : la 2e moitié doit être au moins aussi longue que la 1re.'],
+  reus:'2e moitié ≥ 1re moitié, à 10 m près ; distance à 20 m près de la distance visée.',moins:'Viser 90 %.',plus:'Viser 100 % sans annonce de mi-course.'},extra||{})}
+function S_PROJ(extra){return Object.assign({t:'1’30 avec projet de distance',k:'Fil rouge 2 · course C2 de l’épreuve',sch:'projet',
+  disp:'Plots plats tous les 10 m pour placer son plot, zones d’arrivée autour de la ligne (−15, −5, +5, +15 m). Tous partent au même sifflet, chacun de son plot, et visent la ligne à 1’30. Vague A, 3 min de placement, vague B.',
+  four:'Coureur : annonce sa distance projet, place son plot (distance avant la ligne). Coach : vérifie le plot, se met aux zones, relève la zone et l’écart en mètres.',
+  deroul:['Plot de départ = distance projet avant la ligne (340 m → 140 m avant la ligne, puis un tour complet).'],
+  cons:['Distance à la mi-course (45’’) = moitié du projet.','Même allure du début à la fin : la ligne doit arriver au sifflet.'],
+  reus:'Zone 4 (à 5 m de la ligne) ou zone 3.',moins:'Zones à ± 10 m.',plus:'Projet + 5 m.'},extra||{})}
+const S_RAC={t:'Retour au calme et auto-évaluation',k:'AFL2 · bilan',disp:'Marche, étirements doux (10 à 15’’), hydratation. Chaque élève compare ses projets et ses distances réalisées.',four:'Coureur : remplit la partie bilan du carnet. Coach : complète la feuille de résultats et écrit un conseil au coureur.',reus:'Carnet complet avant de quitter la piste.'};
+
+const SESSIONS=[
+ {id:'s1',n:'S1',short:'Allures, VMA',title:'Courir ensemble, découvrir les allures, mesurer sa VMA de travail',lv:1,tab:'ref1',
+  lead:'Installer les binômes et les règles de la piste, apprendre les 3 parties de l’échauffement, découvrir quatre allures sur 3 min. La 4e, le 3’ rapide, donne la VMA de travail de tout le cycle : grands plots jaunes franchis en 3’ = km/h.',
+  tl:[['Accueil, règles et binômes',5,'acc'],['Échauffement guidé',25,'warm'],['Les 4 allures sur 3’',18,'allures4'],['Le relais du binôme',22,'relais'],['Ma VMA de travail et carnet',20,'bilan']],
+  warm:'Le professeur mène et explique chaque partie. Apprendre à prendre son pouls (15’’ × 4) et à vérifier les 3 signes ; gammes démontrées.',
+  eval:[['afl1','Le 3’ rapide est déjà la course C1 de l’épreuve : première distance, première note repère.'],['afl2','Premières données du carnet : 4 vitesses, pouls, VMA de travail.'],['afl3','Le binôme se forme : compter, noter, encourager.']],
+  ex:{acc:S_ACC,
+   allures4:{t:'Les 4 allures : 4 × 3 min',k:'Fil rouge 2 · courir au temps',sch:'allures4',
+    disp:'Toute la classe en même temps. Grands plots jaunes tous les 50 m : en 3 min, le nombre de plots franchis donne directement la vitesse en km/h.',
+    four:'Chacun compte ses grands plots jaunes. À chaque pause, le binôme se retrouve : il note les deux totaux et les deux pouls.',
+    deroul:['Marche rapide 3 min, pause 1 min (noter, pouls).','Footing 3 min, pause 1 min.','Allure rythmée (on parle par mots) 3 min, pause 1 min.','3’ rapide : la plus grande distance possible en restant régulier. C’est la VMA de travail.'],
+    cons:['Pouls : 2 doigts sur le côté du cou, compter 15’’, multiplier par 4.','Associer chaque allure à une respiration : je parle, je parle par mots, je ne parle plus.','Le 3’ rapide : partir à l’allure de la fin, pas plus vite.'],
+    reus:'Les 4 vitesses augmentent ; le 3’ rapide est régulier (pas d’arrêt, pas de marche).',
+    moins:'Marche-course alternée sur les 2 premières allures.',plus:'Annoncer avant le 3’ rapide le nombre de plots visés.'},
+   relais:{t:'Le relais du binôme',k:'Situation finale · courir ensemble',sch:'relais',
+    disp:'Binôme = une équipe. Zone de relais sur la ligne, couloir extérieur. 2 × 6 min de course, 3 min entre les manches, chacun un tour (200 m) à son tour.',
+    four:'Coureur : 1 tour, tape la main de son partenaire. Partenaire : attend dans la zone, repart, compte les tours du binôme. Le trio fait tourner ses trois coureurs.',
+    deroul:['Avant chaque manche, le binôme annonce le nombre de tours qu’il pense faire en 6 min.','2e manche : le binôme ajuste son annonce.'],
+    cons:['Allure qu’on peut répéter, pas de sprint.','Relais dans la zone, le partenaire s’écarte de la corde pour attendre.'],
+    reus:'Écart entre tours annoncés et réalisés : 1 tour au plus, sur la 2e manche.',moins:'Relais à mi-piste (100 m).',plus:'Un tour sur deux à l’allure du 3’ rapide.'}
+  },
+  bilan:'Classement du jour des binômes (points des deux challenges). VMA de travail = grands plots jaunes franchis pendant le 3’ rapide (au demi-plot près). Chacun recopie sa ligne du tableau « Mes cibles » dans le carnet. Groupes de vitesse (G1 moins de 10 km/h, G2 10 à 11,5, G3 12 à 13,5, G4 14 et plus) ; coureur et coach dans deux groupes différents. Retour au calme : marche, étirements doux.'},
+
+ {id:'s2',n:'S2',short:'36’’, 1’30',title:'Découvrir le 36’’/36’’ et mesurer son 1’30',lv:1,tab:'cour',
+  lead:'Premier contact avec les deux situations du cycle : le 36’’/36’’ au plot cible (la VMA de travail donne le numéro du plot) et le 1’30 mesuré, qui fournit la distance du premier projet. Échauffement guidé, mais ce sont les élèves qui annoncent l’étape suivante.',
+  tl:[['Échauffement guidé',22,'warm'],['36’’/36’’ au plot cible à 100 %',24,'i36'],['Récupération active',6,'ra'],['Le 1’30 mesuré',18,'p130'],['Bilan et carnet',20,'bilan']],
+  warm:'Les élèves annoncent la partie suivante et vérifient les 3 signes. Fin d’échauffement : 2 × 36’’ « pour voir » sur les plots plats.',
+  eval:[['afl1','Le 1’30 mesuré donne la première distance du projet de l’épreuve.'],['afl3','Le coach juge les arrivées au plot cible et mesure le 1’30.']],
+  ex:{i36:S_I36(100,8),ra:S_RA,
+   p130:{t:'Le 1’30 mesuré',k:'Fil rouge 2 · mesurer sa distance',sch:'p130',
+    disp:'Plots plats tous les 10 m et grands plots jaunes tous les 50 m. Départ de la ligne, 1’30 de course ; mi-course annoncée à 45’’. Vague A, puis vague B 5 min plus tard.',
+    four:'Coureur : court 1’30 à l’allure qu’il pourrait tenir encore une fois. Coach : crie « mi-course » à 45’’ en repérant le plot, compte les tours, relève le plot d’arrêt à 1’30.',
+    deroul:['Cible : 105 à 110 % de la VMA de travail (VMA 12 → 315 à 330 m).','Distance = tours × 200 m + plot d’arrêt ; vitesse en km/h = distance ÷ 25.'],
+    cons:['La 2e moitié au moins aussi longue que la 1re.'],
+    reus:'Distance de la 2e moitié ≥ distance de la 1re moitié.',moins:'Cible à 100 %.',plus:'Cible à 110 % sans regarder les plots.'}
+  },
+  bilan:'Carnet : répétitions « pile » au 36’’, distance du 1’30 et sa note repère (barème de Seconde). Premier projet pour S3 : distance du 1’30 mesuré, ± 10 m selon le ressenti.'},
+
+ {id:'s3',n:'S3',short:'Premier projet',title:'Le 3’ au plot et le premier 1’30 avec projet',lv:2,tab:'cour',
+  lead:'Les deux courses de l’épreuve, chacune seule : le 3’ avec mi-course marquée pour apprendre la régularité, puis le premier 1’30 avec plot de départ et zones d’arrivée. Échauffement semi-guidé : le binôme suit la fiche, le professeur ne donne que les tops.',
+  tl:[['Échauffement semi-guidé',20,'warm'],['36’’/36’’ au plot cible à 100 %',20,'i36'],['Le 3’ au plot',16,'c3'],['1’30 avec projet',18,'proj'],['Bilan et carnet',16,'bilan']],
+  warm:'Fin d’échauffement : 2 accélérations de 60 m à l’allure du 36’’/36’’.',
+  eval:[['afl1','Les deux courses de l’épreuve sont là : distance du 3’, zone du 1’30.'],['afl2','Projet construit à partir d’une mesure (S2), pas au hasard.'],['afl3','Le coach marque la mi-course du 3’ et juge la zone du 1’30.']],
+  ex:{i36:S_I36(100,6,{t:'36’’/36’’ au plot cible à 100 % (2e fois)',reus:'5 répétitions sur 6 à 1 plot près : mieux qu’en S2.'}),c3:S_3MIN({moins:'Viser 90 %.'}),proj:S_PROJ({deroul:['Projet = distance du 1’30 mesuré en S2, ± 10 m selon le ressenti.','Au moins 8 min après le 3’ : vague A, 3 min de placement, vague B.']})},
+  bilan:'Carnet : distance du 3’ et régularité (2e moitié − 1re), zone du 1’30 et écart en mètres. Retour au calme : marche et étirements doux.'},
+
+ {id:'s4',n:'S4',short:'1’30 fatigué',title:'Tenir son projet en étant fatigué',lv:2,tab:'cour',
+  lead:'Même travail qu’en S3, une seule variable change : le 1’30 avec projet arrive juste après le 3’, avec seulement 6 min de récupération. Faut-il retirer quelques mètres au projet ? Le binôme décide et le justifie.',
+  tl:[['Échauffement semi-guidé',18,'warm'],['36’’/36’’ au plot cible à 100 %',20,'i36'],['Le 3’ au plot',14,'c3'],['1’30 avec projet, après 6 min',16,'proj'],['Récupération active',6,'ra'],['Bilan et carnet',16,'bilan']],
+  warm:'Le binôme choisit ses 4 exercices de renforcement et sa fin d’échauffement.',
+  eval:[['afl1','Préparer C2 : courir le 1’30 sans être frais.'],['afl2','Ajuster son projet à la fatigue : décision écrite dans le carnet.']],
+  ex:{i36:S_I36(100,6,{t:'36’’/36’’ au plot cible à 100 % (3e fois)',reus:'6 répétitions sur 6 à 1 plot près.'}),c3:S_3MIN(),proj:S_PROJ({t:'1’30 avec projet, 6 min après le 3’',deroul:['Vague A : 3’ puis 1’30 six minutes plus tard ; vague B décalée de 5 min.','Projet ajusté à la fatigue : − 5 à − 10 m par rapport à S3 ? Le binôme décide.']}),ra:S_RA},
+  bilan:'Carnet : zone du 1’30 fatigué comparée à S3. La décision prise sur le projet était-elle la bonne ?'},
+
+ {id:'s5',n:'S5',short:'Régularité',title:'Régularité sur 3’ et allure au-dessus de la VMA',lv:3,tab:'cour',
+  lead:'Le 36’’/36’’ passe à 105 %. Deux 3’ séparés de 5 min pour apprendre à reproduire une allure, puis le 1’30 avec projet. Échauffement autonome avec fiche : le binôme construit son échauffement de 15 min et l’écrit dans le carnet.',
+  tl:[['Échauffement autonome (fiche)',15,'warm'],['36’’/36’’ au plot cible à 105 %',20,'i36'],['2 × 3’ au plot',24,'c3'],['1’30 avec projet',16,'proj'],['Bilan et carnet',15,'bilan']],
+  warm:'Le binôme écrit son échauffement (durées des 3 parties, 4 exercices, gammes) avant de commencer.',
+  eval:[['afl1','Régularité du 3’ : 1 point de l’efficacité à l’épreuve.'],['afl2','Échauffement construit et écrit par le binôme.']],
+  ex:{i36:S_I36(105,6),c3:S_3MIN({t:'2 × 3’ au plot',disp:'Deux 3’ par vague, 5 min entre les deux (la course de l’autre vague). Départ de la ligne, mi-course marquée.',deroul:['A 3’, B 3’, A 3’, B 3’.','Le 2e 3’ doit être à 20 m près du 1er : c’est reproduire une allure.'],reus:'Deux 3’ à 20 m près l’un de l’autre, et réguliers (2e moitié ≥ 1re, à 10 m près).'}),proj:S_PROJ()},
+  bilan:'Carnet : écart entre les deux 3’, régularité, zone du 1’30. Le coach écrit un conseil pour l’épreuve blanche.'},
+
+ {id:'s6',n:'S6',short:'Épreuve blanche',title:'Épreuve blanche : 3’, 10 min, 1’30',lv:3,tab:'evs',
+  lead:'L’épreuve de Seconde en vrai, notée au barème : 3’ au plot, 10 min de récupération, 1’30 avec projet. Le bilan dit ce que chacun travaille en S7.',
+  tl:[['Échauffement autonome (fiche)',18,'warm'],['Projets et installation',5,'inst'],['C1 · 3’ au plot',12,'e1'],['C2 · 1’30 avec projet',12,'e2'],['Retour au calme et auto-évaluation',13,'rac'],['Notes et bilan',30,'bilan']],
+  warm:'Échauffement écrit dans le carnet, réalisé en binôme ; dernières accélérations à l’allure du 1’30.',
+  eval:[['afl1','Note blanche : performance /8 (3’ /4, 1’30 /4) et efficacité /4.'],['afl2','Échauffement et projet comme le jour de l’évaluation.'],['afl3','Le coach mesure, marque la mi-course, juge la zone.']],
+  ex:{
+   inst:{t:'Projets et installation',k:'Organisation',disp:'Feuille de résultats remise à chaque coach. Plots des 1’30 posés à côté de la piste.',four:'Coureur : écrit sa distance visée sur 3’ et son projet de 1’30. Coach : les recopie sur la feuille.'},
+   e1:{t:'C1 · 3’ au plot',k:'Course 1',sch:'s3min',disp:'Vague A au top (0’), vague B à 6’.',four:'Coach : compte les tours, pose le plot de mi-course à 1’30, relève la distance.',deroul:['Après la course : marche, trot très lent, boire ; rester actif.']},
+   e2:{t:'C2 · 1’30 avec projet',k:'Course 2',sch:'projet',disp:'Vague A à 12’, vague B à 18’ (comptés depuis C1) : environ 10 min de récupération pour chacun. Plot de départ à la distance projet avant la ligne.',four:'Coach : vérifie le plot, juge la zone, relève la distance.',deroul:['Le coureur peut ajuster son projet après son 3’ : il l’annonce avant de partir.']},
+   rac:S_RAC
+  },
+  bilan:'Chacun calcule sa note blanche (outil « Évaluation ») et choisit son travail pour S7 : allure trop rapide au départ du 3’, 1’30 hors zone, ou chute de vitesse. Grands plots du 3’ = nouvelle VMA de travail : chacun met à jour ses cibles (page 2 du carnet) et se situe sur les degrés AFL2 et AFL3 (page « Je me situe »).'},
+
+ {id:'s7',n:'S7',short:'Réglage',title:'Travailler son point faible et ajuster son projet',lv:4,tab:'cour',
+  lead:'Le 36’’/36’’ passe à 110 %. Chaque binôme travaille le point faible repéré à l’épreuve blanche, puis court un dernier 1’30 avec le projet de l’évaluation. Échauffement seul, sans fiche.',
+  tl:[['Échauffement autonome sans fiche',18,'warm'],['36’’/36’’ au plot cible à 110 %',20,'i36'],['Mon point faible',22,'choix'],['1’30 avec projet final',15,'proj'],['Bilan et carnet',15,'bilan']],
+  warm:'Sans fiche. Le professeur observe avec la grille de l’outil « Échauffement » et rend un retour à chacun.',
+  eval:[['afl1','Projet final du 1’30 et distance visée sur 3’.'],['afl2','Choisir son travail à partir de ses données : premier pas vers la séance construite de Terminale.']],
+  ex:{i36:S_I36(110,6),
+   choix:{t:'Mon point faible',k:'Au choix du binôme',sch:'s3min',
+    disp:'Trois ateliers sur la piste, au choix : A. départ du 3’ trop rapide : 2 × 1’30 à l’allure du 3’, 2 min entre les deux, mi-course annoncée ; B. 1’30 hors zone : 3 × 45’’ à l’allure du projet (moitié du projet en 45’’), 1’30 entre ; C. chute de vitesse : 4 × 300 m à l’allure du 1’30, 3 min entre.',
+    four:'Coureur : choisit l’atelier à partir de l’épreuve blanche et l’écrit. Coach : mesure et donne l’écart après chaque répétition.',
+    deroul:['10 min par coureur, puis on inverse.'],
+    reus:'Écart à la cible réduit d’une répétition à l’autre.'},
+   proj:S_PROJ({t:'1’30 avec projet final'})},
+  bilan:'Projet final dans le carnet : distance visée sur 3’ et projet du 1’30, justifiés par l’épreuve blanche et la séance du jour.'},
+
+ {id:'s8',n:'S8',short:'Évaluation',title:'Évaluation : 3’, 10 min, 1’30',lv:4,tab:'evs',status:'eval',
+  lead:'L’épreuve de Seconde : 3’ au plot, 10 min de récupération, 1’30 avec projet. Échauffement seul observé ; projets annoncés avant la première course.',
+  tl:[['Échauffement autonome observé',20,'warm'],['Projets et installation',5,'inst'],['C1 · 3’ au plot',12,'e1'],['C2 · 1’30 avec projet',12,'e2'],['Retour au calme et auto-évaluation',13,'rac'],['Notes et bilan',28,'bilan']],
+  warm:'Sans fiche, observé (AFL2, 2 points).',
+  eval:[['afl1','Performance /8 : 3’ /4 et 1’30 /4. Efficacité /4 : zone du 1’30 /3 et régularité du 3’ /1.'],['afl2','Échauffement seul (2 pts) et projet justifié par le carnet (2 pts).'],['afl3','Coach : distance, mi-course, zone (4 pts).']],
+  ex:{inst:null,e1:null,e2:null,rac:S_RAC},
+  bilan:'Saisie dans l’outil « Évaluation ». Chaque élève écrit ce qu’il garde pour la Première et la Terminale : sa VMA de travail, sa distance sur 3’, sa distance sur 1’30.'}
+];
+SESSIONS[7].ex.inst=SESSIONS[5].ex.inst;SESSIONS[7].ex.e1=SESSIONS[5].ex.e1;SESSIONS[7].ex.e2=SESSIONS[5].ex.e2;
+
+/* ---------- Challenges du binôme : une règle de jeu greffée sur l’exercice, points au « championnat des binômes » ---------- */
+const JEUX={
+ s1:{allures4:{n:'Le défi des 4 allures',r:'Avant chaque allure, le coureur annonce à son coach le nombre de grands plots qu’il va franchir. Au 3’ rapide, règle du banquier : chaque grand plot franchi = 1 point, divisé par deux si le coureur marche.',p:'annonce juste = 3 pts, à 1 plot près = 1 pt ; 3’ rapide : 1 pt par grand plot'},
+     relais:{n:'Le contrat de tours',r:'Le binôme signe un contrat avant chaque manche : nombre de tours en 6 min. La 2e manche se joue en connaissant le résultat de la 1re.',p:'contrat tenu = 5 pts, à 1 tour près = 2 pts, par manche'}}
+};
+SESSIONS.forEach(s=>{const J=JEUX[s.id];if(!J)return;Object.keys(J).forEach(k=>{if(s.ex[k])s.ex[k]=Object.assign({},s.ex[k],{jeu:J[k]})})});
+SESSIONS[0].lead='Séance d’entrée en challenges : le binôme se forme et marque des points ensemble sur deux défis (annonce juste, contrat tenu), classement du jour en fin de séance. On apprend les 3 parties de l’échauffement, on découvre quatre allures sur 3 min ; la 4e, le 3’ rapide, donne la VMA de travail (grands plots jaunes franchis = km/h).';
+/* ---------- Exercices partagés (repris en Terminale) ---------- */
+const LIB={
+ "testA": {
+  "t": "Test 10 × 36’’/24’’ · vague A",
+  "k": "Test de VMA",
+  "sch": "test",
+  "disp": "Plots plats tous les 10 m sur toute la piste. Une minute = 36’’ de course + 24’’ de marche, 10 fois de suite (10 min). Sifflet au départ et à la fin de chaque 36’’.",
+  "four": "Coureur A : part d’un plot plat, compte ses plots en courant, s’arrête au sifflet et annonce son chiffre ; il marche 24’’ jusqu’au plot plat suivant et repart de là. Coach B : au centre de la pelouse, suit son coureur des yeux, vérifie le chiffre annoncé (demi-plot = 0,5) et le note dans la grille 1’ à 10’.",
+  "deroul": [
+   "2 min : rappel du protocole, chaque coach a son crayon et sa grille.",
+   "10 min de test.",
+   "2 min : le coach additionne les 10 chiffres et divise par 10 : c’est la VMA (km/h)."
+  ],
+  "cons": [
+   "Plots franchis en 36’’ = vitesse en km/h (12 plots = 120 m en 36’’ = 12 km/h).",
+   "Partir à l’allure que je crois tenir 10 fois : on cherche 10 chiffres proches, pas un record sur la 1re.",
+   "Si c’est facile après 3 répétitions, monter d’un plot."
+  ],
+  "reus": "Au plus 2 km/h d’écart entre la meilleure et la moins bonne répétition.",
+  "moins": "8 répétitions (diviser par 8) pour un élève qui reprend ou un inapte partiel autorisé à courir.",
+  "plus": "Aucune : c’est un test."
+ },
+ "testB": {
+  "t": "Test 10 × 36’’/24’’ · vague B",
+  "k": "Test de VMA",
+  "sch": "test",
+  "disp": "Même dispositif, rôles inversés.",
+  "four": "Coureur B, coach A. Le coach de la vague A, encore essoufflé, compte à voix haute avec son coureur : c’est l’occasion de vérifier que la grille est lisible.",
+  "deroul": [
+   "10 min de test, 2 min de calcul, 2 min de récupération en marchant."
+  ],
+  "cons": [
+   "Comparer avec la séance 1 : distance des anneaux ÷ 100 et allure rapide des 4 allures. Les trois chiffres sont proches mais pas égaux, et c’est normal : ce ne sont pas les mêmes efforts."
+  ],
+  "reus": "VMA calculée et vérifiée par le professeur pour chaque élève avant la fin de la séance."
+ },
+ "t130": {
+  "t": "Travail du 1’30 : 1’30, 45’’, 45’’, 1’30",
+  "k": "Situation finale · leçon 5 du carnet",
+  "sch": "projet",
+  "disp": "Plots plats pour placer les plots de départ, zones autour de la ligne. Deux 1’30 avec projet ; entre les deux, 2 × 45’’ à l’allure du 1’30 (45’’ de récupération).",
+  "four": "Coureur : distance prévue, distance aux 45’’, distance réalisée. Coach : annonce « mi-course » à 45’’, relève la distance et la zone.",
+  "deroul": [
+   "A 1’30, B 1’30, A 2 × 45’’, B 2 × 45’’, A 1’30, B 1’30.",
+   "45’’ : plot de départ à la moitié de la distance projet avant la ligne."
+  ],
+  "cons": [
+   "Distance aux 45’’ = la moitié du projet : si on la dépasse, on finit en zone 2."
+  ],
+  "reus": "Deuxième 1’30 en zone 4 ou zone 3.",
+  "moins": "Un seul 1’30 après les 45’’.",
+  "plus": "Deuxième 1’30 avec un projet + 5 m."
+ },
+ "inst": {
+  "t": "Projets et installation",
+  "k": "Organisation",
+  "disp": "Fiche de résultats remise à chaque coach. Plots des 1’30 posés dès maintenant à côté de la piste.",
+  "four": "Coureur : donne au professeur son temps projet du 500 m et sa distance projet du 1’30. Coach : recopie les projets sur la fiche.",
+  "deroul": [
+   "Rappel : passage au 250 m annoncé par le coach ; arrivée sur la ligne ; zones du 1’30."
+  ]
+ },
+ "c1": {
+  "t": "C1 · 500 m",
+  "k": "Course 1",
+  "sch": "d500",
+  "disp": "Vague A au top de départ (0’), vague B à 6’.",
+  "four": "Coach : chronomètre, annonce le passage au 250 m, note le temps. Professeur : chronomètre officiel au départ de chaque vague et contrôle quelques temps.",
+  "deroul": [
+   "Après la course : récupération active (marche, footing très lent), hydratation."
+  ]
+ },
+ "c2": {
+  "t": "C2 · 500 m",
+  "k": "Course 2",
+  "sch": "d500",
+  "disp": "Vague A à 12’, vague B à 18’ (comptés depuis le départ de C1) : environ 10 min de récupération pour chacun après sa course.",
+  "four": "Mêmes rôles. Le coach annonce le temps de C1 au coureur avant le départ.",
+  "deroul": [
+   "Le coureur peut ajuster son projet pour C2 : il l’annonce avant de partir."
+  ]
+ },
+ "c3": {
+  "t": "C3 · 1’30 avec projet",
+  "k": "Course 3",
+  "sch": "projet",
+  "disp": "Vague A à 24’, vague B à 30’. Plot de départ à la distance projet avant la ligne.",
+  "four": "Coach : vérifie le plot de son coureur, se place aux zones, relève zone et distance.",
+  "deroul": [
+   "Zone 4 : ± 5 m = 4 pts ; zone 3 : +5 à +15 m = 3 ; zone 2 : −5 à −15 m = 2 ; zone 1 : 1 (trop loin) ou 0,5 (trop court)."
+  ]
+ },
+ "rac": {
+  "t": "Retour au calme et auto-évaluation",
+  "k": "AFL2 · bilan",
+  "disp": "Marche, étirements doux (10 à 15’’), hydratation. Chaque élève compare ses projets et ses temps réalisés.",
+  "four": "Coureur : remplit la partie bilan du carnet (écarts, ressenti, ce qui a marché). Coach : complète la feuille de résultats et écrit un conseil au coureur.",
+  "reus": "Carnet complet avant de quitter la piste."
+ },
+ "c100": {
+  "t": "Prise d’allure : 3 × 100 m",
+  "k": "Allure spécifique",
+  "sch": "c100",
+  "disp": "100 m (virage + ligne droite), récupération 1 min en marchant. Temps visé = temps projet du 500 m ÷ 5.",
+  "four": "Coureur : vise son temps au 100 m. Coach : chronomètre à l’arrivée, annonce l’écart.",
+  "deroul": [
+   "Vague A : 3 × 100 m, puis vague B."
+  ],
+  "cons": [
+   "On ne sprinte pas : c’est l’allure qu’on tiendra 5 fois."
+  ],
+  "reus": "2 des 3 passages à 1 seconde près.",
+  "moins": "2 × 100 m.",
+  "plus": "Le 3e sans annonce du coach : le coureur estime son temps."
+ },
+ "ra": {
+  "t": "Récupération active : 3 min à 70 %",
+  "k": "Mode « temps » · 70 % de VMA",
+  "sch": "ra",
+  "disp": "Toute la classe ensemble. Grands plots jaunes (50 m) : cible = 0,7 × VMA plots en 3 min.",
+  "four": "Chacun pour soi ; le coach note le nombre de plots de son coureur.",
+  "deroul": [
+   "3 min de footing à 70 %, puis 1 min de marche."
+  ],
+  "cons": [
+   "La récupération active aide à faire baisser le pouls et à éliminer plus vite les déchets de l’effort que l’arrêt complet."
+  ],
+  "reus": "À 1 grand plot de la cible."
+ }
+};
+/* ---------- Le cycle de Terminale : 9 séances de 90 min (accès direct à la piste), épreuve en T9 ---------- */
+const T_RAC={t:'Retour au calme et auto-évaluation',k:'AFL2 · bilan',disp:'Marche, étirements doux (10 à 15’’), hydratation. Chaque élève compare ses projets et ses temps réalisés.',four:'Coureur : remplit la partie bilan du carnet (écarts, ressenti, ce qui a marché). Coach : complète la feuille de résultats et écrit un conseil au coureur.',reus:'Carnet complet avant de quitter la piste.'};
+const SX=id=>SESSIONS.find(s=>s.id===id).ex;   /* reprise d’exercices de Seconde */
+const T_RA={t:'Récupération active : 3 min à 70 %',k:'Mode « temps »',sch:'ra',disp:'Toute la classe, grands plots jaunes (50 m) : cible = 0,7 × VMA plots en 3 min.',four:'Chacun pour soi ; le coach note le nombre de plots.',deroul:['3 min puis 1 min de marche.'],reus:'À 1 grand plot de la cible.'};
+const T_PROJ={t:'1’30 avec projet de distance',k:'Situation finale · course C3 de l’épreuve',sch:'projet',
+  disp:'Plot de départ à la distance projet avant la ligne, zones à −15, −5, +5, +15 m. Vague A, 3 min de placement, vague B.',
+  four:'Coureur : annonce sa distance, place son plot. Coach : vérifie le plot, juge la zone, note l’écart en mètres.',
+  deroul:['Projet ajusté à partir de la dernière séance et de la fatigue du jour.'],
+  cons:['Distance aux 45’’ = moitié du projet.'],reus:'Zone 4 ou zone 3.',moins:'Zones à ± 10 m.',plus:'Projet + 5 m.'};
+const T_SESSIONS=[
+ {id:'t1',n:'T1',short:'Relais 5 km',title:'Diagnostic : le 5 km à deux et un 500 m de référence',lv:3,tab:'t1',
+  lead:'Retrouver la piste et le binôme, courir longtemps à une allure régulière, puis un premier 500 m pour se situer dans le barème. Échauffement en binôme avec la fiche de Seconde : le professeur repère qui sait déjà s’échauffer seul.',
+  tl:[['Échauffement avec fiche',18,'warm'],['Relais 5 km à deux',35,'r5'],['Récupération active',5,'ra'],['500 m de référence',17,'ref'],['Bilan et carnet',15,'bilan']],
+  warm:'Rappel des 3 parties et des 3 signes. Fin d’échauffement : 2 accélérations de 80 m.',
+  eval:[['afl1','Premier 500 m chronométré : note au barème, point de départ des progrès.'],['afl2','Carnet ouvert dès la 1re séance : distances et temps de chaque relais.'],['afl3','Binômes coureur / coach formés (groupes de vitesse différents), fixes après T3.']],
+  ex:{
+   r5:{t:'Relais 5 km à deux',k:'Leçon 1 du carnet · régularité',sch:'relais5',
+    disp:'25 tours de 200 m en relais ; chacun choisit des relais de 1 à 3 tours. Grille de 7 relais par élève dans le carnet. Record cadette du 5 km : 17’32 (carnet).',
+    four:'Coureur : annonce la longueur de son relais et court. Partenaire : chronomètre, note distance prévue et temps réalisé, puis prend le relais dans la zone.',
+    deroul:['Avant le départ, le binôme annonce son temps total visé.','Au bout de 35 min, on arrête : la distance réalisée compte (5 km à deux en 35 min = 8,6 km/h de moyenne).'],
+    cons:['Même temps au tour sur tous ses relais : le chronomètre du partenaire le dit.','Partir à l’allure des derniers tours, pas plus vite.'],
+    reus:'Temps au tour stable à 3 secondes près sur tous ses relais ; écart au temps visé inférieur à 1 min.',
+    moins:'3 km (15 tours).',plus:'Relais de 2 tours imposés, temps au tour annoncé avant chaque relais.'},
+   ra:{t:'Récupération active',k:'Marche et footing lent',sch:'ra',disp:'2 min de marche, 3 min de footing très lent, hydratation.',four:'Le binôme remplit le carnet du relais pendant la marche.',reus:'Pouls sous 120 avant le 500 m.'},
+   ref:{t:'500 m de référence',k:'Situation finale · course C1 sans projet chiffré',sch:'d500',
+    disp:'Départ en face de la ligne, passage au 250 m au plot bleu. Vague A, puis vague B 5 min plus tard.',
+    four:'Coureur : court au mieux, sans projet chiffré. Coach : annonce le passage au 250 m, note le temps final et le pouls.',
+    deroul:['Après la course : note au barème (outil « Évaluation »).'],
+    cons:['La 2e moitié au moins aussi vite que la 1re.'],
+    reus:'Écart entre les deux 250 m inférieur à 3 secondes.'}
+  },
+  bilan:'Carnet : temps au tour moyen, 500 m de référence et sa note sur 8. Première idée de la répartition AFL2 / AFL3 (6/2, 4/4 ou 2/6), à confirmer avant T7.'},
+
+ {id:'t2',n:'T2',short:'VMA',title:'Alterner les allures et trouver sa VMA',lv:3,tab:'vma',
+  lead:'Leçon 2 du carnet : des tours de plus en plus rapides pour sentir les allures, puis le test 10 × 36’’/24’’. Les tableaux d’allures du cycle en dépendent.',
+  tl:[['Échauffement avec fiche',18,'warm'],['Varier les allures et coacher',18,'tours'],['Test VMA · vague A',14,'testA'],['Test VMA · vague B',14,'testB'],['Récupération active 3’ à 70 %',6,'ra'],['Tableau d’allures et groupes',20,'bilan']],
+  warm:'Fin d’échauffement courte : les tours rapides de l’exercice 1 terminent la mise en route.',
+  eval:[['afl2','VMA, fréquences cardiaques et ressentis dans le carnet : les données qui servent à planifier la charge.'],['afl3','Annoncer le temps au tour, compter les plots du test.']],
+  ex:{
+   tours:{t:'Varier les allures : tours de 8 à 14 km/h et plus',k:'Leçon 2 du carnet · coaching',sch:'tours',
+    disp:'Tours enchaînés sans arrêt : 8 km/h (1’30 au tour), 10 (1’12), 12 (1’00), 14 (51’’), puis + 1 km/h par tour. Vague A, puis vague B.',
+    four:'Coureur : vise le temps du tour. Coach : sur la ligne, annonce le temps à chaque passage (« 1’02, accélère de 2 »), note le dernier tour tenu et le pouls.',
+    deroul:['On s’arrête au premier tour manqué de plus de 3 secondes.','La dernière vitesse tenue donne une première idée de la VMA.'],
+    cons:['Changer d’allure dès la ligne, pas au milieu du tour.'],
+    reus:'4 tours de suite à 2 secondes près du temps visé.',
+    moins:'Démarrer à 7 km/h (1’43 au tour).',plus:'Tours à + 0,5 km/h au-delà de 14.'},
+   ra:T_RA,testA:LIB.testA,testB:Object.assign({},LIB.testB,{cons:['Comparer avec la dernière vitesse tenue aux tours (exercice 1) et avec la VMA de Seconde notée dans le carnet : un écart de plus de 1,5 km/h se discute avec le professeur.']})
+  },
+  bilan:'VMA = total des 10 répétitions ÷ 10. Recopier sa ligne du tableau d’allures. Groupes de vitesse (G1 à G4) ; binômes définitifs avec coureur et coach dans deux groupes différents.'},
+
+ {id:'t3',n:'T3',short:'1er 500',title:'Travail du premier 500 m',lv:4,tab:'t3',
+  lead:'Leçon 3 du carnet : des distances qui raccourcissent pendant que l’allure monte, de 90 à 130 % de la VMA, puis l’intermittent 36’’/36’’ au-dessus de la VMA. À partir de T3, échauffement seul et sans fiche.',
+  tl:[['Échauffement autonome',15,'warm'],['Varier les allures : 500 à 100 m',38,'desc'],['Récupération active 3’ à 70 %',5,'ra'],['36’’/36’’ à 110 puis 120 %',18,'i36'],['Bilan et carnet',14,'bilan']],
+  warm:'Chacun écrit son échauffement dans le carnet après coup ; le professeur observe 5 élèves par séance avec la grille.',
+  eval:[['afl1','Allure du premier 500 m : partir à la bonne vitesse, c’est la moitié de la note de C1.'],['afl2','Performances stables : chaque course a un temps prévu et un temps réalisé.'],['afl3','Coach : choix des vitesses, organisation de la récupération, bilan de coaching.']],
+  ex:{
+   desc:{t:'Varier les allures : 500-400-300-200-100-100',k:'Leçon 3 du carnet · % de VMA',sch:'pyramide',
+    disp:'500 m à 90 %, 400 m à 95 %, 300 m à 100 %, 200 m à 110 %, 100 m à 120 %, 100 m à 130 %. Récupérations du carnet respectées (4’, 3’30, 3’, 2’, 2’) : la course de l’autre vague plus le temps qui manque.',
+    four:'Coureur : lit son temps prévu. Coach : chronomètre, annonce le passage à mi-course, note temps et pouls, remplit « choix de vitesses », « organisation de la récup », « bilan coaching ».',
+    deroul:['A puis B sur chaque distance. Départs : 500 et 300 m en face de la ligne, 400 et 200 m de la ligne, 100 m en face.'],
+    cons:['Plus c’est court, plus c’est vite : le 100 m à 130 % n’est pas un sprint.'],
+    reus:'5 courses sur 6 à 2 secondes ou moins du temps prévu.',moins:'Intensités à −5 % ; sans le dernier 100 m.',plus:'300 m à 105 %, 200 m à 115 %.'},
+   ra:T_RA,
+   i36:{t:'36’’/36’’ à 110 % puis 120 %',k:'Leçon 3 du carnet · intermittent',sch:'i3636',
+    disp:'Aller-retour depuis la ligne, plot plat cible : 3 répétitions à 110 % (plot = 1,1 × VMA), 3 à 120 %. Vague A puis vague B.',
+    four:'Coureur : arrive au plot au sifflet. Coach : au plot cible, juge les allers ; le coureur s’annonce lui-même aux retours.',
+    deroul:['6 × 36’’/36’’ par vague, transition 2 min.'],
+    cons:['120 % : allure du 1’30 de l’épreuve.'],
+    reus:'4 répétitions sur 6 à 1 plot près.',moins:'105 puis 110 %.',plus:'4 à 110 %, 4 à 120 %.'}
+  },
+  bilan:'Carnet : écarts prévu-réalisé, pouls, ressenti 1 à 5. Question : à quel pourcentage de ta VMA cours-tu ton 500 m de T1 ? (vitesse = 1 800 ÷ temps en secondes).'},
+
+ {id:'t4',n:'T4',short:'Intermittent',title:'Intermittent long et pyramide',lv:4,tab:'t4',
+  lead:'Leçon 4 du carnet : 1’12/1’12 à 80 % pour durer, puis une pyramide de 250 à 500 m qui monte jusqu’à 130 %. On apprend à tenir une allure au-dessus de la VMA sur des distances proches de 500 m.',
+  tl:[['Échauffement autonome',15,'warm'],['1’12/1’12 à 80 %',24,'i112'],['Récupération active 2’ à 50 %',3,'ra2'],['Pyramide 250 à 500 m',36,'pyr'],['Bilan et carnet',12,'bilan']],
+  warm:'Fin d’échauffement à l’allure du 500 m (110 %).',
+  eval:[['afl1','Le 500 m à 110 % de la pyramide : l’allure des deux 500 m de l’épreuve.'],['afl2','Tenue des allures prévues sur toute la pyramide.']],
+  ex:{
+   i112:{t:'1’12/1’12 à 80 %',k:'Leçon 4 du carnet · intermittent long',sch:'i112',
+    disp:'Aller-retour depuis un départ commun en face de la ligne, coupelles orange tous les 20 m : en 1’12, 1 coupelle = 1 km/h. Coupelle cible n° 0,8 × VMA (VMA 12 → 9,5e coupelle, 190 m environ). 4 répétitions par vague (2 allers, 2 retours).',
+    four:'Coureur : arrive au plot au bout de 1’12. Coach : au plot cible, juge les allers ; noter ressentis souffle, chaleur, muscles.',
+    deroul:['Vague A : 4 × 1’12/1’12 (9 min 36), 2 min de transition, puis vague B.'],
+    cons:['80 % : on parle encore par mots.'],
+    reus:'3 répétitions sur 4 à 10 m près du plot.',moins:'75 %.',plus:'6 répétitions.'},
+   ra2:{t:'Récupération active : 2’ à 50 %',k:'Mode « temps »',disp:'Marche rapide ou trot très lent, toute la classe.',four:'Chacun pour soi.',reus:'Pouls qui redescend sous 120.'},
+   pyr:{t:'Pyramide 250-375-500-375-250-125',k:'Leçon 4 du carnet · % de VMA',sch:'pyrT4',
+    disp:'250 m à 95 %, 375 m à 100 %, 500 m à 110 %, 375 m à 115 %, 250 m à 120 %, 125 m à 130 %. Alternance des vagues ; récupérations du carnet (2’30 à 5’) respectées en ajoutant une minute si besoin.',
+    four:'Coureur : lit son temps prévu. Coach : chronomètre, annonce l’écart à l’arrivée, note.',
+    deroul:['Départs : distance avant la ligne (250 m à 150 m après la ligne, 375 m à 25 m après, 500 m en face, 125 m à 75 m après). Pour 375 et 125 m, un seul plot de départ, posé entre deux plots plats.'],
+    cons:['Le 500 m à 110 % est la course clé : passage au 250 m à la moitié du temps prévu.'],
+    reus:'4 courses sur 6 à 2 secondes près.',moins:'Intensités à −5 % ; sans le 125 m à 130 %.',plus:'125 m à 130 % refait en fin de séance.'}
+  },
+  bilan:'Carnet : temps prévu et réalisé du 500 m à 110 %. C’est la première estimation du projet de C1.'},
+
+ {id:'t5',n:'T5',short:'2e 500, 1’30',title:'Travail du deuxième 500 m et du 1’30',lv:4,tab:'t5',
+  lead:'Leçon 5 du carnet : répéter l’allure du 500 m en étant fatigué (6 × 300 m à 110 %), puis le travail du 1’30 en deux 45’’. Le deuxième 500 m de l’épreuve se court 10 min après le premier.',
+  tl:[['Échauffement autonome',15,'warm'],['6 × 300 m à 110 %',33,'r300'],['Récupération active 3’ à 70 %',5,'ra'],['Travail du 1’30',22,'t130'],['Bilan et carnet',15,'bilan']],
+  warm:'Fin d’échauffement : 1 accélération de 100 m à l’allure du 300 m.',
+  eval:[['afl1','Tenir l’allure malgré la fatigue : la note de C2 en dépend.'],['afl1','1’30 : zones d’arrivée (/4).'],['afl2','Projet de distance construit à partir de la mesure des 45’’.']],
+  ex:{
+   r300:{t:'6 × 300 m à 110 %',k:'Leçon 5 du carnet · maintenir l’allure',sch:'pyramide',
+    disp:'300 m (départ en face de la ligne) à 110 % de la VMA. Récupération du carnet (5 min) par alternance des coureurs : la course de l’autre vague, puis on repart au top du professeur toutes les 5 min environ.',
+    four:'Coureur : même temps visé 5 fois. Coach : chronomètre, annonce le passage au 150 m, note temps, pouls, et remplit « organisation de la récup ».',
+    deroul:['A, B, A, B… 6 fois chacun.'],
+    cons:['Le 6e 300 m doit ressembler au 1er : c’est le 2e 500 m de l’épreuve.'],
+    reus:'5 des 6 courses à 2 secondes près ; le 6e pas plus lent de 3 secondes que le 1er.',moins:'4 × 300 m.',plus:'300 m à 115 % pour les deux derniers.'},
+   ra:T_RA,
+   t130:LIB.t130
+  },
+  bilan:'Carnet : distance aux 45’’ et distance réalisée ; zone obtenue. Le coach écrit un conseil pour le projet de T6.'},
+
+ {id:'t6',n:'T6',short:'Dernier 500',title:'Travail du dernier 500 m : résister',lv:4,tab:'t6',
+  lead:'Leçon 6 du carnet : des distances qui s’allongent pendant que l’allure monte (jusqu’à 125 %), pour apprendre à tenir quand les jambes brûlent. Puis un 1’30 avec projet en étant fatigué, comme C3 à l’épreuve.',
+  tl:[['Échauffement autonome',15,'warm'],['Re-test VMA court (36’’/24’’)',10,'retest'],['Résistance : 100 à 400 m',30,'res'],['Récupération active 3’ à 70 %',5,'ra'],['1’30 avec projet',18,'proj'],['Bilan et carnet',12,'bilan']],
+  warm:'Fin d’échauffement : 2 accélérations, la 2e à l’allure du 400 m.',
+  eval:[['afl1','La 3e course de l’épreuve arrive fatigué : projet du 1’30 ajusté à l’état du jour.'],['afl2','Projet anticipé et réalisé : degré 4 du référentiel.']],
+  ex:{
+   res:{t:'Résistance : 100-200-250-300-400 m',k:'Leçon 6 du carnet',sch:'pyrT6',
+    disp:'100 m à 100 %, 200 m à 105 %, 250 m à 110 %, 300 m à 120 %, 400 m à 125 % (intensités du carnet). Récupérations du carnet (2’ à 5’) par alternance des vagues.',
+    four:'Coureur : vise son temps. Coach : chronomètre, annonce le passage à mi-course et l’écart à l’arrivée.',
+    deroul:['A puis B sur chaque distance.'],
+    cons:['Le 500 m à 130 % du carnet est retiré : 6e effort de la série, et le temps manque. Les documents de collègues placent l’allure du 3 × 500 m entre 107 et 130 % de la VMA selon le niveau ; mais ici la VMA vient d’un test intermittent, qui la surestime : 125 % de cette VMA est déjà très haut. Si plus de la moitié de la classe rate le 300 m, passer à la variable « − ».'],
+    reus:'4 courses sur 5 à 2 secondes près ; le 400 m tenu jusqu’au bout.',moins:'300 m et 400 m à 115 %.',plus:'500 m à 130 % en fin de séance (carnet) pour les G4.'},
+   retest:{t:'Re-test VMA court : 36’’/24’’',k:'2e mesure de VMA · mise à jour des cibles',sch:'test',
+    disp:'Même protocole que T2, plots plats tous les 10 m, mais départ à la VMA de T2 moins 2 km/h : 3 à 6 paliers seulement. Vague A puis vague B.',
+    four:'Coureur : court jusqu’au plot annoncé à chaque palier. Coach : note le dernier palier tenu.',
+    deroul:['Vague A (5 min), vague B (5 min).','Nouvelle VMA = dernier palier tenu. Chacun met à jour la colonne « Mise à jour T6 » de ses cibles (page 2 du carnet).'],
+    cons:['Nancy-Metz impose au moins deux tests de VMA dans la séquence et retient le meilleur. Ici, il sert surtout à recaler les allures de T7 et T9.'],
+    reus:'Chaque élève a une VMA à jour et ses cibles de l’épreuve recalculées.',moins:'Arrêt au palier de T2 pour les élèves fatigués.',plus:'Aller au bout pour les G4.'},
+   ra:T_RA,proj:T_PROJ
+  },
+  bilan:'Carnet : zone du 1’30 fatigué comparée à celle de T5, cibles de l’épreuve mises à jour avec la nouvelle VMA.'},
+
+ {id:'t7',n:'T7',short:'Épreuve blanche',title:'Épreuve blanche : 500 m, 500 m, 1’30',lv:4,tab:'t7',
+  lead:'L’épreuve en vrai : projets annoncés, échauffement seul observé, 3 courses avec 10 min de récupération, notes au barème. Le bilan dit ce qu’il faut travailler en T8.',
+  tl:[['Échauffement autonome observé',20,'warm'],['Projets et installation',5,'inst'],['C1 · 500 m',12,'c1'],['C2 · 500 m',12,'c2'],['C3 · 1’30 avec projet',12,'c3'],['Retour au calme et auto-évaluation',12,'rac'],['Notes et bilan',17,'bilan']],
+  warm:'Observé avec la grille de l’outil « Échauffement » ; retour individuel en fin de séance.',
+  eval:[['afl1','Note blanche /12 : performance /8 et efficacité /4.'],['afl2','Échauffement et projet observés comme le jour J.'],['afl3','Le coach chronomètre, annonce le passage au 250 m, vérifie le plot du 1’30.']],
+  ex:{inst:LIB.inst,c1:LIB.c1,c2:LIB.c2,c3:LIB.c3,rac:T_RAC},
+  bilan:'Chacun calcule sa note blanche (outil « Évaluation ») et choisit son thème pour T8 : 1er 500 (départ mal réglé), 2e 500 (chute de vitesse), ou 1’30 (zone ratée). Puis page « Je me situe » : il se place sur les degrés AFL2 et AFL3 et choisit sa répartition (6/2, 4/4, 2/6), à annoncer avant l’épreuve.'},
+
+ {id:'t8',n:'T8',short:'Ma séance',title:'Construire et réaliser sa séance',lv:4,tab:'t8',
+  lead:'Ce que le référentiel demande en AFL2 : construire et réaliser une séance sur un thème en utilisant les paramètres de la charge (distance ou durée, intensité, récupération, répétitions). Le thème vient de l’épreuve blanche. Puis on règle l’allure du projet final.',
+  tl:[['Échauffement autonome',15,'warm'],['Construire sa séance',10,'constr'],['Réaliser sa séance',35,'mine'],['Prise d’allure : 3 × 100 m',12,'c100'],['Projet final et bilan',18,'bilan']],
+  warm:'Échauffement adapté au thème choisi.',
+  eval:[['afl2','Séance construite avec les paramètres de la charge et réalisée : élément du référentiel.'],['afl3','Le coach aide à construire la séance et la chronomètre.']],
+  ex:{
+   constr:{t:'Construire sa séance',k:'AFL2 · paramètres de la charge',
+    disp:'Fiche du carnet. Trois thèmes : 1er 500 m, 2e 500 m, 1’30. Choix parmi la banque de situations ou les leçons du carnet (6’ au plot pour la puissance, 36’’/36’’ pour la capacité).',
+    four:'Coureur : écrit thème, exercice, distance ou durée, intensité, récupération, nombre de répétitions. Coach : vérifie la cohérence avec le carnet. Professeur : valide en passant de binôme en binôme.',
+    deroul:['Volume total d’effort rapide entre 1 000 et 1 800 m.'],
+    cons:['La séance répond à un problème vu en T7 : écrire lequel.'],reus:'Séance écrite, chiffrée et validée.'},
+   mine:{t:'Réaliser sa séance',k:'AFL2 · séance du binôme',sch:'piste',
+    disp:'Les binômes travaillent en même temps, chacun sur sa séance ; la piste est partagée (corde aux courses longues, couloirs extérieurs aux fractions).',
+    four:'Coureur : réalise sa séance. Coach : chronomètre et note, puis on inverse (ou les deux courent en alternance dans la même séance).',
+    deroul:['Exemples : 6’ au plot à 95 % (puissance) ; 2 × 6 × 36’’/36’’ à 110 % (capacité) ; 4 × 250 m à l’allure du 500 m, 1’ de récupération (allure spécifique).'],
+    cons:['Respecter les récupérations écrites : c’est un paramètre de la charge.'],
+    reus:'Séance réalisée telle qu’écrite ; écart prévu-réalisé noté.'},
+   c100:LIB.c100
+  },
+  bilan:'Projet final dans le carnet : temps de C1 et C2, passage au 250 m, distance et plot du 1’30, justifiés par l’épreuve blanche.'},
+
+ {id:'t9',n:'T9',short:'Épreuve',title:'Épreuve CCF',lv:4,tab:'eval',status:'eval',
+  lead:'Épreuve du référentiel du lycée : 500 m, 500 m et 1’30, 10 min entre les courses, en binôme ; projets annoncés au professeur avant la première course ; échauffement observé.',
+  tl:[['Échauffement autonome observé',20,'warm'],['Projets et installation',5,'inst'],['C1 · 500 m',12,'c1'],['C2 · 500 m',12,'c2'],['C3 · 1’30 avec projet',12,'c3'],['Retour au calme et auto-évaluation',12,'rac'],['Notes',17,'bilan']],
+  warm:'Sans fiche, observé (AFL2).',
+  eval:[['afl1','Performance /8 (moyenne des notes des 3 courses) et efficacité /4 (zone du 1’30).'],['afl2','Carnet, échauffement, projet : 2, 4 ou 6 points selon le choix de l’élève.'],['afl3','Coach-chronométreur-juge : 6, 4 ou 2 points.']],
+  ex:{inst:LIB.inst,c1:LIB.c1,c2:LIB.c2,c3:LIB.c3,rac:T_RAC},
+  bilan:'Saisie des notes dans l’outil « Évaluation ». Le professeur relève les chronos officiels au départ de chaque vague et contrôle les temps des coachs.'}
+];
+
+/* ---------- T1 à T4 : jeu et travail en équipe (équipes de 2 binômes, niveaux mélangés, formées en T1) ---------- */
+const JEUX_T={
+ t1:{r5:{n:'Le 5 km des équipes',r:'Équipes de 2 binômes (4 élèves, niveaux mélangés). Chaque binôme annonce son temps total visé ; l’équipe additionne ses deux écarts (temps visé − temps réalisé, en valeur absolue). L’équipe qui a le plus petit écart cumulé gagne, pas la plus rapide.',p:'plus petit écart cumulé de la classe = 5 pts, 2e = 3, 3e = 1 ; tout binôme à moins de 30’’ de son temps visé = + 1 pt'},
+     ref:{n:'Le pronostic du coach',r:'Avant le 500 m, chaque coach écrit le temps qu’il prédit pour son coureur, sans le lui dire. On compare à l’arrivée : c’est le coach qui marque pour l’équipe.',p:'pronostic à 2’’ près = 3 pts, à 5’’ près = 1 pt'}},
+ t2:{tours:{n:'La montée en équipe',r:'Dans chaque équipe, les 2 coureurs de la vague montent ensemble les tours de 8, 10, 12, 14 km/h… Chaque tour tenu à 2’’ près rapporte un point à l’équipe ; les 2 coachs annoncent les passages et s’entraident pour chronométrer.',p:'1 pt par tour tenu ; meilleure équipe de la vague = + 3 pts'}},
+ t3:{i36:{n:'Pile-poil par équipes',r:'Les 4 membres de l’équipe font les 36’’/36’’ (deux par vague). Chaque arrivée « pile » au plot cible compte pour l’équipe : on gagne ensemble, chacun à son plot.',p:'pile = 2 pts, à 1 plot près = 1 pt ; total de l’équipe sur les deux vagues'},
+     desc:{n:'Le contrat d’équipe',r:'Avant la série, l’équipe additionne les temps prévus de ses 4 coureurs sur chaque distance (tableau) : c’est son contrat. Après chaque distance, on compare au total réalisé (d’après le cours « Demi-fond Pompidou », 6 × 250 m en relais à contrat collectif).',p:'écart d’équipe ≤ 5’’ = 3 pts, ≤ 10’’ = 1 pt, par distance'}},
+ t4:{pyr:{n:'La pyramide à contrat',r:'Même contrat d’équipe qu’en T3, sur la pyramide 250-375-500-375-250-125. Le 500 m à 110 % compte double : c’est l’allure des 500 m de l’épreuve.',p:'écart d’équipe ≤ 5’’ = 3 pts, ≤ 10’’ = 1 pt par distance ; doublé sur le 500 m ; équipe gagnante de T3 + T4 annoncée en fin de séance'}}
+};
+T_SESSIONS.forEach(s=>{const J=JEUX_T[s.id];if(!J)return;Object.keys(J).forEach(k=>{if(s.ex[k])s.ex[k]=Object.assign({},s.ex[k],{jeu:J[k]})})});
+T_SESSIONS[0].bilan='Carnet : temps au tour moyen, 500 m de référence et sa note sur 8. Équipes de 2 binômes (niveaux mélangés) gardées jusqu’à T4 ; résultats des deux challenges du jour. Première idée de la répartition AFL2 / AFL3 (6/2, 4/4 ou 2/6), à confirmer avant T7.';
+T_SESSIONS[3].bilan='Carnet : temps prévu et réalisé du 500 m à 110 %, première estimation du projet de C1. Annonce de l’équipe gagnante des contrats de T3 et T4 ; à partir de T5, on revient au binôme seul.';
+/* ---------- Outils ---------- */
+function list(a){return Array.isArray(a)?'<ul>'+a.map(x=>'<li>'+x+'</li>').join('')+'</ul>':(a||'')}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+let MYVMA=null;try{MYVMA=parseFloat(localStorage.getItem('df2-vma'))||null}catch(e){}
+function vtable(key,opt){
+  const T=TABS[key];opt=opt||{};const rows=T.rows==='v'?SPEEDS:VMAS;
+  const me=MYVMA?Math.round(MYVMA*2)/2:null;
+  return `<div class="vt-block"><div class="vt-h"><h3>${T.t}</h3></div>${T.note?`<p class="vt-note">${T.note}</p>`:''}
+  <div class="vt-wrap"><table class="vt"><thead><tr><th>${T.rowh||'VMA (km/h)'}</th>${T.cols.map(c=>`<th>${c.h}</th>`).join('')}</tr></thead><tbody>
+  ${rows.map(v=>`<tr${T.rows!=='v'&&me===v?' class="me"':''}><td>${fV(v)}</td>${T.cols.map(c=>`<td>${c.f(v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`;
+}
+
+/* ===== Échauffement autonome ===== */
+const WU_RENF=[['Gainage ventral','sur les avant-bras, corps aligné','20 à 30’’'],['Gainage latéral','appui sur un avant-bras, bassin haut','15 à 20’’ par côté'],['Squats','pieds largeur de bassin, dos droit','10 à 15'],['Fentes avant alternées','genou avant au-dessus de la cheville','8 par jambe'],['Montées sur pointes','sur un pied, l’autre levé','12 par pied'],['Pompes sur les genoux','corps gainé','8 à 12'],['Superman','à plat ventre, lever bras et jambes opposés','10 par côté'],['Pont fessier','sur le dos, monter le bassin','12']];
+const WU_GAM=[['Déroulé du pied','talon puis pointe en se grandissant','chevilles'],['Talons-fesses','fréquence qui augmente','ischio-jambiers'],['Montées de genoux','genou à l’horizontale, buste droit','psoas, gainage'],['Pas chassés','« décoller » haut','adducteurs'],['Jambes tendues','pied posé sous le bassin, avant-pied','fessiers'],['Foulées bondissantes','genou pointé vers l’avant','quadriceps, ischios'],['Course arrière','grandes foulées','quadriceps'],['Fréquence puis amplitude','beaucoup de petits pas, puis grands pas','tous']];
+function renderWarm(){
+  return `<div class="panel wu-print"><span class="status st-next noprint">Outil · fiche élève</span>
+  <div class="teq-top"><div><h2>S’échauffer en autonomie</h2><p class="lead">Fiche GAREEPS « Rendez-vous dans 25 min » (septembre), complétée par les étirements dynamiques et les accélérations de l’échauffement type 3 × 500 m de tes dossiers. Toujours du général au spécifique, 15 à 20 min, puis 2 min de repos avant de courir.</p></div>
+  <div class="teq-btns noprint"><button type="button" class="tb pri" onclick="printOnly('warm')">Imprimer la fiche</button><a class="tb" href="pdf/Echauffement-autonome.pdf" download target="_blank" rel="noopener">PDF de la fiche</a></div></div>
+  <div class="wu-tl"><div style="flex:6"><b>5 à 6 min</b>1 · Activation cardio</div><div style="flex:7"><b>6 à 7 min</b>2 · Articulaire, renforcement, étirements dynamiques</div><div style="flex:5" class="hi"><b>5 à 6 min</b>3 · Gammes et accélérations à l’allure du jour</div></div>
+  <div class="teq-grid">
+   <section><h3><span class="teq-step">1</span>Activation cardio · 5 à 6 min</h3><p>Footing à 60-70 % de la VMA : je peux parler en phrases. Puis talons-fesses, montées de genoux, pas chassés en courant.</p>
+    <p><b>Je passe à la partie 2 quand j’ai les 3 signes :</b></p><div class="crit"><div>J’ai chaud, je commence à transpirer.</div><div>Ma respiration s’accélère : je parle encore, mais par phrases courtes.</div><div>Mon pouls est vers 150 à 160 pulsations par minute (15’’ × 4).</div></div></section>
+   <section><h3><span class="teq-step">2</span>Articulaire, renforcement, étirements · 6 à 7 min</h3>
+    <p><b>Articulaire, obligatoire, de bas en haut</b>, 10 à 15 mouvements par articulation : chevilles → genoux et hanches → tronc → épaules → poignets → cou (flexions et rotations lentes, jamais de grands cercles de la tête).</p>
+    <p><b>Renforcement : 4 exercices au choix</b>, zones différentes (liste ci-dessous).</p>
+    <p><b>Étirements dynamiques</b> (pas d’étirement tenu longtemps avant de courir) : balancés de jambe avant-arrière et latéraux × 10, fentes marchées avec rotation du buste × 6, montées de genou attrapées × 6.</p></section>
+   <section class="hi"><h3><span class="teq-step">3</span>Gammes et accélérations · 5 à 6 min</h3>
+    <p><b>3 à 4 gammes</b> sur 20 m, retour en marchant (${state.c==='t'?'rappelées par le professeur en T1':'montrées par le professeur en S1 et S2'}).</p>
+    <p><b>2 à 3 accélérations progressives</b> de 60 à 100 m : la dernière à l’allure de la séance (${state.c==='t'?'allure du 36’’, du 300 m, du 500 m…':'allure du 36’’, du 3’ ou du 1’30'}).</p>
+    <p><b>Puis 2 min de repos actif</b> : marcher, boire, relire son projet.</p></section>
+   <section><h3>Retour au calme · 5 min</h3><p>3 min de marche ou de footing très lent, puis étirements doux de 10 à 15’’ : mollets, ischio-jambiers, quadriceps, fessiers. Boire.</p><p class="small muted">Douleur vive (différente de la brûlure ou de la fatigue musculaire) : on arrête et on prévient le professeur.</p></section>
+  </div>
+  <h3 class="sec">Renforcement : choisis 4 exercices</h3><div class="tablewrap"><table><thead><tr><th>Exercice</th><th>Repère</th><th>Dose</th></tr></thead><tbody>${WU_RENF.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class="num">${r[2]}</td></tr>`).join('')}</tbody></table></div>
+  <h3 class="sec">Gammes athlétiques</h3><div class="tablewrap"><table><thead><tr><th>Gamme</th><th>Ce que je cherche</th><th>Muscles</th></tr></thead><tbody>${WU_GAM.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</tbody></table></div>
+  <h3 class="sec">Vers l’autonomie : 4 niveaux sur le cycle</h3>
+  <div class="lvl-grid">${[1,2,3,4].map(i=>{const L=WU_LV[i];const ss=curSessions().filter(s=>s.lv===i).map(s=>s.n).join(', ')||'–';return `<div class="lvl-card"><h4><span class="teq-step">${i}</span>${L.k.split('·')[1].trim().replace(/^./,c=>c.toUpperCase())}</h4><p class="small muted">${ss}</p><p>${L.who}</p><p><b>Support :</b> ${L.sup}</p><p><b>On regarde :</b> ${L.obs}</p></div>`}).join('')}</div>
+  <h3 class="sec">Grille d’observation (${state.c==='t'?'T3 à T9, épreuve en T7 et T9':'S7 et S8'}) · AFL2, préparation</h3>
+  <div class="tablewrap"><table class="grid4"><thead><tr><th></th><th>Degré 1</th><th>Degré 2</th><th>Degré 3</th><th>Degré 4</th></tr></thead><tbody>
+   <tr><td>Progressivité</td><td>Part vite, ou ne s’échauffe pas</td><td>Footing puis arrêt, pas de montée en intensité</td><td>Les 3 parties dans l’ordre</td><td>Les 3 parties, montée jusqu’à l’allure de course</td></tr>
+   <tr><td>Contenu</td><td>Quelques mouvements au hasard</td><td>Stéréotypé, identique à son camarade</td><td>Articulaire complet, renforcement, gammes</td><td>Choisi selon sa forme et la course à venir</td></tr>
+   <tr><td>Durée et timing</td><td>Moins de 5 min</td><td>Trop court ou trop long, refroidit avant de courir</td><td>15 à 20 min</td><td>15 à 20 min, prêt au départ, 2 min de repos actif</td></tr>
+   <tr><td>Indicateurs</td><td>Aucun</td><td>Ne vérifie pas les signes</td><td>Vérifie les 3 signes</td><td>Vérifie les signes et s’en sert pour ajuster</td></tr>
+  </tbody></table></div>
+  <h3 class="sec">Mon échauffement (à remplir à partir de ${state.c==='t'?'T3':'S5'})</h3>
+  <div class="tablewrap"><table class="teq-log"><thead><tr><th>Séance</th><th>Partie 1 (durée, allure)</th><th>Partie 2 (mes 4 exercices)</th><th>Partie 3 (gammes, accélérations)</th><th>Pouls fin</th></tr></thead><tbody>${(state.c==='t'?['T3','T4','T5','T6','T7','T8','T9']:['S5','S6','S7','S8']).map(s=>`<tr><td class="num"><b>${s}</b></td><td></td><td></td><td></td><td></td></tr>`).join('')}</tbody></table></div>
+  </div>`;
+}
+
+/* ===== Piste et plots ===== */
+function renderPiste(){
+  return `<div class="panel"><span class="status st-next">Outil</span><h2>La piste et ses plots</h2><p class="lead">Piste de 200 m (cahier « Piste plots et zones » de tes dossiers). Trois rangées de plots suffisent pour toutes les séances : on ne calcule plus, on compte.</p>
+  <figure class="evalfig" style="max-width:720px;margin-top:14px"><div class="schema">${piste(SCH.piste)}</div><figcaption>${SCH.piste.cap}</figcaption></figure>
+  <div class="tablewrap"><table><thead><tr><th>Plots</th><th>Écart</th><th>Je cours…</th><th>1 plot franchi =</th><th>Séances</th></tr></thead><tbody>
+   <tr><td>Plats (coupelles)</td><td class="num">10 m</td><td>36’’</td><td><b>1 km/h</b></td><td>${state.c==='t'?'T2 test, T3 36’’/36’’, T4 1’12, placer son plot du 1’30':'36’’/36’’ (S2 à S7), lire le plot d’arrêt, placer son plot du 1’30'}</td></tr>
+   <tr><td>Coupelles orange</td><td class="num">20 m</td><td>1’12</td><td><b>1 km/h</b></td><td>${state.c==='t'?'T4 1’12/1’12':'non utilisées en Seconde'}</td></tr>
+   <tr><td>Plats + grands jaunes</td><td class="num">10 et 50 m</td><td>1’30</td><td><b>distance ÷ 25</b></td><td>${state.c==='t'?'mesurer sa distance sur 1’30 (T5, T6)':'S2 le 1’30 mesuré'}</td></tr>
+   <tr><td>Grands jaunes</td><td class="num">50 m</td><td>3’</td><td><b>1 km/h</b></td><td>${state.c==='t'?'T2 tours, récupération active à 70 %':'S1 les 4 allures et le 3’ rapide, le 3’ au plot (S3 à S8), récupération active'}</td></tr>
+   
+  </tbody></table></div>
+  <h3 class="sec">Départs (toutes les arrivées sur la ligne)</h3>
+  <div class="tablewrap"><table><thead><tr><th>Distance</th><th>Départ</th><th>Passage à mi-course</th></tr></thead><tbody>
+   <tr><td>100 m</td><td>100 m après la ligne (en face)</td><td>–</td></tr><tr><td>200 m</td><td>sur la ligne</td><td>100 m (en face)</td></tr><tr><td>250 m</td><td>150 m après la ligne</td><td>125 m : 75 m après la ligne</td></tr><tr><td>300 m</td><td>100 m après la ligne (en face)</td><td>150 m : 50 m après la ligne</td></tr><tr><td>400 m</td><td>sur la ligne</td><td>200 m : sur la ligne</td></tr><tr><td>500 m</td><td>100 m après la ligne (en face)</td><td>250 m : 150 m après la ligne (plot bleu)</td></tr><tr><td>1’30 avec projet</td><td>à la distance projet avant la ligne</td><td>45’’ : la moitié du projet</td></tr>
+  </tbody></table></div>
+  <figure class="evalfig" style="max-width:720px;margin-top:18px"><div class="schema">${piste(SCH.projet)}</div><figcaption>${SCH.projet.cap}</figcaption></figure>
+  <div class="zonebar"><div style="flex:2;background:#e5484d">Z1 · 0,5</div><div style="flex:2;background:#f2c200">Z2 · 2</div><div style="flex:2;background:#16a34a;color:#fff">Z4 · 4</div><div style="flex:2;background:#8fd16a">Z3 · 3</div><div style="flex:2;background:#e5484d">Z1 · 1</div></div>
+  <div class="zl"><span>au-delà de −15 m</span><span>−15 à −5</span><span>±5 m</span><span>+5 à +15</span><span>au-delà de +15 m</span></div>
+  <div class="note"><b>Installation pour 35 élèves.</b> Prévoir 20 plots plats (tous les 10 m), 4 grands plots jaunes (0, 50, 100, 150 m), 10 coupelles orange (tous les 20 m, T4) ; aucun repère de 25 m n’est nécessaire ; 1 plot bleu (passage 250 m, Terminale), 17 plots violets (mi-course du 3’, Seconde), 4 plots de zone, 1 plot par élève pour le 1’30, 17 chronomètres (téléphones en mode avion acceptés), un sifflet.</div></div>`;
+}
+
+/* ===== Tableaux d’allures ===== */
+function renderTables(){
+  return `<div class="panel"><span class="status st-next">Outil · à imprimer</span>
+  <div class="teq-top"><div><h2>Tableaux d’allures</h2><p class="lead">Une ligne par VMA, de 8 à 20 km/h par demi-km/h. Temps arrondis à la seconde, distances à 5 m. Chaque séance a aussi son propre tableau sous la fiche.</p></div>
+  <div class="teq-btns noprint"><button type="button" class="tb pri" onclick="printOnly('tables')">Imprimer les tableaux</button><a class="tb" href="pdf/Tableaux-allures.pdf" download target="_blank" rel="noopener">PDF</a></div></div>
+  <div class="calc noprint"><label>Surligner ma VMA<input type="number" step="0.5" min="8" max="20" value="${MYVMA||''}" placeholder="12" oninput="setVma(this.value,'tables')"></label></div>
+  ${['vma','g36','g130','g3','g100','g200','g250','g300','g400','g500'].map(k=>vtable(k)).join('')}</div>`;
+}
+function setVma(v,back){const n=parseFloat(String(v).replace(',','.'));MYVMA=n>=6&&n<=24?n:null;try{MYVMA?localStorage.setItem('df2-vma',MYVMA):localStorage.removeItem('df2-vma')}catch(e){}
+  clearTimeout(setVma.t);setVma.t=setTimeout(()=>{const y=window.scrollY;show(back,false);window.scrollTo(0,y);const i=document.querySelector('.calc input');if(i){i.focus();const l=i.value.length;try{i.setSelectionRange(l,l)}catch(e){}}},350)}
+
+/* ===== Ma calculette ===== */
+function renderCalc(){
+  const v=MYVMA;
+  let body='<p class="muted">Entre une VMA pour afficher toutes les cibles du cycle.</p>';
+  if(v){
+    const card=(h,rows)=>`<div class="mycard"><h4>${h}</h4><table>${rows.map(r=>`<tr><td>${r[0]}</td><td class="num">${r[1]}</td></tr>`).join('')}</table></div>`;
+    const pl=x=>plotPlace(Math.round(dist(90,v*x)/5)*5);
+    if(state.c==='t') body=`<div class="mycards">
+     ${card('T1 · T2 · repères',[['Temps au tour à 90 %',fT(tSec(200,v*0.9))],['3’ à 70 % (grands plots)',fP(v*0.7)],['Allure 80 % / 100 %',fV(v*0.8)+' / '+fV(v)+' km/h'],['Allure 110 % / 120 %',fV(v*1.1)+' / '+fV(v*1.2)+' km/h']])}
+     ${card('T3 · 1er 500',[['500 m à 90 %',fT(tSec(500,v*0.9))+' (250 : '+fT(tSec(250,v*0.9))+')'],['400 m à 95 %',fT(tSec(400,v*0.95))],['300 m à 100 %',fT(tSec(300,v))],['200 m à 110 %',fT(tSec(200,v*1.1))],['100 m à 120 / 130 %',fT(tSec(100,v*1.2))+' / '+fT(tSec(100,v*1.3))],['36’’ à 110 / 120 % : plot',fP(v*1.1)+' / '+fP(v*1.2)]])}
+     ${card('T4 · intermittent, pyramide',[['1’12 à 80 % : coupelle n°',fP(v*0.8)+' · '+fD(dist(72,v*0.8))],['250 m à 95 %',fT(tSec(250,v*0.95))],['375 m à 100 %',fT(tSec(375,v))],['500 m à 110 %',fT(tSec(500,v*1.1))+' (250 : '+fT(tSec(250,v*1.1))+')'],['375 m à 115 %',fT(tSec(375,v*1.15))],['250 / 125 m à 120 / 130 %',fT(tSec(250,v*1.2))+' / '+fT(tSec(125,v*1.3))]])}
+     ${card('T5 · 2e 500, 1’30',[['300 m à 110 %',fT(tSec(300,v*1.1))],['1’30 à 115 %',fD(dist(90,v*1.15))],['45’’ à 115 %',fD(dist(45,v*1.15))],['plot du 1’30 à 115 %',pl(1.15)]])}
+     ${card('T6 · dernier 500',[['100 m à 100 %',fT(tSec(100,v))],['200 m à 105 %',fT(tSec(200,v*1.05))],['250 m à 110 %',fT(tSec(250,v*1.1))],['300 m à 120 %',fT(tSec(300,v*1.2))],['400 m à 125 %',fT(tSec(400,v*1.25))]])}
+     ${card('T7 · T9 · épreuve',[['500 m à 105 %',fT(tSec(500,v*1.05))+' (250 : '+fT(tSec(250,v*1.05))+')'],['500 m à 110 %',fT(tSec(500,v*1.1))+' (250 : '+fT(tSec(250,v*1.1))+')'],['500 m à 115 %',fT(tSec(500,v*1.15))+' (250 : '+fT(tSec(250,v*1.15))+')'],['1’30 à 120 %',fD(dist(90,v*1.2))],['plot du 1’30 à 120 %',pl(1.2)]])}
+    </div>`;
+    else body=`<div class="mycards">
+     ${card('S1 · ma VMA de travail',[['Grands plots en 3’ (= km/h)',fV(v)],['Distance du 3’ rapide',fD(dist(180,v),10)],['3’ à 70\u00a0% (grands plots)',fP(v*0.7)],['Temps au tour à 100\u00a0%',fT(tSec(200,v))]])}
+     ${card('Fil rouge 1 · 36’’/36’’',[['à 100\u00a0% : plot plat',fP(v)],['à 105\u00a0% : plot plat',fP(v*1.05)],['à 110\u00a0% : plot plat',fP(v*1.1)]])}
+     ${card('Fil rouge 2 · le 3’',[['3’ à 95\u00a0% (mi-course)',fD(dist(180,v*0.95),10)+' ('+fD(dist(90,v*0.95),10)+')'],['3’ à 100\u00a0% (mi-course)',fD(dist(180,v),10)+' ('+fD(dist(90,v),10)+')']])}
+     ${card('Fil rouge 2 · le 1’30',[['1’30 à 105\u00a0%',fD(dist(90,v*1.05))],['1’30 à 110\u00a0%',fD(dist(90,v*1.1))],['1’30 à 115\u00a0%',fD(dist(90,v*1.15))],['plot du 1’30 à 110\u00a0%',pl(1.1)]])}
+    </div>`;
+  }
+  return `<div class="panel"><span class="status st-next">Outil</span><h2>Ma calculette</h2><p class="lead">Pour l’iPad au bord de la piste : une VMA, et toutes les cibles du cycle. La valeur reste sur l’appareil.</p>
+  <div class="calc"><label>VMA (km/h)<input type="number" step="0.5" min="6" max="24" value="${v||''}" placeholder="12" oninput="setVma(this.value,'calc')"></label>
+  <label>Ou : plots du test (somme des 10)<input type="number" min="40" max="240" placeholder="120" oninput="const s=parseFloat(this.value);if(s>=40)setVma(Math.round(s)/10,'calc')"></label>
+  ${state.c==='t'?`  <label>Ou : 500 m réel (m’ss)<input type="text" placeholder="2’25" onchange="const t=secOf(this.value);if(t){const x=document.getElementById('v500');x.textContent='vitesse '+fV(1800/t)+' km/h'+(MYVMA?' = '+Math.round(1800/t/MYVMA*100)+' % de la VMA':'')}"><span id="v500" class="small muted"></span></label>`:''}</div>
+  ${body}</div>`;
+}
+
+/* ===== Rôles (AFL3) ===== */
+function renderRoles(){
+  return `<div class="panel"><span class="status st-next noprint">Outil · fiche élève</span>
+  <div class="teq-top"><div><h2>Coach, chronométreur, juge</h2><p class="lead">D’après ta fiche AFL3 « Coach / Juge / Chronométreur ». Le coach est l’interlocuteur du professeur pour son coureur ; binômes fixes à la fin de ${state.c==='t'?'T3':'S3'}, coureur et coach dans deux groupes de vitesse différents (référentiel).</p></div>
+  <div class="teq-btns noprint"><button type="button" class="tb pri" onclick="printOnly('roles')">Imprimer la fiche</button></div></div>
+  <div class="teq-grid">
+   <section><h3>Pendant la course</h3><ul><li><b>En retard au 250 m</b> : « Tu es en retard de 3, accélère un peu. »</li><li><b>Dans le temps</b> : « Pile dans ton temps, garde l’allure. »</li><li><b>En avance</b> : « Tu as 3 d’avance, garde ton allure, ne craque pas. »</li></ul></section>
+   <section><h3>Après la course</h3><ul><li>Parti trop vite ou trop lentement : « Change ton allure dès le départ, tu as x secondes d’écart. »</li><li>Pile mais pas essoufflé : « Sois plus ambitieux la prochaine fois. »</li><li>Projet suivant : tenir compte de la fatigue, du résultat et des courses restantes.</li></ul></section>
+   <section><h3>Ce que j’observe</h3><ul><li><b>Pied</b> : se déroule, sans claquer au sol.</li><li><b>Buste</b> : presque droit, regard loin devant, bassin gainé.</li><li><b>Bras</b> : coudes à 90°, relâchés, ils tirent vers l’avant.</li><li><b>Respiration</b> : régulière ; mains et épaules relâchées.</li></ul></section>
+   <section><h3>Entre les courses</h3><ul><li>Faire rester actif : marcher, trottiner, ne pas s’asseoir.</li><li>Faire boire.</li><li>Rappeler le projet de la course suivante et le temps de la précédente.</li></ul></section>
+  </div>
+  <h3 class="sec">Degrés (auto-évaluation et grille du professeur)</h3>
+  <div class="tablewrap"><table class="grid4"><thead><tr><th></th><th>Fantôme<br><span class="small">rôle subi</span></th><th>Théorique<br><span class="small">rôle aléatoire</span></th><th>Complice<br><span class="small">rôle préférentiel</span></th><th>Personnel<br><span class="small">au service de tous</span></th></tr></thead><tbody>
+   <tr><td>Coach / observateur</td><td>Peu attentif à la prestation de son partenaire. Aucune interaction au sein du binôme.</td><td>Attentif, l’encourage et lui apporte des conseils simples pour réaliser l’exercice correctement.</td><td>Attentif, l’encourage de façon constructive, conseils pertinents pour maintenir une allure.</td><td>Attentif, l’encourage de façon constructive, conseils avisés à différents moments pour être plus efficace.</td></tr>
+   <tr><td>Juge / chronométreur</td><td>Aucune intervention auprès de l’enseignant, ou informations prélevées et transmises de façon aléatoire.</td><td>Informations prélevées mais partiellement transmises, ou pas au moment opportun.</td><td>Informations prélevées et transmises de façon pertinente.</td><td>Informations prélevées, sélectionnées et transmises au moment opportun.</td></tr>
+   <tr><td class="small">Repère de précision du chrono (ajout)</td><td class="small">plus d’1’’ d’erreur</td><td class="small">7 à 9 dixièmes</td><td class="small">3 à 6 dixièmes</td><td class="small">moins de 3 dixièmes</td></tr>
+  </tbody></table></div>
+  <div class="note noprint"><b>Deux rôles au choix (référentiel : « choix des rôles à tenir »).</b> Coach / observateur, ou juge / chronométreur : chronomètre et annonce le passage, vérifie la balise du départ décalé du 1’30, juge la zone d’arrivée, transmet au professeur. Le carnet a une page « Mes rôles » et une feuille de juge-chrono ; chaque bilan de séance note le rôle tenu. <b>Vérifier un chronométreur.</b> En ${state.c==='t'?'T3 et T5':'S3 et S5'}, ${state.c==='t'?'chronomètre':'mesure'} toi-même quelques courses en même temps que les coachs : l’écart donne le degré (référentiel).</div></div>`;
+}
+
+/* ===== Repères de spécialiste ===== */
+function renderCoach(){
+  return `<div class="panel"><span class="status st-next">Outil</span><h2>Repères d’entraîneur</h2><p class="lead">Ce qui guide les intensités et les récupérations du cycle, pour des élèves de 15 ans non spécialistes.</p>
+  <div class="tablewrap"><table><thead><tr><th>Intensité (% VMA)</th><th>Ressenti</th><th>Ce qu’on travaille</th><th>Dans le cycle</th></tr></thead><tbody>
+   <tr><td class="num">60-70 %</td><td>Je parle en phrases</td><td>Échauffement, récupération active</td><td>Partie 1 de l’échauffement, 3’ à 70 %</td></tr>
+   <tr><td class="num">80-90 %</td><td>Je parle par mots</td><td>Endurance, allures longues</td><td>${state.c==='t'?'500 m à 90 % (T3), 1’12 à 80 % (T4)':'3’ à 95 % (S3 à S5)'}</td></tr>
+   <tr><td class="num">95-105 %</td><td>Je ne parle plus</td><td>Développer la VMA (intermittent court)</td><td>${state.c==='t'?'375 m à 100 % (T4), 300 m à 100 % (T3)':'36’’/36’’ à 100 % (S2 à S4), 3’ rapide (S1)'}</td></tr>
+   <tr><td class="num">105-130 %</td><td>Essoufflement fort, jambes qui brûlent à la fin</td><td>Allure des 500 m et du 1’30</td><td>${state.c==='t'?'36’’/36’’ à 110-120 % (T3), 300 m à 110 % (T5), résistance (T6)':'36’’/36’’ à 105-110 % (S5, S7), 1’30 avec projet'}</td></tr>
+  </tbody></table></div>
+  <div class="teq-grid" style="margin-top:14px">
+   <section><h3>Durée et allure</h3><p>On tient en moyenne 6 min environ à 100 % de la VMA, entre 3 et 9 min selon les personnes [1]. Un 500 m (1’50 à 3’) se court donc au-dessus de la VMA. Selon les documents de collègues, l’allure du 3 × 500 m va de 107 % (élève de VMA 15, lycée Prévert) à 120-130 % de la VMA (lycée Herriot, Lyon) [2][3]. ${state.c==='t'?'Le 500 m de T4 donne le vrai pourcentage de chaque élève.':'En Seconde, le 3’ rapide de S1 sert de VMA de travail : sur 3’ on court un peu au-dessus de la VMA (on la tient environ 6 min), donc cette « VMA de travail » est légèrement haute, ce qui reste cohérent avec des cibles de 100 à 110 %.'}</p></section>
+   <section><h3>${state.c==='t'?'Le test 36’’/24’’':'Mesurer sa vitesse sans test (Seconde)'}</h3><p>${state.c==='t'?`Plots plats tous les 10 m : 36’’ = un centième d’heure, donc 1 plot (10 m) = 1 km/h ; c’est le balisage de Lemire (10 m → 36’’, 20 m → 1’12, 50 m → 3’) [4]. Sur 1’30, sans repère de 25 m : vitesse = distance ÷ 25. VMA = somme des 10 répétitions ÷ 10 (ton carnet de Terminale). Les tests intermittents surestiment la VMA d’un test continu : de plus de 2 km/h pour le 45/15, d’environ 4 km/h pour le 30-15 IFT [5]. Je n’ai pas trouvé de mesure pour le 36/24, mais il laisse encore plus de récupération. Conséquence : un 500 m à 110 % de cette VMA correspond sans doute à 120 % ou plus d’une VMA de test continu, ce qui rejoint les repères de collègues.`:`Balisage de Lemire [4] : 10 m → 36’’, 20 m → 1’12, 50 m → 3’ ; dans chaque cas 1 repère franchi = 1 km/h. Le 3’ rapide de S1 donne donc la vitesse sans calcul (grands plots franchis), et c’est aussi la course C1 de l’épreuve : l’élève apprend avec l’outil qui l’évaluera. Sur 1’30, sans repère de 25 m : vitesse = distance ÷ 25. Les tests intermittents surestiment la VMA d’un test continu de 2 à 4 km/h [5] : le 3’ continu évite ce biais.`}</p></section>
+   <section><h3>Récupérer</h3><p>Entre deux fractions courtes : marche ou trot. Entre deux courses de l’épreuve (10 min) : environ 5 min de marche, étirements courts (10’’), puis trot léger et quelques accélérations avant de repartir, pouls vers 120 [3] ; boire ; ne pas s’asseoir longtemps. Une récupération moitié active, moitié passive serait aussi efficace qu’une récupération entièrement active [6] : c’est un bon choix à faire tester dans le carnet (AFL2).</p></section>
+   <section><h3>Répartir son effort</h3><p>Courir la 2e moitié au moins aussi vite que la 1re (règle de l’épreuve nationale). Un départ trop rapide se paie dans le dernier 150 m. ${state.c==='t'?'Le temps de passage au 250 m est le premier outil de régulation.':'En Seconde, la mi-course du 3’ (plot violet) et la distance à 45’’ du 1’30 sont les outils de régulation.'}</p></section>
+   <section><h3>Sécurité</h3><ul><li>Sens de course unique, corde à gauche ; on double par l’extérieur ; personne ne traverse la piste pendant une vague.</li><li>Malaise, douleur dans la poitrine, vertige, pâleur : arrêt immédiat, allonger, prévenir.</li><li>Asthmatiques : ventoline au bord de la piste. Chaleur : eau à disposition, courses tôt.</li></ul></section>
+   <section><h3>Échauffement et étirements</h3><p>Pas d’étirements passifs longs pendant l’échauffement : ils peuvent nuire à la performance ; on les préfère dynamiques et de plus en plus toniques, proches de l’activité [7]. Si des étirements sont tenus, pas plus de 30’’ par groupe musculaire [3]. Fin d’échauffement : quelques accélérations courtes à l’allure du 500 m [3].</p></section>
+   <section><h3>Ce qui a changé dans les explications</h3><p>Plusieurs fiches de tes dossiers disent que l’« acide lactique » bloque la contraction et donne le « muscle de bois ». La physiologie actuelle attribue plutôt la brûlure à l’acidité et à d’autres produits de l’effort, et voit le lactate comme un carburant réutilisé. Je n’ai pas trouvé de document académique EPS qui le formule : à présenter avec prudence. Le conseil pratique (récupérer en restant actif) reste valable.</p></section>
+  </div>
+  <h3 class="sec">Sources externes</h3><ol class="small">
+   <li>Tlim à VMA : Billat et Koralsztein (1996), Bosquet et coll. (2002), cités dans <a href="https://www.fredericgrappe.com/wp-content/uploads/2015/11/Maxime-M1.pdf" target="_blank" rel="noopener">un mémoire de M1 (site de F. Grappe)</a>.</li>
+   <li>Lycée Jacques-Prévert (académie de Normandie), <a href="https://eps-prevert.lycee.ac-normandie.fr/IMG/pdf/ppeps4_protocole_3x500_2023.pdf" target="_blank" rel="noopener">protocole d’évaluation 3 × 500 m (2023)</a>.</li>
+   <li>Lycée Édouard-Herriot (académie de Lyon), <a href="https://lycee-eherriot.etab.ac-lyon.fr/spip/IMG/pdf/demi-fond_terminale_preparation_a_l_epreuve.pdf" target="_blank" rel="noopener">préparation à l’épreuve de demi-fond 3 × 500 m</a>.</li>
+   <li>Académie de Strasbourg, <a href="https://pedagogie.ac-strasbourg.fr/fileadmin/pedagogie/eps/formations/FPC_DF_Pencreach_Lemire.pdf" target="_blank" rel="noopener">formation demi-fond, Pencreach et Lemire</a>.</li>
+   <li>AEEPS, <a href="https://www.aeeps.org/ajouter-un-fichier/doc_download/3071-.html" target="_blank" rel="noopener">comparaison des tests de VMA</a>.</li>
+   <li>Académie de Grenoble, <a href="https://eps-pedagogie.web.ac-grenoble.fr/sites/default/files/media-d7/media-fichiers/2022-10/visio_ca1.pdf" target="_blank" rel="noopener">visioconférence CA1</a>.</li>
+   <li>Académie de la Martinique, <a href="https://site.ac-martinique.fr/wp-content/uploads/sites/13/2014/05/ECHAUFFEMENT-EN-EPS.pdf" target="_blank" rel="noopener">« L’échauffement en EPS »</a> (C. Prévost).</li>
+  </ol>
+  <p class="foot">Sources internes : référentiel CA1 demi-fond du lycée Pompidou (version 2026) ; carnets de course Seconde et Terminale 2025 ; cours « Demi-fond Pompidou » ; fiches AFL2 (échauffement, ressenti) et AFL3 (coach, juge, chronométreur) ; fiche « Piste plots et zones » ; fiche GAREEPS « Rendez-vous dans 25 min » (septembre 2026) ; programme d’EPS du lycée général et technologique (BO spécial n° 1 du 22 janvier 2019).</p></div>`;
+}
+
+/* ===== Banque de situations ===== */
+const BANK=[
+ {c:'Courir au temps',ex:[
+  ['N1','30’’/30’’','3 séries de 8 × (30’’ vite à 95-110 % de la VMA, 30’’ de footing lent), 5 min entre les séries.','Cours Pompidou, séance 1','Variante du 36’’/36’’ pour une classe qui débute.'],
+  ['N2','36’’/36’’ en aller-retour','2 séries de 8 × 36’’/36’’ entre deux repères espacés de VMA × 10 m, 95 à 105 % ; 5 min entre les séries.','Cours Pompidou, séance 3','Variante du 36’’/36’’ : 2 séries au lieu d’une.'],
+  ['N3','18’’/12’’ à VMA + 4 km/h','3 séries de 8 répétitions ; plots tous les 10 m : 1 plot franchi en 18’’ = 2 km/h.','Cours Pompidou, entraînement par intervalles','Variante du 36’’/36’’ à 110 % (Seconde S7, Terminale T3).'],
+  ['N4','9 × 1’ au plot','9 courses d’1’ ; plot de départ reculé de 15 m toutes les 3 courses ; 2 min de marche entre les courses.','Cours Pompidou, séance « BAC 3 × 500 »','Variante du travail du 1’30 (Terminale T5).']]},
+ {c:'Courir à la distance',ex:[
+  ['N1','6 × 400 m','90 à 100 % de la VMA, récupération égale au temps de course.','Cours Pompidou, séance 4 (10 × 400 m en Terminale)','Terminale : variante de T3.'],
+  ['N2','Pyramide 125 à 500 m','125-250-375-500-375-250-125 m de 90 à 130 % de la VMA ; récupération de 2 à 5 min.','Séance 3 de Terminale 2023','Terminale : variante de T4.'],
+  ['N3','3 × (500 m + 200 m)','1 min entre le 500 et le 200 m, 10 min entre les séries ; temps annoncés à 2’’ près.','Cours Pompidou, séance « BAC 3 × 500 »','Terminale : variante de T6.'],
+  ['N4','6 × 300 m à l’allure du 500 m','Récupération 3 min ; tous les 300 m à 1’’ près.','Cours Pompidou, séance 7 (régularité)','Terminale : variante de T5.']]},
+ {c:'Allure et projet',ex:[
+  ['N1','12 × 125 m avec projet','Temps visé = moitié du temps sur 250 m ; récupération 3 min ; à 0,5’’ près.','Cours Pompidou, séance 12','Terminale : variante de la prise d’allure (T8).'],
+  ['N2','Choisir sa récupération','4 × (2 × 250 m, 1 min) ; entre les séries, essayer 6 min passives puis 4 min actives, et choisir.','Cours Pompidou, allure spécifique','Terminale : à proposer en T8.'],
+  ['N3','Du 18’’ au 500 m','8 × 18’’/18’’ à l’allure spécifique, 2 × 250 m (1 min), puis 500 m avec passages au 125, 250 et 375 m.','Cours Pompidou, repères d’allure','Terminale : à proposer en T8.'],
+  ['N4','500 m puis fractions à sa vitesse','500 m, puis 150-200-250-300 m à la vitesse du 500 m (45’’ entre), puis 1’30, 45’’, 45’’, 1’30.','Séance 5 de Terminale 2024','Terminale : T8 pour un groupe G4.']]},
+ {c:'Enchaîner comme à l’épreuve',ex:[
+  ['N1','Relais à deux','3 km en relais à deux (15 tours) ; distance prévue par relais, temps du binôme.','Carnet de Terminale 2025, séance 1 (5 km)','Variante du relais du binôme (S1, T1).'],
+  ['N2','6 × 250 m en relais','Binômes de même niveau, contrat collectif : la somme des temps visés à l’allure spécifique.','Cours Pompidou, filières du 3 × 500','Terminale : à proposer en T8.'],
+  ['N3','1 000 + 600 + 400 m','10 min puis 8 min de récupération ; temps visés annoncés.','Cours Pompidou, séance 2','Terminale : T8, classe avancée.'],
+  ['N4','3 × 500 m, 10 min','Format de l’ancienne épreuve : projet sur chaque 500 m.','Cours Pompidou, séance 11','Ancien format : à éviter avant l’épreuve.']]}
+];
+function renderBank(){
+  return `<div class="panel"><span class="status st-next noprint">Outil</span>
+  <div class="teq-top"><div><h2>Banque de situations</h2><p class="lead">Situations tirées de tes dossiers, classées du plus simple (N1) au plus exigeant (N4), et la séance dont elles sont une variante. En Terminale, elles servent aussi de menu pour la séance construite par l’élève (T8).</p></div>
+  <div class="teq-btns noprint"><button type="button" class="tb pri" onclick="printOnly('bank')">Imprimer</button><a class="tb" href="pdf/Banque-situations.pdf" download target="_blank" rel="noopener">PDF</a></div></div>
+  ${BANK.map(c=>`<section class="bank-cat"><h3>${c.c}</h3><div class="bank-grid">${c.ex.map(e=>`<div class="bank-ex"><h4><span class="lvl">${e[0]}</span>${e[1]}</h4><p>${e[2]}</p><p class="repl">${e[4]}</p><p class="repl">Source : ${e[3]}</p></div>`).join('')}</div></section>`).join('')}</div>`;
+}
+
+/* ===== Travail par niveaux ===== */
+function renderDiff(){
+  return `<div class="panel"><span class="status st-next">Outil</span><h2>Travail par niveaux</h2><p class="lead">Les groupes de vitesse se font en ${state.c==='t'?'T2, après le test':'S1, après le 3’ rapide'}. Coureur et coach sont dans deux groupes différents.</p>
+  <div class="tablewrap"><table><thead><tr><th>Groupe</th><th>VMA</th><th>${state.c==='t'?'500 m à 105 %':'1’30 à 105 %'}</th><th>Ce qu’on ajuste</th></tr></thead><tbody>
+   <tr><td><b>G1</b></td><td>moins de 10 km/h</td><td class="num">${state.c==='t'?fT(tSec(500,9*1.05)):fD(dist(90,9*1.05))} (VMA 9)</td><td>${state.c==='t'?'Intensités −5 %, 400 m à la place du 500 m dans les pyramides, récupération + 1 min.':'Plot cible du 36’’ à 95 %, 3’ visé à 90 %, récupération + 1 min.'} Marche autorisée pendant la récupération active.</td></tr>
+   <tr><td><b>G2</b></td><td>10 à 11,5</td><td class="num">${state.c==='t'?fT(tSec(500,10.5*1.05)):fD(dist(90,10.5*1.05))} (VMA 10,5)</td><td>Séances telles quelles ; attention aux départs trop rapides.</td></tr>
+   <tr><td><b>G3</b></td><td>12 à 13,5</td><td class="num">${state.c==='t'?fT(tSec(500,12.5*1.05)):fD(dist(90,12.5*1.05))} (VMA 12,5)</td><td>Séances telles quelles, variable « + » des fiches.</td></tr>
+   <tr><td><b>G4</b></td><td>14 et plus</td><td class="num">${state.c==='t'?fT(tSec(500,15*1.05)):fD(dist(90,15*1.05))} (VMA 15)</td><td>Variable « + », situations N3-N4 de la banque ; ils coachent un élève de G1 ou G2.</td></tr>
+  </tbody></table></div>
+  <div class="teq-grid" style="margin-top:14px">
+   <section><h3>Inaptes partiels</h3><p>Ils tiennent le rôle de juge ou de chronométreur pour deux binômes, et suivent ce que le certificat autorise : marche active à la place du footing, récupération active seulement, ou 36’’ à 80 %. L’AFL3 peut alors compter 6 points.</p></section>
+   <section><h3>Élèves en très grande difficulté</h3><p>${state.c==='t'?'Marche-course 1’/1’ pendant le relais ; test VMA sur 8 répétitions ;':'Marche-course sur les 2 premières allures de S1 ; 36’’/36’’ sur 4 répétitions ;'} 1’30 avec projet maintenu (c’est la gestion d’allure qui compte, pas la vitesse).</p></section>
+   <section><h3>Santé et chaleur</h3><p>En septembre-octobre à Castelnau : séances tôt si possible, eau sur le terrain, casquette. Asthme : ventoline sur la piste (PAI), le coach sait où elle est. Douleur : arrêt immédiat, pas de course « à travers ». Le carnet a une page « Santé, sécurité, adaptations » en Seconde et un encadré en Terminale.</p></section>
+   <section><h3>Surpoids, élèves à besoins particuliers</h3><p>Privilégier le temps à la distance (1’30, 3’, intermittents) : tout le monde court la même durée dans la même filière. Intensités −5 à −10 %, marche-course autorisée en récupération. Pour un référentiel adapté, l’académie de Martinique publie une épreuve combinée pour élèves en surcharge pondérale.</p></section>
+   <section><h3>Élèves licenciés en club</h3><p>Ils prennent les situations N4, mènent l’échauffement d’un groupe en ${state.c==='t'?'T3-T4':'S5-S6'} et coachent un élève de G1.</p></section>
+  </div></div>`;
+}
+
+/* ===== Évaluation ===== */
+const EVS={sexe:'F',c1:'',c2:'',c3:'',pj:'',a2:4,a3:4,d2:3,d3:3};try{Object.assign(EVS,JSON.parse(localStorage.getItem('df2-ev')||'{}'))}catch(e){}
+function evSet(k,v){EVS[k]=v;try{localStorage.setItem('df2-ev',JSON.stringify(EVS))}catch(e){}if(k==='a2'||k==='a3'){if(k==='a2')EVS.a3=8-v;else EVS.a2=8-v;try{localStorage.setItem('df2-ev',JSON.stringify(EVS))}catch(e){}const y=window.scrollY;show('evalf',false);window.scrollTo(0,y);return}evPaint()}
+function evCompute(){
+  const s1=secOf(EVS.c1),s2=secOf(EVS.c2),d=parseFloat(EVS.c3),p=parseFloat(EVS.pj);
+  const n1=s1?note500(EVS.sexe,s1):null,n2=s2?note500(EVS.sexe,s2):null,n3=isNaN(d)?null:note130(EVS.sexe,d);
+  const perf=[n1,n2,n3].every(x=>x!=null)?Math.round((n1+n2+n3)/3*10)/10:null;
+  const z=(!isNaN(d)&&!isNaN(p))?zonePts(d-p):null;
+  const mid=[0.125,0.375,0.625,0.875][EVS.d2-1],mid3=[0.125,0.375,0.625,0.875][EVS.d3-1];
+  const a2=Math.round(EVS.a2*mid*10)/10,a3=Math.round(EVS.a3*mid3*10)/10;
+  const tot=perf!=null&&z?Math.round((perf+z[0]+a2+a3)*10)/10:null;
+  return {n1,n2,n3,perf,z,a2,a3,tot};
+}
+function evPaint(){const o=document.getElementById('evout');if(!o)return;const r=evCompute();const f=x=>x==null?'–':String(x).replace('.',',');
+  o.innerHTML=`<div class="evres"><div><b>${f(r.n1)}</b><span>C1 · 500 m (/8)</span></div><div><b>${f(r.n2)}</b><span>C2 · 500 m (/8)</span></div><div><b>${f(r.n3)}</b><span>C3 · 1’30 (/8)</span></div><div><b>${f(r.perf)}</b><span>Performance /8 (moyenne)</span></div><div><b>${r.z?f(r.z[0]):'–'}</b><span>Efficacité /4 ${r.z?'· '+r.z[1]:''}</span></div><div><b>${f(r.a2)}</b><span>AFL2 /${EVS.a2} · degré ${EVS.d2}</span></div><div><b>${f(r.a3)}</b><span>AFL3 /${EVS.a3} · degré ${EVS.d3}</span></div><div><b>${f(r.tot)}</b><span>Total /20 (formatif)</span></div></div>`;}
+function barTable(){
+  const N=BAR.notes;const row=(lab,arr)=>`<tr><td><b>${lab}</b></td>${arr.map(x=>`<td>${x}</td>`).join('')}</tr>`;
+  const half=(a,b)=>`<div class="vt-wrap"><table class="vt"><thead><tr><th>Note</th>${N.slice(a,b).map(n=>`<th>${String(n).replace('.',',')}</th>`).join('')}</tr></thead><tbody>${row('500 m filles',BAR.F500.slice(a,b))}${row('500 m garçons',BAR.G500.slice(a,b))}${row('1’30 filles',BAR.F130.slice(a,b).map(x=>x+' m'))}${row('1’30 garçons',BAR.G130.slice(a,b).map(x=>x+' m'))}</tbody></table></div>`;
+  return half(0,12)+half(12,24);
+}
+/* ===== Évaluation de Seconde : 3’ + 1’30 ===== */
+const EV2={sexe:'F',d3:'',mi:'',d130:'',pj:'',w:2,pr:2,co:3};try{Object.assign(EV2,JSON.parse(localStorage.getItem('df2-ev2')||'{}'))}catch(e){}
+function ev2Set(k,v){EV2[k]=v;try{localStorage.setItem('df2-ev2',JSON.stringify(EV2))}catch(e){}ev2Paint()}
+function ev2Compute(){
+  const d3=parseFloat(EV2.d3),mi=parseFloat(EV2.mi),d1=parseFloat(EV2.d130),pj=parseFloat(EV2.pj);
+  const n3=isNaN(d3)?null:noteS(EV2.sexe+'3',d3),n1=isNaN(d1)?null:noteS(EV2.sexe+'130',d1);
+  const z=(!isNaN(d1)&&!isNaN(pj))?zoneS(d1-pj):null;
+  const reg=(!isNaN(d3)&&!isNaN(mi))?((d3-mi)>=mi-10?1:0):null;
+  const a2=(+EV2.w)+(+EV2.pr),a3=+EV2.co;
+  const parts=[n3,n1,z&&z[0],reg];const tot=parts.every(x=>x!=null)?Math.round((n3+n1+z[0]+reg+a2+a3)*10)/10:null;
+  return {n3,n1,z,reg,a2,a3,tot};
+}
+function ev2Paint(){const o=document.getElementById('ev2out');if(!o)return;const r=ev2Compute();const f=x=>x==null?'–':String(x).replace('.',',');
+  o.innerHTML=`<div class="evres"><div><b>${f(r.n3)}</b><span>3’ (/4)</span></div><div><b>${f(r.n1)}</b><span>1’30 (/4)</span></div><div><b>${r.z?f(r.z[0]):'–'}</b><span>Zone du 1’30 (/3) ${r.z?'· '+r.z[1]:''}</span></div><div><b>${f(r.reg)}</b><span>Régularité du 3’ (/1)</span></div><div><b>${f(r.a2)}</b><span>AFL2 (/4)</span></div><div><b>${f(r.a3)}</b><span>AFL3 (/4)</span></div><div><b>${f(r.tot)}</b><span>Total /20</span></div></div>`;}
+function bar2Table(){
+  const N=BAR2.notes,row=(l,a)=>`<tr><td><b>${l}</b></td>${a.map(x=>`<td>${x} m</td>`).join('')}</tr>`;
+  return `<div class="vt-wrap"><table class="vt"><thead><tr><th>Note /4</th>${N.map(n=>`<th>${String(n).replace('.',',')}</th>`).join('')}</tr></thead><tbody>${row('3’ filles',BAR2.F3)}${row('3’ garçons',BAR2.G3)}${row('1’30 filles',BAR2.F130)}${row('1’30 garçons',BAR2.G130)}</tbody></table></div>`;
+}
+function renderEvalS(){
+  const sel=(k,opts)=>`<select onchange="ev2Set('${k}',this.value)">${opts.map(o=>`<option value="${o[0]}"${String(EV2[k])===String(o[0])?' selected':''}>${o[1]}</option>`).join('')}</select>`;
+  const inp=(k,ph)=>`<input type="number" value="${esc(EV2[k])}" placeholder="${ph}" oninput="ev2Set('${k}',this.value)">`;
+  const html=`<div class="panel"><span class="status st-eval">S8 · épreuve de Seconde</span>
+  <div class="teq-top"><div><h2>Évaluation de Seconde : 3’ et 1’30</h2><p class="lead">C1 : 3’ au plot depuis la ligne. 10 min de récupération. C2 : 1’30 avec projet de distance (plot de départ à la distance annoncée avant la ligne). AFL1 /12, AFL2 /4, AFL3 /4.</p></div>
+  <div class="teq-btns noprint"><button type="button" class="tb pri" onclick="printOnly('evalf')">Imprimer barème et feuille</button></div></div>
+  <div class="calc noprint"><label>Sexe ${sel('sexe',[['F','Fille'],['G','Garçon']])}</label>
+   <label>3’ : distance (m)${inp('d3','ex. 590')}</label><label>3’ : mi-course (m)${inp('mi','ex. 290')}</label>
+   <label>1’30 : distance (m)${inp('d130','ex. 340')}</label><label>1’30 : projet (m)${inp('pj','ex. 345')}</label>
+   <label>Échauffement /2 ${sel('w',[[0,'0'],[0.5,'0,5'],[1,'1'],[1.5,'1,5'],[2,'2']])}</label><label>Projet /2 ${sel('pr',[[0,'0'],[0.5,'0,5'],[1,'1'],[1.5,'1,5'],[2,'2']])}</label>
+   <label>Coach /4 ${sel('co',[[0,'0'],[1,'1'],[2,'2'],[3,'3'],[4,'4']])}</label></div>
+  <div id="ev2out" class="noprint"></div>
+  <h3 class="sec">Performance (/8) : 3’ /4 et 1’30 /4</h3>${bar2Table()}
+  <p class="vt-note">Une distance entre deux colonnes prend la note de la colonne atteinte. 1’30 : une colonne sur trois du barème du lycée, donc note de Seconde = note de bac ÷ 2. 3’ : de 8 à 14 km/h (filles) et de 10 à 17 km/h (garçons), repères à recaler après une première année.</p>
+  <h3 class="sec">Efficacité (/4)</h3>
+  <div class="zonebar"><div style="flex:2;background:#e5484d">Z1 · 0</div><div style="flex:2;background:#f2c200">Z2 · 1</div><div style="flex:2;background:#16a34a;color:#fff">Z4 · 3</div><div style="flex:2;background:#8fd16a">Z3 · 2</div><div style="flex:2;background:#e5484d">Z1 · 0</div></div>
+  <div class="zl"><span>plus de 15 m avant</span><span>5 à 15 m avant</span><span>à 5 m de la ligne</span><span>5 à 15 m après</span><span>plus de 15 m après</span></div>
+  <p class="vt-note">Zone d’arrivée du 1’30 sur 3. Régularité du 3’ sur 1 : la 2e moitié (distance totale − mi-course) au moins aussi longue que la 1re, à 10 m près.</p>
+  <h3 class="sec">AFL2 et AFL3</h3>
+  <div class="tablewrap"><table class="grid4"><thead><tr><th></th><th>0 à 0,5</th><th>1</th><th>1,5</th><th>2</th></tr></thead><tbody>
+   <tr><td>AFL2 · échauffement seul (/2)</td><td>Incomplet ou bâclé</td><td>Minimaliste, copie un camarade</td><td>Complet et progressif</td><td>Complet, progressif, adapté à ses sensations et à la course</td></tr>
+   <tr><td>AFL2 · projet (/2)</td><td>Absent ou au hasard</td><td>Écrit, pas justifié</td><td>Justifié par une donnée du carnet</td><td>Justifié et ajusté après le 3’</td></tr>
+  </tbody></table></div>
+  <div class="tablewrap"><table class="grid4"><thead><tr><th></th><th>0 à 1</th><th>2</th><th>3</th><th>4</th></tr></thead><tbody>
+   <tr><td>AFL3 · coach (/4)</td><td>Distance fausse ou non relevée</td><td>Distance juste, mi-course ou zone oubliée</td><td>Distance, mi-course et zone justes</td><td>Tout juste, et conseil utile donné entre les deux courses</td></tr>
+  </tbody></table></div>
+  <h3 class="sec">Feuille de résultats (un coach par ligne)</h3>
+  <div class="tablewrap"><table class="teq-log"><thead><tr><th>Coureur</th><th>Coach</th><th>3’ visé</th><th>3’ : mi-course</th><th>3’ : distance</th><th>Projet 1’30</th><th>1’30 : distance</th><th>Zone</th></tr></thead><tbody>${Array.from({length:18},()=>'<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>').join('')}</tbody></table></div>
+  </div>`;
+  setTimeout(ev2Paint,0);return html;
+}
+function renderEval(){
+  if(state.c==='s')return renderEvalS();
+  const sel=(k,opts)=>`<select onchange="evSet('${k}',${typeof opts[0][0]==='number'?'+this.value':'this.value'})">${opts.map(o=>`<option value="${o[0]}"${EVS[k]==o[0]?' selected':''}>${o[1]}</option>`).join('')}</select>`;
+  const html=`<div class="panel"><span class="status st-eval">${state.c==='t'?'T9 · épreuve CCF':'S8 · évaluation formative'}</span>
+  <div class="teq-top"><div><h2>Évaluation : barème et calcul</h2><p class="lead">Référentiel CA1 demi-fond du lycée Pompidou (version 2026). AFL1 /12 : performance /8 = moyenne des notes des 3 courses ; efficacité /4 = zone d’arrivée du 1’30. AFL2 et AFL3 : 8 points répartis 6/2, 4/4 ou 2/6, au choix de l’élève.</p></div>
+  <div class="teq-btns noprint"><button type="button" class="tb pri" onclick="printOnly('evalf')">Imprimer barème et feuille</button></div></div>
+  <div class="calc noprint"><label>Sexe ${sel('sexe',[['F','Fille'],['G','Garçon']])}</label>
+   <label>C1 · 500 m<input type="text" value="${esc(EVS.c1)}" placeholder="ex. 2’20" oninput="evSet('c1',this.value)"></label>
+   <label>C2 · 500 m<input type="text" value="${esc(EVS.c2)}" placeholder="ex. 2’02" oninput="evSet('c2',this.value)"></label>
+   <label>C3 · 1’30 (m)<input type="number" value="${esc(EVS.c3)}" placeholder="ex. 347" oninput="evSet('c3',this.value)"></label>
+   <label>Projet 1’30 (m)<input type="number" value="${esc(EVS.pj)}" placeholder="ex. 345" oninput="evSet('pj',this.value)"></label>
+   <label>AFL2 sur ${sel('a2',[[2,'2'],[4,'4'],[6,'6']])}</label><label>degré ${sel('d2',[[1,'1'],[2,'2'],[3,'3'],[4,'4']])}</label>
+   <label>AFL3 sur ${sel('a3',[[6,'6'],[4,'4'],[2,'2']])}</label><label>degré ${sel('d3',[[1,'1'],[2,'2'],[3,'3'],[4,'4']])}</label></div>
+  <div id="evout" class="noprint"></div>
+  <p class="small muted noprint">Contrôle avec l’exemple du référentiel : fille, 2’20, 2’02, 347 m → 5/8. AFL2 et AFL3 : milieu du degré choisi.</p>
+  <h3 class="sec">Barème de performance (/8)</h3>${barTable()}
+  <p class="vt-note">Une performance entre deux colonnes prend la note de la colonne atteinte (2’21 chez une fille = 3,6). Ce barème est celui de Terminale : en Seconde, il sert de repère, pas de note certificative.${state.c==='t'?' En Terminale, la répartition AFL2 / AFL3 est choisie par l’élève avant l’épreuve.':''}</p>
+  <h3 class="sec">Efficacité du projet sur 1’30 (/4)</h3>
+  <div class="zonebar"><div style="flex:2;background:#e5484d">Z1 · 0,5 pt</div><div style="flex:2;background:#f2c200">Z2 · 2 pts</div><div style="flex:2;background:#16a34a;color:#fff">Z4 · 4 pts</div><div style="flex:2;background:#8fd16a">Z3 · 3 pts</div><div style="flex:2;background:#e5484d">Z1 bis · 1 pt</div></div>
+  <div class="zl"><span>plus de 15 m avant</span><span>5 à 15 m avant</span><span>à 5 m de la ligne</span><span>5 à 15 m après</span><span>plus de 15 m après</span></div>
+  <h3 class="sec">AFL2 et AFL3 (degrés du référentiel)</h3>
+  <div class="tablewrap"><table class="grid4"><thead><tr><th></th><th>Degré 1</th><th>Degré 2</th><th>Degré 3</th><th>Degré 4</th></tr></thead><tbody>
+   <tr><td>AFL2 · carnet</td><td>Très incomplet ou absent ; performances stables sur ¼ des tentatives</td><td>Incomplet ; stables sur ⅓</td><td>Complet ; stables sur ⅔</td><td>Rempli avec exactitude ; stables sur ¾</td></tr>
+   <tr><td>AFL2 · savoir s’entraîner</td><td>Préparation et récupération aléatoires, projet méconnu</td><td>Préparation stéréotypée, projet identique au camarade</td><td>Préparation et récupération adaptées, projet prévu et construit</td><td>Adaptées à sa forme du moment, projet anticipé et réalisé</td></tr>
+   <tr><td>AFL3 · coach</td><td>Peu attentif, aucune interaction</td><td>Encourage, conseils simples</td><td>Conseils pertinents pour maintenir une allure</td><td>Conseils avisés à différents moments</td></tr>
+   <tr><td>AFL3 · juge, chrono</td><td>Informations aléatoires</td><td>Partiellement transmises ou trop tard</td><td>Prélevées et transmises de façon pertinente</td><td>Sélectionnées et transmises au bon moment</td></tr>
+  </tbody></table></div>
+  <h3 class="sec">Feuille de résultats (un coach par ligne)</h3>
+  <div class="tablewrap"><table class="teq-log"><thead><tr><th>Coureur</th><th>Coach</th><th>Projet C1</th><th>C1 (passage · final)</th><th>Projet C2</th><th>C2 (passage · final)</th><th>Projet 1’30</th><th>Zone · distance</th></tr></thead><tbody>${Array.from({length:18},()=>'<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>').join('')}</tbody></table></div>
+  </div>`;
+  setTimeout(evPaint,0);return html;
+}
+
+/* ===== Lien avec l’évaluation ===== */
+function renderCheck(){
+  const R=[
+   ['Épreuve de Seconde (validée) : C1 3’ au plot, 10 min, C2 1’30 avec projet','S6 (épreuve blanche), S8','ok','Épreuve propre à la Seconde : elle prépare la C3 de Terminale (1’30) sans reprendre les 500 m.'],
+   ['AFL1 · performance 3’ (/4)','S1 (3’ rapide), S3, S4, S5 (2 × 3’), S6, S8','ok','Seuils de 8 à 14 km/h (filles) et 10 à 17 km/h (garçons) : à recaler après une première année.'],
+   ['AFL1 · performance 1’30 (/4)','S2 (1’30 mesuré), S3 à S7 (1’30 avec projet), S8','ok','Seuils = une colonne sur trois du barème du lycée : note de Seconde = note de bac ÷ 2.'],
+   ['AFL1 · efficacité : zone du 1’30 (/3) et régularité du 3’ (/1)','Zones en S3, S4, S5, S6, S7 ; mi-course du 3’ marquée en S3, S4, S5, S6','ok',''],
+   ['10 min de récupération entre les courses','S6, S8 (S4 : 6 min, volontairement)','ok',''],
+   ['AFL2 · échauffement seul (/2)','Guidé S1-S2, semi-guidé S3-S4, avec fiche S5-S6, seul S7-S8 (observé)','ok',''],
+   ['AFL2 · projet justifié par le carnet (/2)','Projet du 1’30 à chaque séance à partir de S3, décision écrite en S4 et S7','ok',''],
+   ['AFL3 · coach / observateur ou juge / chronométreur (/4)','Toutes les séances à partir de S1 ; rôle tenu noté dans chaque bilan','ok','Le comptage des tours sur 3’ est le point fragile : vérifie quelques coachs en S3 et S5.'],
+   ['AFL2 et AFL3 au fil de la séquence','Étoiles ★ AFL2 / ★ AFL3 validées par le prof dans le bilan de chaque séance','ok','Grenoble recommande ce type de repère pour rendre l’AFL2 et l’AFL3 observables.'],
+   ['Projets tenus (indicateur AFL2 du référentiel : ¼, ⅓, ⅔, ¾ des tentatives)','Compté dans chaque bilan, total en page « Ma progression »','ok',''],
+   ['Deux mesures de VMA','S1 (3’ rapide) et S6 (3’ de l’épreuve blanche) : cibles mises à jour','ok',''],
+   ['Autoévaluation sur les degrés (page « Je me situe »)','S6 et S8','ok','']
+  ];
+  if(state.c==='t'){R.length=0;R.push(
+   ['AFL1 · performance 500 m (/8, C1 et C2)','T1 (référence), T3 (500 m à 90 %), T4 (500 m à 110 %), T5 (300 m répétés : le 2e 500), T6 (résistance), T7 (épreuve blanche), T9','ok',''],
+   ['AFL1 · performance 1’30 (/8, C3)','T3 (36’’ à 120 %), T5 (travail du 1’30), T6 (1’30 fatigué), T7, T9','ok',''],
+   ['AFL1 · efficacité : zone du 1’30 (/4)','T5, T6, T7, T9 : zones matérialisées','ok','Quatre 1’30 avec projet avant l’épreuve : c’est peu si un élève n’a pas fait le cycle de Seconde.'],
+   ['10 min de récupération entre les courses','T7 (épreuve blanche), T9','warn','Une seule répétition complète avant l’épreuve.'],
+   ['Passage au 250 m donné par le binôme','T1, T3, T4, T7, T9','ok',''],
+   ['AFL2 · carnet et performances stables','Toutes les séances : prévu et réalisé sur chaque course (carnet de Terminale 2025)','ok',''],
+   ['AFL2 · séance construite avec les paramètres de la charge','T8 (thème choisi après l’épreuve blanche)','ok','Une seule séance : à évaluer avec la fiche du carnet, pas seulement en observant.'],
+   ['AFL2 · échauffement individualisé','Sans fiche à partir de T3, observé en T7 et T9','ok',''],
+   ['AFL3 · coach / observateur ou juge / chronométreur','Toutes les séances ; rôle tenu noté dans chaque bilan ; binômes fixes après T3 (référentiel)','ok',''],
+   ['AFL2 et AFL3 au fil de la séquence','Étoiles ★ AFL2 / ★ AFL3 validées dans le bilan de chaque séance','ok',''],
+   ['Projets tenus (¼, ⅓, ⅔, ¾ des tentatives)','Compté dans chaque bilan, total en page « Ma progression »','ok','C’est l’indicateur chiffré du degré AFL2 du référentiel.'],
+   ['Deux mesures de VMA','T2 (test 36’’/24’’) et re-test court en T6 : cibles mises à jour','ok','Nancy-Metz impose au moins deux tests de VMA dans la séquence.'],
+   ['Choix des points AFL2 / AFL3 (2, 4 ou 6)','Autoévaluation « Je me situe » en T7, choix annoncé avant l’épreuve, définitif','ok','Le choix ne peut plus changer une fois l’épreuve commencée (référentiel national).'],
+   ['Récupération entre les courses planifiée','T7 et T9 (carnet)','ok',''])}
+  return `<div class="panel"><span class="status st-next">Outil</span><h2>Lien avec l’évaluation</h2><p class="lead">Chaque élément du référentiel CA1 demi-fond du lycée, et les séances qui le préparent.</p>
+  <div class="tablewrap"><table><thead><tr><th>Élément du référentiel</th><th>Séances</th><th>Statut</th><th>Remarque</th></tr></thead><tbody>${R.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td><span class="chip ${r[2]}">${r[2]==='ok'?'ok':'à surveiller'}</span></td><td class="small">${r[3]}</td></tr>`).join('')}</tbody></table></div>
+  <figure class="evalfig" style="max-width:720px;margin-top:16px"><div class="schema">${piste(state.c==='t'?SCH.epreuve:SCH.epreuve2)}</div><figcaption>${state.c==='t'?SCH.epreuve.cap:SCH.epreuve2.cap}</figcaption></figure>
+  <div class="note"><b>Incohérences relevées dans tes documents.</b> Le tableau de passages du carnet de Seconde 2025 tronque certains temps au lieu de les arrondir (300 m à 105 % pour une VMA de 12 : 1’25 au lieu de 1’26) ; l’outil arrondit. Les dossiers de 2023 citent encore le 3 × 500 m, ancien format.</div></div>`;
+}
+
+/* ---------- Séances ---------- */
+const main=document.getElementById('main');
+const LEGEND=`<div class="legend"><span><i class="dot" style="background:var(--accent)"></i>coureur</span><span><i class="dot" style="background:var(--team-n)"></i>coach, observateur</span><span><i class="liner"></i>course</span><span><i class="lineo"></i>retour</span><span>plots : plats tous les 10 m · coupelles orange tous les 20 m · grands jaunes tous les 50 m</span></div>`;
+let VIEW='terrain';try{VIEW=localStorage.getItem('df2-view')||'terrain'}catch(e){}
+let PRINTING=false;
+function isFull(){return PRINTING||VIEW==='prep'}
+function setView(v){VIEW=v;try{localStorage.setItem('df2-view',v)}catch(e){}show(state.id,false)}
+function exCard(e,d,full){
+  const sp=e.sch&&SCH[e.sch],pic=sp?`<div class="schema">${piste(sp)}</div>`:'';
+  let v='';
+  if(e.moins||e.plus){v=`<dt>Variables</dt><dd><div class="var">${e.moins?`<span class="m" aria-label="simplifier">−</span><span>${e.moins}</span>`:''}${e.plus?`<span class="p" aria-label="complexifier">+</span><span>${e.plus}</span>`:''}</div></dd>`}
+  const jeu=e.jeu?`<div class="jeu"><b>🏁 Challenge du binôme · ${e.jeu.n}</b><span>${e.jeu.r}</span><span class="jeu-p">Points : ${e.jeu.p}</span></div>`:'';
+  if(!full){
+    const more=(e.disp?`<dt>Dispositif</dt><dd>${e.disp}</dd>`:'')+(e.deroul?`<dt>Déroulement</dt><dd>${list(e.deroul)}</dd>`:'')+(e.cons?`<dt>Consignes et critères de réalisation</dt><dd>${list(e.cons)}</dd>`:'')+v+(sp&&sp.cap?`<dt>Le schéma</dt><dd>${sp.cap}</dd>`:'');
+    return `<section class="ex tv"><div class="ex-head"><h3>${e.t}</h3><span class="dur">${d} min</span></div>${pic?`<figure class="tv-fig">${pic}</figure>`:''}
+     ${jeu}<dl class="card tv-card">${e.four?`<dt class="four">Rôle de chacun</dt><dd class="four">${e.four}</dd>`:''}${e.reus?`<dt>Critère de réussite</dt><dd class="tv-reus">${e.reus}</dd>`:''}</dl>
+     ${more?`<details class="tv-more"><summary>Fiche complète</summary><dl class="card">${more}</dl></details>`:''}</section>`;
+  }
+  const fg=pic?`<figure>${pic}<figcaption>${sp.cap||''}</figcaption></figure>`:'';
+  return `<section class="ex"><div class="ex-head"><h3>${e.t}</h3><span class="dur">${d} min</span>${e.k?`<span class="kind">${e.k}</span>`:''}</div>
+   ${jeu}   <div class="ex-body ${pic?'':'noschema'}">${fg}<dl class="card">
+    ${e.disp?`<dt>Dispositif</dt><dd>${e.disp}</dd>`:''}
+    ${e.four?`<dt class="four">Rôle de chacun</dt><dd class="four">${e.four}</dd>`:''}
+    ${e.deroul?`<dt>Déroulement</dt><dd>${list(e.deroul)}</dd>`:''}
+    ${e.cons?`<dt>Consignes et critères de réalisation</dt><dd>${list(e.cons)}</dd>`:''}
+    ${e.reus?`<dt>Critère de réussite</dt><dd>${e.reus}</dd>`:''}
+    ${v}
+   </dl></div></section>`;
+}
+function statusChip(s){return {done:'<span class="status st-done">Faite</span>',today:'<span class="status st-today">Aujourd’hui</span>',next:'<span class="status st-next">À venir</span>',eval:'<span class="status st-eval">Évaluation</span>'}[s]}
+function sessTable(s){
+  if(s.tab==='evs')return `<div class="tabs-sess"><h3 class="sec" style="margin-top:0">Tableau de la séance · barème de Seconde</h3>${bar2Table()}<p class="vt-note">Performance /8 = 3’ /4 + 1’30 /4. Efficacité /4 : zone du 1’30 /3, régularité du 3’ /1. Calcul automatique dans l’outil « Évaluation ».</p>${vtable('cour')}</div>`;
+  if(s.tab==='eval')return `<div class="tabs-sess"><h3 class="sec" style="margin-top:0">Tableau de la séance · barème du lycée</h3>${barTable()}<p class="vt-note">Performance /8 = moyenne des notes de C1, C2 et C3. Efficacité /4 : zone d’arrivée du 1’30. Calcul automatique dans l’outil « Évaluation ».</p></div>`;
+  return `<div class="tabs-sess">${vtable(s.tab)}</div>`;
+}
+function renderSession(s){
+  const full=isFull();
+  const tl=`<div class="timeline">${s.tl.map(x=>`<button type="button" class="tl-b" data-bt-l="${esc(s.n+' · '+x[0])}" data-bt-m="${x[1]}" title="Lancer un minuteur de ${x[1]} min">${x[0]} <b>${x[1]} min</b><i class="noprint">▶</i></button>`).join('')}</div>`;
+  const head=`<div class="panel">${statusChip(s.status)}<h2>${s.n} · ${s.title}</h2><p class="lead">${s.lead}</p>${tl}<p class="small muted" style="margin:.6rem 0 0">${CYCLES[state.c].bin}</p>`;
+  const blocks=s.tl.map(x=>{
+    const [lab,d,key]=x;
+    if(key==='warm')return `<section class="ex${full?'':' tv'}"><div class="ex-head"><h3>${lab}</h3><span class="dur">${d} min</span><span class="kind">échauffement niveau ${s.lv}</span></div><p>${warmText(s.lv,s.warm)} <a href="#" data-go="warm" class="noprint">Fiche d’échauffement</a></p></section>`;
+    if(key==='bilan')return `<section class="ex${full?'':' tv'}"><div class="ex-head"><h3>${lab}</h3><span class="dur">${d} min</span></div><p>${s.bilan}</p></section>`;
+    return exCard(s.ex[key],d,full);
+  }).join('');
+  if(!full) return head+`<div class="legend-once">${LEGEND}</div>`+blocks+sessTable(s)+`<p class="small muted tv-help noprint">Cibles d’un élève : <a href="#" data-go="calc">Ma calculette</a> · <a href="#" data-go="tables">Tous les tableaux</a> · <a href="#" onclick="event.preventDefault();setView('prep')">vue préparation</a> pour le lien avec l’évaluation.</p></div>`;
+  const ev=`<div class="evalbox"><h4>Ce que la séance prépare pour l’évaluation</h4><ul>${s.eval.map(x=>`<li><b>${EVAL_SHORT[x[0]]}.</b> ${x[1]}</li>`).join('')}</ul></div>`;
+  return head+ev+blocks+`<div class="legend-once">${LEGEND}</div>`+sessTable(s)+'</div>';
+}
+
+/* ----- minuteur d’un temps de séance (toucher une durée de la frise) ----- */
+const BT={lab:'',end:0,left:0,run:false,iv:null,b1:false,ac:null};
+function tmFmt(s){s=Math.max(0,Math.ceil(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function beep(n,f){try{if(!BT.ac)return;const ac=BT.ac;for(let i=0;i<n;i++){const o=ac.createOscillator(),g=ac.createGain(),t0=ac.currentTime+i*0.45;o.frequency.value=f||880;o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(0.4,t0+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t0+0.35);o.start(t0);o.stop(t0+0.4)}}catch(e){}}
+let WL=null;function tmWake(on){try{if(on&&navigator.wakeLock&&!WL)navigator.wakeLock.request('screen').then(w=>{WL=w}).catch(()=>{});if(!on&&WL){WL.release();WL=null}}catch(e){}}
+function btLeft(){return BT.run?(BT.end-Date.now())/1000:BT.left}
+function btStart(lab,min){
+  if(!BT.ac){try{BT.ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}
+  try{BT.ac&&BT.ac.state==='suspended'&&BT.ac.resume()}catch(e){}
+  BT.lab=lab;BT.left=min*60;BT.end=Date.now()+BT.left*1000;BT.run=true;BT.b1=false;clearInterval(BT.iv);BT.iv=setInterval(btTick,250);tmWake(true);btPaint();
+}
+function btTick(){const l=btLeft();if(BT.run&&l<=60&&!BT.b1){BT.b1=true;beep(1,660)}if(BT.run&&l<=0){BT.run=false;BT.left=0;clearInterval(BT.iv);beep(3);tmWake(false)}btPaint()}
+function btToggle(){if(BT.run){BT.left=btLeft();BT.run=false;clearInterval(BT.iv)}else if(BT.left>0){BT.end=Date.now()+BT.left*1000;BT.run=true;clearInterval(BT.iv);BT.iv=setInterval(btTick,250)}btPaint()}
+function btStop(){BT.run=false;clearInterval(BT.iv);BT.lab='';tmWake(false);btPaint()}
+function btPaint(){
+  let el=document.getElementById('btimer');
+  if(!BT.lab){if(el)el.remove();return}
+  if(!el){el=document.createElement('div');el.id='btimer';el.className='btimer noprint';el.setAttribute('role','timer');document.body.appendChild(el)}
+  const l=btLeft();el.classList.toggle('last',l<=60&&l>0);el.classList.toggle('over',l<=0);
+  el.innerHTML=`<span class="bt-lab">${esc(BT.lab)}</span><b class="bt-t">${tmFmt(l)}</b><button type="button" class="tb mini" onclick="btToggle()" aria-label="${BT.run?'Pause':'Reprendre'}">${BT.run?'⏸':'▶'}</button><button type="button" class="tb mini" onclick="btStop()" aria-label="Fermer le minuteur">✕</button>`;
+}
+
+/* ===== Impression ===== */
+function printBar(s){
+  const isToday=CUR[state.c]===s.id;
+  const day=isToday?'<span class="tb today-on">✓ Séance du jour</span>':`<button type="button" class="tb pri" onclick="setCur('${s.id}')">Marquer comme séance du jour</button>`;
+  const vw=`<button type="button" class="tb" onclick="setView('${VIEW==='prep'?'terrain':'prep'}')">${VIEW==='prep'?'Vue terrain':'Vue préparation'}</button>`;
+  return `<div class="printbar noprint">${day}${vw}<button type="button" class="tb" onclick="window.print()">Imprimer cette séance</button><a class="tb" href="pdf/${CYCLES[state.c].pre}-DemiFond-${s.n}.pdf" download target="_blank" rel="noopener">PDF de la séance</a><button type="button" class="tb" onclick="printCycle()">Imprimer le cycle complet</button><a class="tb" href="pdf/Cycle-DemiFond-${CYCLES[state.c].label}.pdf" download target="_blank" rel="noopener">PDF du cycle complet</a></div>`;
+}
+function cycleCover(){const C=CYCLES[state.c];
+  return `<div class="panel print-cover"><h2>Cycle demi-fond · ${C.label}</h2><p class="lead">${C.cover}</p>
+  <div class="tablewrap"><table><thead><tr><th>Séance</th><th>Titre</th><th>Échauffement</th><th>Déroulé</th></tr></thead><tbody>${curSessions().map(s=>`<tr><td class="num"><b>${s.n}</b></td><td>${s.title}</td><td class="small">${WU_LV[s.lv].k}</td><td class="small">${s.tl.map(x=>x[0]+' '+x[1]+'′').join(' · ')}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+function buildCyclePrint(){PRINTING=true;main.innerHTML=`<div class="cyband">${CYCLES[state.c].label} · demi-fond</div>`+cycleCover()+curSessions().map(s=>`<div class="print-page">${renderSession(s)}</div>`).join('');wire()}
+function printCycle(){
+  const back=state.id;buildCyclePrint();
+  const restore=()=>{window.removeEventListener('afterprint',restore);PRINTING=false;show(back,false)};
+  window.addEventListener('afterprint',restore);
+  setTimeout(()=>{try{window.print()}catch(e){restore()}},150);
+}
+function printOnly(id){if(state.id!==id)show(id,false);setTimeout(()=>window.print(),100)}
+
+/* ===== Navigation ===== */
+const TOOLDEF={
+ calc:{n:'Ma calculette',short:'une VMA → toutes les cibles',render:renderCalc},
+ warm:{n:'Échauffement autonome',short:'fiche · 4 niveaux · grille',render:renderWarm},
+ tables:{n:'Tableaux d’allures',short:'VMA 8 à 20 · à imprimer',render:renderTables},
+ piste:{n:'Piste et plots',short:'1 plot = 1 km/h · départs',render:renderPiste},
+ roles:{n:'Coach, chrono, juge',short:'AFL3 · fiche élève',render:renderRoles},
+ coach:{n:'Repères d’entraîneur',short:'intensités · récup · sécurité',render:renderCoach},
+ bank:{n:'Banque de situations',short:'16 situations · N1–N4',render:renderBank},
+ diff:{n:'Travail par niveaux',short:'groupes G1–G4 · inaptes',render:renderDiff},
+ evalf:{n:'Évaluation',short:'barème · calcul de la note',render:renderEval},
+ check:{n:'Lien avec l’éval',short:'référentiel Pompidou',render:renderCheck}
+};
+const PRIMARY=['calc','warm','tables'];
+const PREP=['piste','roles','coach','bank','diff','evalf','check'];
+const navC=document.getElementById('nav-cycles'),navT=document.getElementById('nav-tools'),navS=document.getElementById('nav-sessions'),navP=document.getElementById('nav-prep');
+const CYCLES={
+ s:{label:'Seconde',pre:'2de',sessions:SESSIONS,start:'s1',n:'8 séances',bin:BIN,
+  cover:'CA1 · 8 séances de 90 min (accès direct à la piste) · piste de 200 m · 35 élèves en binômes coureur / coach · VMA de travail mesurée sur le 3’ rapide de S1 · deux fils rouges : 36’’/36’’ au plot cible, 3’ et 1’30 avec projet · épreuve de Seconde : 3’, 10 min, 1’30 avec projet (blanche en S6, évaluation en S8).'},
+ t:{label:'Terminale',pre:'Tle',sessions:T_SESSIONS,start:'t1',n:'9 séances',bin:'Binômes coureur / coach (un trio si l’effectif est impair), coureur et coach dans deux groupes de vitesse différents, binômes fixes après T3 (référentiel). La vague A court pendant que la vague B coache, puis on inverse.',
+  cover:'CA1 · 9 séances de 90 min (accès direct à la piste) · piste de 200 m · binômes coureur / coach · trame : carnet de course de Terminale 2025 · test VMA en T2 · épreuve blanche en T7 · séance construite par l’élève en T8 · épreuve CCF en T9 (500 m, 500 m, 1’30, 10 min entre les courses).'}
+};
+function curSessions(){return CYCLES[state.c].sessions}
+let state={c:'s',id:'s1'};
+SESSIONS.concat(T_SESSIONS).forEach(s=>s.orig=s.status||'next');
+const CUR={s:'',t:''};try{const o=JSON.parse(localStorage.getItem('df2-cur2')||'{}');Object.assign(CUR,o)}catch(e){}
+function applyCur(){['s','t'].forEach(k=>{const L=CYCLES[k].sessions,idx=L.findIndex(s=>s.id===CUR[k]);L.forEach((s,i)=>{s.status=(s.orig==='eval'&&i!==idx)?'eval':idx<0?'next':i<idx?'done':i===idx?'today':'next'})})}
+function setCur(v){CUR[state.c]=v;try{localStorage.setItem('df2-cur2',JSON.stringify(CUR))}catch(e){}applyCur();show(state.id,false)}
+applyCur();
+function btn(parent,n,short,cls,onclick,sel){const b=document.createElement('button');b.type='button';b.className='tab '+cls;b.setAttribute('role','tab');b.setAttribute('aria-selected',sel?'true':'false');b.innerHTML=`<b>${n}</b><span>${short}</span>`;b.addEventListener('click',onclick);parent.appendChild(b);return b}
+function renderNav(){
+  navC.innerHTML='';navT.innerHTML='';navS.innerHTML='';navP.innerHTML='';
+  Object.entries(CYCLES).forEach(([k,C])=>{const c0=C.sessions.find(x=>x.id===CUR[k]);btn(navC,C.label,c0?'séance du jour : '+c0.n:C.n+' · demi-fond','cycle c'+k,()=>{state.c=k;show(c0?c0.id:C.start,true)},state.c===k)});
+  const cs=curSessions().find(x=>x.id===CUR[state.c]);
+  btn(navT,'Séance du jour',cs?cs.n+' · '+cs.short:'pas encore choisie','today-btn',()=>show(cs?cs.id:CYCLES[state.c].start,true),!!cs&&state.id===cs.id);
+  PRIMARY.forEach(t=>btn(navT,TOOLDEF[t].n,TOOLDEF[t].short,'',()=>show(t,true),state.id===t));
+  PREP.forEach(t=>btn(navP,TOOLDEF[t].n,TOOLDEF[t].short,'',()=>show(t,true),state.id===t));
+  const pd=document.getElementById('nav-prep-d');if(pd){if(PREP.includes(state.id))pd.open=true;pd.querySelector('summary').textContent='Préparer et évaluer ('+PREP.length+' outils)'}
+  curSessions().forEach(s=>btn(navS,s.n,s.short,s.status==='done'?'done':s.status==='today'?'today':s.status==='eval'?'eval':'',()=>show(s.id,true),state.id===s.id));
+}
+function wire(){
+  main.querySelectorAll('[data-go]').forEach(a=>a.addEventListener('click',ev=>{ev.preventDefault();show(a.dataset.go,true)}));
+  main.querySelectorAll('[data-bt-m]').forEach(b=>b.addEventListener('click',()=>btStart(b.dataset.btL,+b.dataset.btM)));
+}
+function show(id,scroll){
+  if(T_SESSIONS.find(s=>s.id===id))state.c='t';else if(SESSIONS.find(s=>s.id===id))state.c='s';
+  if(!TOOLDEF[id]&&!curSessions().find(s=>s.id===id))id=CYCLES[state.c].start;
+  state.id=id;renderNav();
+  const s=curSessions().find(x=>x.id===id);
+  document.documentElement.setAttribute('data-cycle',state.c);
+  main.innerHTML=`<div class="cyband">${CYCLES[state.c].label} · demi-fond</div>`+(s?printBar(s)+renderSession(s):TOOLDEF[id].render());
+  wire();
+  try{history.replaceState(null,'','#'+state.c+'-'+id)}catch(e){}
+  try{localStorage.setItem('df2-tab',state.c+'-'+id)}catch(e){}
+  if(scroll) main.scrollIntoView({behavior:'smooth',block:'start'});
+}
+let init=(location.hash||'').slice(1);
+if(!init){try{init=localStorage.getItem('df2-tab')||''}catch(e){init=''}}
+const m0=/^([st])-(.+)$/.exec(init);if(m0){state.c=m0[1];init=m0[2]}
+show(init||'s1',false);
+window.addEventListener('beforeprint',()=>{if(!isFull()&&curSessions().find(x=>x.id===state.id)){PRINTING=true;show(state.id,false)}});
+window.addEventListener('afterprint',()=>{if(PRINTING){PRINTING=false;show(state.id,false)}});
+</script>
+<script>if('serviceWorker' in navigator&&location.protocol==='https:'){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
+</body>
+</html>

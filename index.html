@@ -456,6 +456,9 @@ input.chin{width:48px;font:inherit;font-size:16px;padding:4px 6px;border:1.5px s
 .appicon.logoimg{width:46px;height:46px;margin:0;border-radius:12px}
 .test-banner{background:#facc15;color:#111;font:700 15px/1.3 system-ui,sans-serif;text-align:center;padding:8px 12px;position:relative;z-index:99999}
 @media print{.appicon,.test-banner{display:none!important}}</style>
+<link rel="stylesheet" href="eps-design.css">
+<style>:root{--sport:#f59e0b}</style>
+<script src="eps-commun.js" defer></script>
 </head>
 <body>
 <div class="wrap">
@@ -1561,7 +1564,7 @@ function sessTable(s){
 }
 function renderSession(s){
   const full=isFull();
-  const tl=`<div class="timeline">${s.tl.map(x=>`<button type="button" class="tl-b" data-bt-l="${esc(s.n+' · '+x[0])}" data-bt-m="${x[1]}" title="Lancer un minuteur de ${x[1]} min">${x[0]} <b>${x[1]} min</b><i class="noprint">▶</i></button>`).join('')}</div>`;
+  const tl=`<div class="timeline">${s.tl.map(x=>`<button type="button" class="tl-b" style="flex:${x[1]}" data-bt-l="${esc(s.n+' · '+x[0])}" data-bt-m="${x[1]}" title="Lancer un minuteur de ${x[1]} min">${x[0]} <b>${x[1]} min</b><i class="noprint">▶</i></button>`).join('')}</div>`;
   const head=`<div class="panel">${statusChip(s.status)}<h2>${s.n} · ${s.title}</h2><p class="lead">${s.lead}</p>${tl}<p class="small muted" style="margin:.6rem 0 0">${CYCLES[state.c].bin}</p>`;
   const blocks=s.tl.map(x=>{
     const [lab,d,key]=x;
