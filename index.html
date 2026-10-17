@@ -2,10 +2,15 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Demi-fond 2de">
-<meta name="theme-color" content="#0f7a62">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Demi-fond">
+<meta name="theme-color" content="#f59e0b">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cycles Demi-fond</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -444,11 +449,18 @@ table.grid4 td{font-size:13.5px} table.grid4 td:first-child{font-weight:700;widt
 input.chin{width:48px;font:inherit;font-size:16px;padding:4px 6px;border:1.5px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg)}
 .print-only-blank{display:none} @media print{.print-only-blank{display:block}}
 </style>
+
+<style id="appicon-css">.appicon{width:40px;height:40px;border-radius:9px;vertical-align:middle;margin:0 10px 0 0;box-shadow:0 1px 3px rgba(0,0,0,.25);flex:none;display:inline-block;object-fit:cover}
+.appicon.big{width:72px;height:72px;border-radius:16px;margin:0 auto 10px;display:block}
+.appicon.fill{width:100%;height:100%;margin:0;border-radius:inherit;box-shadow:none;display:block}
+.appicon.logoimg{width:46px;height:46px;margin:0;border-radius:12px}
+.test-banner{background:#facc15;color:#111;font:700 15px/1.3 system-ui,sans-serif;text-align:center;padding:8px 12px;position:relative;z-index:99999}
+@media print{.appicon,.test-banner{display:none!important}}</style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>Cycles demi-fond · Seconde et Terminale</h1>
+    <h1><img class="appicon" src="icon-192.png" alt="" width="40" height="40">Cycles demi-fond · Seconde et Terminale</h1>
     <details class="about"><summary>À propos de l’outil</summary>
     <p>Huit séances de 90 min de pratique (accès direct à la piste) pour une classe de Seconde de 35 élèves sur la piste de 200 m du lycée Georges Pompidou. Trois objectifs : courir au temps de façon régulière, annoncer et tenir un projet de distance, s’échauffer seul et coacher son binôme. Deux fils rouges à chaque séance : le 36’’/36’’ au plot cible, le 3’ et le 1’30 avec projet. Épreuve de Seconde : 3’ au plot, 10 min, 1’30 avec projet (blanche en S6, évaluation en S8) ; elle prépare la C3 de l’épreuve de Terminale sans reprendre les 500 m. Le cycle de Terminale (9 séances) suit ton carnet de course de Terminale 2025 : leçons 1 à 6, épreuve blanche en T7, séance construite par l’élève en T8 (AFL2), épreuve CCF en T9.</p>
     <div class="meta"><span class="tag">Piste 200 m</span><span class="tag">35 élèves · binômes coureur / coach</span><span class="tag">90 min · échauffement + 2 exercices + situation finale</span><span class="tag">CA1 · AFL1 /12 · AFL2+AFL3 /8</span></div>
@@ -1667,5 +1679,6 @@ show(init||'s1',false);
 window.addEventListener('beforeprint',()=>{if(!isFull()&&curSessions().find(x=>x.id===state.id)){PRINTING=true;show(state.id,false)}});
 window.addEventListener('afterprint',()=>{if(PRINTING){PRINTING=false;show(state.id,false)}});
 </script>
+<script>if('serviceWorker' in navigator&&location.protocol==='https:'){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
 </body>
 </html>
