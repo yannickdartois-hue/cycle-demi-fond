@@ -310,6 +310,8 @@ ol.der li::before{content:counter(e);font:800 20px/1 var(--d);font-stretch:75%;w
 .outil-v iframe{flex:1;width:100%;border:0;background:#fff}
 body.sous-outil{overflow:hidden}
 @media (max-width:560px){.outil-v .ot{display:none}}
+
+.racc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 2px}.racc .bt{min-height:44px}
 </style>
 </head>
 <body>
@@ -404,7 +406,7 @@ function phrases(t){return String(t||'').split(/(?<=[.;])(?<!(?:^|[\s(])[A-ZÀ-�
 function orgHTML(t){const p=phrases(t);return p.length>1?`<ul class="org">${p.map(x=>`<li>${grasChiffres(x)}</li>`).join('')}</ul>`:`<p class="texte">${grasChiffres(t)}</p>`}
 function etapesEchauff(s,b){
   const brut=String(s.warm||'').replace(/<a [^>]*>.*?<\/a>/g,'').replace(/<[^>]+>/g,'').trim();
-  return `<div style="margin-top:14px">${orgHTML(brut)}</div><p class="texte" style="margin-top:12px"><a href="${OLD}" data-ov="warm">Fiches d’échauffement</a></p>`;
+  return `<div style="margin-top:14px">${orgHTML(brut)}</div>`;
 }
 
 /* ================== Rendu ================== */
@@ -484,7 +486,7 @@ function rendreZone(){
   if(apercu){ctrl=`<div class="lance"><button class="bt noir" type="button" data-act="retour">Revenir au bloc en cours</button>${b.st==='todo'?`<button class="bt clair" type="button" data-act="zap" data-i="${i}">Zapper ce bloc</button>`:''}</div>`}
   else if(enCours){ctrl=`<div class="reglage"><div class="chrono" id="chrono"><span class="num">–</span><small>restantes</small></div><button class="bt jaune" type="button" data-act="plus" data-v="2">+ 2 min</button><button class="bt jaune" type="button" data-act="plus" data-v="5">+ 5 min</button><button class="bt clair" type="button" data-act="pause" id="btPause">Pause</button><button class="bt noir suiv" type="button" data-act="suivant">${suivantDe(i)<0?'Terminer la séance':'Bloc suivant'}</button></div>`}
   else {ctrl=`<div class="lance"><button class="bt noir go" type="button" data-act="go">${J.started?'C’est parti':'Démarrer la séance'}</button><button class="bt clair" type="button" data-act="zap" data-i="${i}">Zapper</button></div>`}
-  const carte=`<article class="carte${apercu?' apercu':enCours?'':' attente'}"><p class="etiq"><span class="nv">${NIV[J.c].court}</span>${etiq}</p><h1>${esc(titreBloc(b))}</h1>${e&&norm(e.t)!==norm(b.label)?`<p class="fiche">Fiche : ${esc(e.t)}</p>`:''}<p class="quand">${quand}</p>${enCours?ctrl:''}${corps}${enCours?'':ctrl}</article>`;
+  const carte=`<article class="carte${apercu?' apercu':enCours?'':' attente'}"><p class="etiq"><span class="nv">${NIV[J.c].court}</span>${etiq}</p><h1>${esc(titreBloc(b))}</h1>${e&&norm(e.t)!==norm(b.label)?`<p class="fiche">Fiche : ${esc(e.t)}</p>`:''}<p class="quand">${quand}</p>${enCours?ctrl:''}${raccourcis(b,e)}${corps}${enCours?'':ctrl}</article>`;
   // colonne de droite : schéma, consignes, ensuite
   let cote='';
   if(e){cote+=`<div class="boite"><h2>${esc(e.k||'Schéma')}</h2>${schemaDe(e)||'<p class="cap">Pas de schéma pour cette situation.</p>'}</div>`;
@@ -582,7 +584,7 @@ function finHTML(){
   ${zaps.length&&nx?`<h2 class="rub">Exercices zappés</h2>${zaps.map((b,k)=>`<label class="case"><input type="checkbox" data-rep="${J.blocks.indexOf(b)}" checked> Proposer « ${esc(b.label)} » au début de ${esc(nx.n)}</label>`).join('')}`:''}
   <h2 class="rub">Ce que je retiens (facultatif)</h2><textarea class="note" id="note" placeholder="Une phrase suffit.">${esc(notes[cle]||'')}</textarea>
   <div class="lance"><button class="bt noir go" type="button" id="btFin">Enregistrer</button><button class="bt clair" type="button" id="btRouvrir">Reprendre la séance</button></div></article>
-  <aside class="cote"><div class="boite"><h2>Et ensuite</h2><p class="texte">${nx?`La prochaine séance est ${esc(nx.n)} · ${esc(nx.title)}. Pour en faire la séance du jour, marque-la dans <a href="${lienOld(J.c,nx.id)}">Préparer</a>.`:'C’était la dernière séance du cycle.'}</p></div></aside>`;
+  <aside class="cote"><div class="boite"><h2>Et ensuite</h2><p class="texte">${nx?`La prochaine séance est ${esc(nx.n)} · ${esc(nx.title)}. ${CUR[J.c]===nx.id?'C’est la séance du jour.':`<br><button class="bt noir" type="button" data-jour="${nx.id}" style="margin-top:10px">Faire de ${esc(nx.n)} la séance du jour</button>`}`:'C’était la dernière séance du cycle.'}</p></div></aside>`;
 }
 function lierFin(){
   $('btFin').onclick=()=>{const notes=lire('dq-notes',{});notes[J.date+' '+J.c+'-'+J.id]=$('note').value.trim();ecrire('dq-notes',notes);
@@ -670,8 +672,8 @@ function ouvrirSeances(){
     const mini=s.tl?`<div class="mini">${s.tl.map(x=>`<i style="flex:${x[1]}"></i>`).join('')}</div>`:'';
     return `<button type="button" class="sc ${etat}${ouv?' ouverte':''}" data-s="${s.id}"><span class="n">${esc(s.n)}</span><h3>${esc(s.title)}</h3><span class="et">${et}${ouv?' · ouverte ici':''}</span>${mini}</button>`;
   }).join('');
-  panneau('gauche','Mes séances · '+CYC[cyVu].label,`<div class="cy">${ORDRE.map(k=>`<button type="button" data-cy="${k}" class="${cyVu===k?'on':''}">${NIV[k].label}</button>`).join('')}</div><div class="grilleS">${cartes}</div>
-   <p class="aide">Touche une séance pour la faire maintenant. Tournoi, banque, évaluation et les autres outils : bouton <b>Outils</b>, en bas de l’écran.</p>`,'Fermer');
+  panneau('gauche','Mes séances · '+CYC[cyVu].label,`<div class="cy">${ORDRE.map(k=>`<button type="button" data-cy="${k}" class="${cyVu===k?'on':''}">${NIV[k].label}</button>`).join('')}</div><div class="grilleS">${cartes}</div>${cyVu===J.c&&CUR[cyVu]!==J.id?`<p class="aide" style="margin-top:14px"><b>${esc(sea(J.c,J.id).n)}</b> est ouverte ici. ${CUR[cyVu]?'La séance du jour est '+esc((sea(cyVu,CUR[cyVu])||{n:'une autre'}).n)+'.':'Aucune séance du jour n’est encore choisie.'} <button class="bt noir" type="button" data-jour="${J.id}" style="margin-left:6px">Faire de ${esc(sea(J.c,J.id).n)} la séance du jour</button></p>`:''}
+   <p class="aide">Touche une séance pour l’afficher maintenant. Tournoi, banque, évaluation et les autres outils : bouton <b>Outils</b>, en bas de l’écran.</p>`,'Fermer');
   $('couche').querySelector('.pc').classList.add('niv-'+cyVu);
   $('couche').querySelectorAll('[data-cy]').forEach(x=>x.onclick=()=>{cyVu=x.dataset.cy;ouvrirSeances()});
   $('couche').querySelectorAll('[data-s]').forEach(x=>x.onclick=()=>{
@@ -714,6 +716,26 @@ function voirOutil(id,auto,titre){
 function fermerOutil(){const v=document.querySelector('.outil-v');if(!v)return;v.remove();document.body.classList.remove('sous-outil');clearInterval(outilTic);relireCur();rendre()}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelector('.outil-v'))fermerOutil()});
 $('btOutils').onclick=ouvrirOutils;
+
+/* ================== Séance du jour ==================
+   Même réglage que dans l'outil complet (« Préparer ») : les deux restent d'accord. */
+function marquerJour(c,id){const cur=Object.assign({s:'',t:''},lire('df2-cur2',{}));cur[c]=id;ecrire('df2-cur2',cur);Object.assign(CUR,cur)}
+document.addEventListener('click',ev=>{const b=ev.target.closest('[data-jour]');if(!b)return;
+  const c=b.dataset.c||J.c,s=sea(c,b.dataset.jour);if(!s)return;marquerJour(c,s.id);toast(`${s.n} est la séance du jour`);
+  if(panneauOuvert==='seances')ouvrirSeances();else rendre()});
+
+/* ================== Raccourcis : l'outil dont le bloc a besoin ==================
+   Ex. : bloc « montante-descendante » → « Ouvrir le tournoi ». Ouvert par-dessus le cours. */
+const RACC=[[/^warm$/,'warm','Échauffement autonome'],[/outil « évaluation »|barème|course [123]\b|épreuve blanche/i,'evalf','Barème et note'],[/tableau d’allures|tableaux d’allures/i,'tables','Tableaux d’allures'],[/vma|plot cible|au plot|allure/i,'calc','Calculette VMA']];
+function raccourcis(b,e){
+  const typ=b.k==='warm'?'warm':(b.typ||b.k);
+  const txt=e?[e.t,e.k,e.disp,e.four,e.cat,e.dispo,e.titre].concat(e.deroul||[]).filter(Boolean).join(' '):'';
+  const ids=OUTILS.flatMap(g=>g.items.map(t=>t[0])),vus=new Set(),out=[];
+  for(const [re,id,lab,auto] of RACC){if(out.length>=2)break;if(vus.has(id)||!ids.includes(id))continue;
+    if(re.test(typ)||(txt&&!/^\^/.test(re.source)&&re.test(txt))){vus.add(id);out.push(`<button class="bt jaune" type="button" data-ov="${id}"${auto?' data-auto="1"':''}>${esc(lab)} ›</button>`)}}
+  return out.length?`<div class="racc">${out.join('')}</div>`:'';
+}
+
 /* liens du texte (« fiche Échauffements »…) : ouverts par-dessus, comme les outils */
 document.addEventListener('click',ev=>{const a=ev.target.closest('[data-ov]');if(!a)return;ev.preventDefault();
   const id=a.dataset.ov,g=OUTILS.find(g=>g.items.some(t=>t[0]===id)),t=g&&g.items.find(t=>t[0]===id);
