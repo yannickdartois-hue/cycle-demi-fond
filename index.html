@@ -294,6 +294,22 @@ ol.der li::before{content:counter(e);font:800 20px/1 var(--d);font-stretch:75%;w
 @media (prefers-reduced-motion:no-preference){.panneau.droite{animation:dr .18s ease-out}.panneau.gauche{animation:ga .18s ease-out}@keyframes dr{from{transform:translateX(40px);opacity:.6}}@keyframes ga{from{transform:translateX(-40px);opacity:.6}}}
 @media (max-width:560px){.pouce .info{display:none}.barre .titre{display:none}}
 @media print{.pouce,.barre .bt{display:none}}
+
+/* ---- Outils : l'outil complet s'ouvre par-dessus l'écran de cours ; le minuteur continue ---- */
+.og{font:700 14px var(--t);text-transform:uppercase;letter-spacing:.06em;color:var(--repere);margin:20px 0 8px}
+.og:first-child{margin-top:0}
+.tuiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.tuiles button{background:var(--craie);border-radius:16px;padding:14px 16px;text-align:left;min-height:82px;border:2px solid transparent}
+.tuiles button:active{border-color:var(--ligne)}
+.tuiles button b{display:block;font:800 21px/1.1 var(--d);font-stretch:76%}
+.tuiles button span{display:block;margin-top:4px;font-size:14px;line-height:1.25;color:var(--repere)}
+.outil-v{position:fixed;inset:0;z-index:60;background:var(--sol);display:flex;flex-direction:column}
+.outil-v .oh{display:flex;align-items:center;gap:14px;padding:10px 18px;padding-top:max(10px,env(safe-area-inset-top));background:var(--craie);border-bottom:6px solid var(--ligne)}
+.outil-v .oh b{flex:1;min-width:0;font:800 21px/1.1 var(--d);font-stretch:74%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.outil-v .ot{font:700 17px var(--t);color:var(--repere);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%}
+.outil-v iframe{flex:1;width:100%;border:0;background:#fff}
+body.sous-outil{overflow:hidden}
+@media (max-width:560px){.outil-v .ot{display:none}}
 </style>
 </head>
 <body>
@@ -310,6 +326,7 @@ ol.der li::before{content:counter(e);font:800 20px/1 var(--d);font-stretch:75%;w
 <main class="zone" id="zone"></main>
 <footer class="pouce">
   <button class="bt bord" id="btSeances" type="button">‹ Séances</button>
+  <button class="bt bord" id="btOutils" type="button">Outils</button>
   <button class="bt bord" id="btAjuster" type="button">Ajuster le déroulé</button>
   <div class="info" id="info"></div>
 </footer>
@@ -383,11 +400,11 @@ function schemaDe(e){if(!e||!e.sch||!SCH[e.sch])return '';const sp=SCH[e.sch];re
 /* ================== Textes : échauffement, organisation ================== */
 // Repères chiffrés en gras : on les trouve d'un coup d'œil.
 function grasChiffres(t){return esc(t).replace(/(\d+(?:,\d+)?(?:\s?[×x]\s?\d+(?:,\d+)?)?(?:\s?(?:m|min|s|fois|ballons?|équipes?|terrains?|services?|séries?|joueurs?|réceptionneurs?|passeurs?|tours?|points?))?)(?![\w’])/g,'<b>$1</b>')}
-function phrases(t){return String(t||'').split(/(?<=[.;])\s+(?=[A-ZÀ-Ý0-9«(])/).map(x=>x.replace(/[;]$/,'').trim()).filter(Boolean)}
+function phrases(t){return String(t||'').split(/(?<=[.;])(?<!(?:^|[\s(])[A-ZÀ-Ý]\.)\s+(?=[A-ZÀ-Ý0-9«(])/).map(x=>x.replace(/[;]$/,'').trim()).filter(Boolean)}
 function orgHTML(t){const p=phrases(t);return p.length>1?`<ul class="org">${p.map(x=>`<li>${grasChiffres(x)}</li>`).join('')}</ul>`:`<p class="texte">${grasChiffres(t)}</p>`}
 function etapesEchauff(s,b){
   const brut=String(s.warm||'').replace(/<a [^>]*>.*?<\/a>/g,'').replace(/<[^>]+>/g,'').trim();
-  return `<div style="margin-top:14px">${orgHTML(brut)}</div><p class="texte" style="margin-top:12px"><a href="${OLD}">Fiches d’échauffement (Préparer)</a></p>`;
+  return `<div style="margin-top:14px">${orgHTML(brut)}</div><p class="texte" style="margin-top:12px"><a href="${OLD}" data-ov="warm">Fiches d’échauffement</a></p>`;
 }
 
 /* ================== Rendu ================== */
@@ -395,7 +412,7 @@ const $=id=>document.getElementById(id);
 function exDuBloc(b){return b&&b.k==='ex'?exDe(b.ref):null}
 function titreBloc(b){return b.label}
 const norm=t=>String(t||'').toLowerCase().replace(/^fil rouge \d+\s*·\s*/,'').replace(/[^a-z0-9àâäéèêëïîôöùûüç]+/g,' ').trim();
-function texteChaud(html){return String(html||'').replace(/<a [^>]*data-go="(\w+)"[^>]*>(.*?)<\/a>/g,(m,go,t)=>`<a href="${OLD}">${t}</a>`)}
+function texteChaud(html){return String(html||'').replace(/<a [^>]*data-go="(\w+)"[^>]*>(.*?)<\/a>/g,(m,go,t)=>`<a href="${OLD}" data-ov="${go}">${t}</a>`)}
 
 function rendre(){
   const s=sea(J.c,J.id);
@@ -654,7 +671,7 @@ function ouvrirSeances(){
     return `<button type="button" class="sc ${etat}${ouv?' ouverte':''}" data-s="${s.id}"><span class="n">${esc(s.n)}</span><h3>${esc(s.title)}</h3><span class="et">${et}${ouv?' · ouverte ici':''}</span>${mini}</button>`;
   }).join('');
   panneau('gauche','Mes séances · '+CYC[cyVu].label,`<div class="cy">${ORDRE.map(k=>`<button type="button" data-cy="${k}" class="${cyVu===k?'on':''}">${NIV[k].label}</button>`).join('')}</div><div class="grilleS">${cartes}</div>
-   <p class="aide">Touche une séance pour la faire maintenant. La calculette VMA, les tableaux d’allures, l’échauffement autonome, la banque, l’évaluation et les fiches PDF sont dans <a href="${lienOld(cyVu,CUR[cyVu]||CYC[cyVu].L[0].id)}">Préparer</a>.</p>`,'Fermer');
+   <p class="aide">Touche une séance pour la faire maintenant. Tournoi, banque, évaluation et les autres outils : bouton <b>Outils</b>, en bas de l’écran.</p>`,'Fermer');
   $('couche').querySelector('.pc').classList.add('niv-'+cyVu);
   $('couche').querySelectorAll('[data-cy]').forEach(x=>x.onclick=()=>{cyVu=x.dataset.cy;ouvrirSeances()});
   $('couche').querySelectorAll('[data-s]').forEach(x=>x.onclick=()=>{
@@ -669,6 +686,38 @@ function ouvrirSeances(){
 $('btAjuster').onclick=ouvrirAjuster;
 $('btSeances').onclick=ouvrirSeances;
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panneauOuvert){fermer();rendre()}});
+
+
+/* ================== Outils ==================
+   Tournoi, échauffements, banque, évaluation… : l'outil complet s'ouvre par-dessus l'écran de cours,
+   sans en sortir (même appareil, mêmes données). Le minuteur de la séance continue. */
+const OUTILS=[{"titre": "Pendant le cours", "items": [["calc", "Ma calculette", "une VMA → toutes les cibles"], ["tables", "Tableaux d’allures", "VMA 8 à 20 · à imprimer"], ["warm", "Échauffement autonome", "fiche · 4 niveaux · grille"], ["piste", "Piste et plots", "1 plot = 1 km/h · départs"]]}, {"titre": "Adapter", "items": [["bank", "Banque de situations", "16 situations · N1–N4"], ["diff", "Travail par niveaux", "groupes G1–G4 · inaptes"], ["roles", "Coach, chrono, juge", "AFL3 · fiche élève"], ["coach", "Repères d’entraîneur", "intensités · récup · sécurité"]]}, {"titre": "Évaluer", "items": [["evalf", "Évaluation", "barème · calcul de la note"], ["check", "Lien avec l’éval", "référentiel Pompidou"]]}];
+function urlOutil(id){return OLD+'#'+J.c+'-'+id}
+function relireCur(){try{Object.assign(CUR,JSON.parse(localStorage.getItem('df2-cur2')||'{}'))}catch(e){}}
+function ouvrirOutils(){
+  panneauOuvert='outils';
+  const G=OUTILS.slice().sort((a,b)=>(b.a&&J.c==='a')-(a.a&&J.c==='a'));
+  const html=G.map(g=>`<h3 class="og">${esc(g.titre)}</h3><div class="tuiles">${g.items.map(t=>`<button type="button" data-outil="${t[0]}"${g.a?' data-auto="1"':''}><b>${esc(t[1])}</b><span>${esc(t[2])}</span></button>`).join('')}</div>`).join('');
+  panneau('droite','Outils',html+'<p class="aide">L’outil s’ouvre par-dessus l’écran de cours : le minuteur continue. « Retour au cours » pour revenir.</p>','Fermer');
+  $('couche').querySelectorAll('[data-outil]').forEach(x=>x.onclick=()=>voirOutil(x.dataset.outil,!!x.dataset.auto,x.querySelector('b').textContent));
+}
+let outilTic=null;
+function voirOutil(id,auto,titre){
+  fermer();
+  const v=document.createElement('div');v.className='outil-v';v.setAttribute('role','dialog');v.setAttribute('aria-label',titre);
+  v.innerHTML=`<div class="oh"><button class="bt noir" type="button" data-fo>‹ Retour au cours</button><b>${esc(titre)}</b><span class="ot num" id="oTemps"></span></div><iframe title="${esc(titre)}" src="${urlOutil(id,auto)}"></iframe>`;
+  document.body.appendChild(v);document.body.classList.add('sous-outil');
+  const maj=()=>{const el=$('oTemps');if(!el)return;const r=restant(),b=J.blocks[J.cur];el.textContent=(r==null||J.fin||!b)?'':`${titreBloc(b)} · ${r<0?'+':''}${mmss(r)}`};
+  maj();clearInterval(outilTic);outilTic=setInterval(maj,1000);
+  v.querySelector('[data-fo]').onclick=fermerOutil;
+}
+function fermerOutil(){const v=document.querySelector('.outil-v');if(!v)return;v.remove();document.body.classList.remove('sous-outil');clearInterval(outilTic);relireCur();rendre()}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelector('.outil-v'))fermerOutil()});
+$('btOutils').onclick=ouvrirOutils;
+/* liens du texte (« fiche Échauffements »…) : ouverts par-dessus, comme les outils */
+document.addEventListener('click',ev=>{const a=ev.target.closest('[data-ov]');if(!a)return;ev.preventDefault();
+  const id=a.dataset.ov,g=OUTILS.find(g=>g.items.some(t=>t[0]===id)),t=g&&g.items.find(t=>t[0]===id);
+  voirOutil(id,g?!!g.a:J.c==='a',t?t[1]:a.textContent)});
 
 rendre();
 if(J.started&&!J.fin)eveil();

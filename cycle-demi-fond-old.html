@@ -459,6 +459,9 @@ input.chin{width:48px;font:inherit;font-size:16px;padding:4px 6px;border:1.5px s
 <link rel="stylesheet" href="eps-design.css">
 <style>:root{--sport:#f59e0b}</style>
 <script src="eps-commun.js" defer></script>
+<script>/* Ouvert depuis l’écran de cours (bouton Outils) : on ne garde que le contenu de l’outil. */
+try{if(window.self!==window.top)document.documentElement.classList.add('outil')}catch(e){document.documentElement.classList.add('outil')}</script>
+<style>html.outil .wrap>header,html.outil .wrap>nav,html.outil .wrap>.foot,html.outil body>header.top{display:none!important}html.outil .wrap{padding-top:12px}</style>
 </head>
 <body>
 <div class="wrap">
