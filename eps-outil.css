@@ -23,10 +23,10 @@
   /* step : ses propres noms de couleurs */
   --ink:var(--fg); --chip:var(--surface-2);
 }
-@media (prefers-color-scheme:dark){:root.outil:not([data-theme="light"]):not(.x){
+:root[data-theme="dark"].outil:not(.x){
   --bg:#11161D; --surface:#1B222C; --surface-2:#232C38; --fg:#E9EEF3; --muted:#9AA5B3; --line:#323C49;
   --ok:#6FD39F; --ok-bg:#15301F; --warn:#F2C46B; --warn-bg:#3A2D12; --done:#5B6573; --done-bg:#1F2833;
-  --accent-fg:#11161D; color-scheme:dark}}
+  --accent-fg:#11161D; color-scheme:dark}
 
 /* ---------- 2. Page ---------- */
 html.outil body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.45;-webkit-font-smoothing:antialiased}
