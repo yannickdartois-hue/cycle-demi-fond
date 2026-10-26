@@ -38,20 +38,20 @@ body.niv-t{--niv:var(--c-t);--niv-pale:var(--c-t-pale)}
   --font-body:"Source Sans 3","Segoe UI",Roboto,Arial,sans-serif;
 ;--bg:#fff;--surface:#fff;--surface-2:#eef1f5;--fg:#111;--muted:#444;--line:#999;--track:#c8553d;--track-line:#ffffff;--grass:#3f8f5c;--plot10:#ffffff;--plot25r:#e5484d;--plot50:#f2c200;--cy-s:#0f7a62;--cy-s-bg:#dcf2ea;--sport:#f59e0b}
 .schema{background:#fff;color:#14202e;border-radius:14px;padding:8px;font-family:var(--t)}
-.legende-o{margin:8px 4px 0;font-size:14px;color:var(--repere)}
+.legende-o{margin:8px 4px 0;font-size:max(14px,var(--fs-min,15px));color:var(--repere)}
 .legende-o .legend{display:flex;flex-wrap:wrap;gap:4px 14px}
 .legende-o i{display:inline-block;vertical-align:middle;margin-right:4px}
 .legende-o .dot{width:12px;height:12px;border-radius:50%}
 .legende-o .lineb{width:22px;border-top:2px dashed currentColor}
 .legende-o .liner{width:22px;border-top:2px solid currentColor}
-.schema .legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);margin-top:4px}
+.schema .legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:max(12px,var(--fs-min,15px));color:var(--muted);margin-top:4px}
 .schema .legend i{display:inline-block;vertical-align:middle;margin-right:4px}
 .schema .dot{width:10px;height:10px;border-radius:50%}
 .schema .liner{width:22px;border-top:2px solid var(--fg)}
 .schema .c-pa{fill:var(--accent)}
 .schema .c-pb{fill:var(--team-b)}
 .schema .c-pn{fill:var(--team-n)}
-.schema .c-pt{fill:#ffffff;font:700 12px var(--font-body);text-anchor:middle;dominant-baseline:central}
+.schema .c-pt{fill:#ffffff;font:700 max(12px,var(--fs-min,15px)) var(--font-body);text-anchor:middle;dominant-baseline:central}
 .schema .c-head-r{fill:var(--fg)}
 .schema .teq-sch .c-pt{font-size:20px}
 .schema .legend{display:none}
@@ -85,17 +85,18 @@ body.niv-t{--niv:var(--c-t);--niv-pale:var(--c-t-pale)}
 .schema .p-zone.z2{stroke:#f2c200}
 .schema .p-zone.z3{stroke:#8fd16a}
 .schema .p-zone.z4{stroke:#16a34a}
-.schema .p-zt{fill:#111;font:700 10px var(--font-body)}
-.schema .p-lab{fill:var(--fg);font:600 11.5px var(--font-body)}
+.schema .p-zt{fill:#111;font:700 max(10px,var(--fs-min,15px)) var(--font-body)}
+.schema .p-lab{fill:var(--fg);font:600 max(11.5px,var(--fs-min,15px)) var(--font-body)}
 .schema .p-lab.w{fill:#fff}
-.schema .p-lab.big{font:700 13px var(--font-body)}
-.schema .p-small{fill:var(--fg);font:600 10px var(--font-body)}
-.schema .p-pt{font-size:10.5px}
+.schema .p-lab.big{font:700 max(13px,var(--fs-min,15px)) var(--font-body)}
+.schema .p-small{fill:var(--fg);font:600 max(10px,var(--fs-min,15px)) var(--font-body)}
+.schema .p-pt{font-size:max(10.5px,var(--fs-min,15px))}
 .schema .p-grass,.schema .p-track,.schema .p-zone,.schema .p-seg{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .cy button[data-cy=s].on{background:var(--c-s);color:var(--sur-niv)}
 .pc.niv-s .sc.jour{outline-color:var(--c-s)}
 .pc.niv-s{--nivp:var(--c-s)}
 </style>
+<style>/* Lisibilité terrain : textes à 15 px minimum à l'écran ; tailles d'origine à l'impression. */@media print{:root{--fs-min:0px}}</style>
 </head>
 <body>
 <header class="barre">
