@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#C8402A">
+<meta name="theme-color" content="#b91c1c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Demi-fond">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -97,6 +97,24 @@ body.niv-t{--niv:var(--c-t);--niv-pale:var(--c-t-pale)}
 .pc.niv-s{--nivp:var(--c-s)}
 </style>
 <style>/* Lisibilité terrain : textes à 15 px minimum à l'écran ; tailles d'origine à l'impression. */@media print{:root{--fs-min:0px}}</style>
+<link rel="stylesheet" href="eps-charte-v1.css">
+<style>/* Charte v1 : couleur de l'activité et teinte de chaque cycle (calculées par construire.py) */
+:root{--act:#b91c1c;--act-fonce:#731111;--act-pale:#f7e4e4;--act-sombre:#d88282;--act-pale-sombre:#3a1b21}
+:root{--c-s:#f1d2d2;--c-s-pale:#f7e4e4}
+body.niv-s{--niv:#f1d2d2;--sur-niv:#1c2128;--niv-pale:var(--act-pale)}
+:root[data-theme="dark"] body.niv-s{--niv:#5f1b1f;--sur-niv:#e6edf3}
+.cy button[data-cy=s].on{background:#f1d2d2;color:#1c2128}
+:root[data-theme="dark"] .cy button[data-cy=s].on{background:#5f1b1f;color:#e6edf3}
+.pc.niv-s .sc.jour{outline-color:var(--ligne)}
+.pc.niv-s{--nivp:#b91c1c}
+:root{--c-t:#731111;--c-t-pale:#f7e4e4}
+body.niv-t{--niv:#731111;--sur-niv:#ffffff;--niv-pale:var(--act-pale)}
+:root[data-theme="dark"] body.niv-t{--niv:#e09999;--sur-niv:#0d1117}
+.cy button[data-cy=t].on{background:#731111;color:#ffffff}
+:root[data-theme="dark"] .cy button[data-cy=t].on{background:#e09999;color:#0d1117}
+.pc.niv-t .sc.jour{outline-color:var(--ligne)}
+.pc.niv-t{--nivp:#731111}
+</style>
 </head>
 <body>
 <header class="barre">
