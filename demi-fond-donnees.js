@@ -62,9 +62,9 @@ const SCH={
   runs:[{a:14,b:44}],texts:[{x:PIN.x-40,y:PIN.y-18,t:'coupelles orange tous les 20 m',cls:'w'},{x:PIN.x,y:PIN.y+26,t:'les B au centre comptent les coupelles',cls:'w'}],
   cap:'Vague A : 6 min sans marcher. Chaque observateur B reste au centre de la pelouse, compte les coupelles franchies par son coureur et note le total à chaque top de minute. Distance = coupelles × 20 m ; distance ÷ 100 = vitesse moyenne en km/h.'},
  allures4:{alt:'Les 4 allures : toute la classe sur la piste',plots:'50',
-  runners:[{s:6,l:'1'},{s:30,l:'2'},{s:58,l:'3'},{s:85,l:'4'},{s:120,l:'5'},{s:150,l:'6'},{s:178,l:'7'}],runs:[{a:88,b:112}],
+  runners:[{s:6},{s:30},{s:58},{s:85},{s:120},{s:150},{s:178}],runs:[{a:88,b:112}],
   texts:[{x:PIN.x,y:PIN.y-4,t:'grands plots jaunes tous les 50 m',cls:'w'},{x:PIN.x,y:PIN.y+14,t:'en 3 min : plots franchis = km/h',cls:'w'}],
-  cap:'Toute la classe court en même temps ; chacun compte les grands plots jaunes qu’il franchit pendant 3 min, en repartant de 0 à chaque allure. 12 plots en 3 min = 600 m en 3 min = 12 km/h.'},
+  cap:'Les points bleus sont les élèves, répartis tout autour de la piste au départ. Pendant 3 min, chacun compte les grands plots qu’il dépasse, en repartant de 0 à chaque allure. 12 plots en 3 min = 600 m en 3 min = 12 km/h.'},
  relais:{alt:'Le relais du binôme',plots:false,
   runners:[{s:196,l:'B',team:'b',off:-0.2},{s:130,l:'A'}],runs:[{a:132,b:190}],cones:[{s:195,t:'zone de relais',cls:'o',toff:-6.5}],
   texts:[{x:PIN.x,y:PIN.y,t:'A fait 1 tour, tape la main de B',cls:'w'},{x:PIN.x,y:PIN.y+18,t:'qui repart ; A récupère et compte',cls:'w'}],
@@ -146,12 +146,12 @@ const SESSIONS=[
   eval:[['afl1','Le 3’ rapide est déjà la course C1 de l’épreuve : première distance, première note repère.'],['afl2','Premières données du carnet : 4 vitesses, pouls, VMA de travail.'],['afl3','Le binôme se forme : compter, noter, encourager.']],
   ex:{acc:S_ACC,
    allures4:{t:'Les 4 allures : 4 × 3 min',k:'Fil rouge 2 · courir au temps',sch:'allures4',
-    disp:'Toute la classe en même temps. Grands plots jaunes tous les 50 m : en 3 min, le nombre de plots franchis donne directement la vitesse en km/h.',
-    four:'Chacun compte ses grands plots jaunes. À chaque pause, le binôme se retrouve : il note les deux totaux et les deux pouls.',
-    deroul:['Marche rapide 3 min, pause 1 min (noter, pouls).','Footing 3 min, pause 1 min.','Allure rythmée (on parle par mots) 3 min, pause 1 min.','3’ rapide : la plus grande distance possible en restant régulier. C’est la VMA de travail.'],
-    cons:['Pouls : 2 doigts sur le côté du cou, compter 15’’, multiplier par 4.','Associer chaque allure à une respiration : je parle, je parle par mots, je ne parle plus.','Le 3’ rapide : partir à l’allure de la fin, pas plus vite.'],
-    reus:'Les 4 vitesses augmentent ; le 3’ rapide est régulier (pas d’arrêt, pas de marche).',
-    moins:'Marche-course alternée sur les 2 premières allures.',plus:'Annoncer avant le 3’ rapide le nombre de plots visés.'},
+    disp:'Toute la classe en même temps sur la piste. Grands plots jaunes tous les 50 m (4 par tour de 200 m). Les élèves partent répartis tout autour de la piste, pour ne pas courir en paquet. En 3 min, le nombre de grands plots dépassés donne directement la vitesse en km/h.',
+    four:'Coureur : compte ses grands plots sur les doigts (une main = 5). Binôme : au sifflet de fin, chacun dit son total à l’autre, qui le note dans le carnet avec le pouls. Le professeur donne les tops de départ et de fin, et annonce le temps toutes les minutes.',
+    deroul:['Départ au sifflet, chacun là où il est. Fin au sifflet : on s’arrête sur place et on regarde où l’on est.','Compter : nombre de grands plots dépassés ; si on a fait plus de la moitié du chemin vers le plot suivant, on ajoute ½ (= ½ km/h).','Tout de suite après l’arrêt : pouls 15’’ × 4. Puis 1 min de pause en marchant, le binôme note les deux totaux et les deux pouls.','Allure 1 · Marche rapide, 3 min : on marche le plus vite possible sans courir (repère : 5 à 7 plots).','Allure 2 · Footing, 3 min : je peux parler en faisant des phrases (repère : 7 à 9 plots).','Allure 3 · Allure rythmée, 3 min : je parle seulement par mots (repère : 9 à 11 plots).','Allure 4 · 3’ rapide : la plus grande distance possible en restant régulier, sans marcher. Ce total = la VMA de travail du cycle.'],
+    cons:['Associer chaque allure à une respiration : je parle par phrases, je parle par mots, je ne parle plus.','Le 3’ rapide : partir à l’allure de la fin, pas plus vite ; le 1er plot doit tomber vers 15’’ pour 12 km/h (un plot toutes les 15’’ = 12 km/h).','Pouls : 2 doigts sur le côté du cou, compter 15’’, multiplier par 4.','Doubler par l’extérieur, ne jamais s’arrêter dans le couloir 1.'],
+    reus:'Les 4 vitesses augmentent d’une allure à l’autre ; le 3’ rapide est régulier (pas d’arrêt, pas de marche) ; les 4 totaux et 4 pouls sont notés dans le carnet.',
+    moins:'Marche-course alternée sur les 2 premières allures ; le binôme compte pour son coureur pendant le 3’ rapide.',plus:'Annoncer avant le 3’ rapide le nombre de plots visés, et le comparer au réalisé.'},
    relais:{t:'Le relais du binôme',k:'Situation finale · courir ensemble',sch:'relais',
     disp:'Binôme = une équipe. Zone de relais sur la ligne, couloir extérieur. 2 × 6 min de course, 3 min entre les manches, chacun un tour (200 m) à son tour.',
     four:'Coureur : 1 tour, tape la main de son partenaire. Partenaire : attend dans la zone, repart, compte les tours du binôme. Le trio fait tourner ses trois coureurs.',
@@ -558,3 +558,44 @@ SESSIONS.concat(T_SESSIONS).forEach(s=>s.orig=s.status||'next');
 /* Variables « plus facile / plus difficile » des situations qui n’en avaient pas (fixe = pas de variable, volontairement). */
 (function(){const V={"t1#ra": {"fixe": "Récupération : l’intensité reste basse pour tout le monde."}, "t2#ra": {"fixe": "Récupération : l’intensité reste basse pour tout le monde."}, "t4#ra2": {"fixe": "Récupération : l’intensité reste basse pour tout le monde."}, "s2#ra": {"fixe": "Récupération : l’intensité reste basse pour tout le monde."}, "t1#ref": {"fixe": "Situation de référence : mêmes conditions pour tous, pour comparer en fin de cycle."}, "t2#testB": {"fixe": "Test de VMA : protocole identique pour tous, sinon la VMA est fausse."}, "t7#inst": {"fixe": "Temps d’organisation."}, "s1#acc": {"fixe": "Temps d’organisation."}, "s6#inst": {"fixe": "Temps d’organisation."}, "t7#c1": {"fixe": "Course évaluée : conditions de l’épreuve, pas d’aménagement."}, "t7#c2": {"fixe": "Course évaluée : conditions de l’épreuve, pas d’aménagement."}, "t7#c3": {"fixe": "Course évaluée : conditions de l’épreuve, pas d’aménagement."}, "s6#e1": {"fixe": "Course évaluée : conditions de l’épreuve, pas d’aménagement."}, "s6#e2": {"fixe": "Course évaluée : conditions de l’épreuve, pas d’aménagement."}, "t7#rac": {"fixe": "Bilan : même travail pour tous."}, "s6#rac": {"fixe": "Bilan : même travail pour tous."}, "t8#constr": {"moins": "Le binôme part d’une des 3 séances types du carnet (puissance, capacité, allure spécifique) et n’adapte que les chiffres à sa VMA.", "plus": "Chaque paramètre (intensité, durée, récupération) est justifié par le point faible relevé sur le 500 m ; volume vers 1 800 m."}, "t8#mine": {"moins": "Récupérations allongées de 30 s ; volume vers 1 000 m.", "plus": "Récupérations raccourcies (36’’/24’’ au lieu de 36’’/36’’) ; volume vers 1 800 m."}, "s7#choix": {"moins": "Une répétition de moins par atelier, récupération allongée d’1 min ; le coach annonce chaque passage.", "plus": "Le coureur annonce son temps de passage avant que le coach le donne ; une répétition de plus."}};
 [SESSIONS,T_SESSIONS].forEach(L=>L.forEach(s=>{if(!s||!s.ex)return;Object.keys(V).forEach(k=>{const [sid,i]=k.split('#');if(sid!==s.id)return;const e=Array.isArray(s.ex)?s.ex[+i]:s.ex[i];if(!e||e.moins||e.plus||e.fixe)return;Object.assign(e,V[k]);});}));})();
+
+/* ================== Échauffement en 5 parties (copie des données de l'appli élève demi-fond-eleves, img/echauffement/) ================== */
+const DF_WARM=[
+ [['f','Footing de plus en plus vite (60 → 70 %)'],['tf','Talons-fesses'],['mg','Montées de genoux'],['pc','Pas chassés'],['sg1','✓ J’ai chaud, je transpire'],['sg2','✓ Je respire vite, je parle encore'],['sg3','✓ Pouls 150-160 (15" × 4)']],
+ [['ch','1 · Chevilles'],['ge','2 · Genoux et hanches'],['tr','3 · Tronc'],['ep','4 · Épaules'],['pg','5 · Poignets'],['nu','6 · Nuque (demi-cercles)']],
+ [['e1','Mollets'],['e2','Ischio-jambiers'],['e3','Quadriceps'],['e4','Fléchisseurs de hanche']],
+ [['sq','Squats'],['fe','Fentes'],['po','Montées sur pointes'],['ga','Gainage face'],['gl','Gainage latéral'],['pm','Pompes (genoux au sol possible)']],
+ [],
+ [['ac','3 accélérations progressives (60-80 m)'],['al','1 passage à l’allure du jour, au plot']]];
+/* 4 étirements actifs-dynamiques : allonger puis contracter sans bouger 4 s, freiner en contractant 4 s, relâcher, 8 s de mouvement. Chaque côté. */
+const DF_ETIR=[
+ ['e1','Mollets','etir-mollets.jpg','Fente avant, jambe arrière tendue, talon au sol : pousse l’avant du pied arrière dans le sol.','Fléchis doucement le genou arrière, talon toujours au sol.','Petits sauts pieds joints sur l’avant du pied.'],
+ ['e2','Ischio-jambiers','etir-ischios.jpg','Jambe avant tendue, talon au sol, pointe relevée : enfonce le talon dans le sol.','Penche le buste vers le genou en appuyant toujours.','Talons-fesses rapides.'],
+ ['e3','Quadriceps','etir-quadriceps.jpg','Debout, tiens ta cheville, bassin basculé vers l’arrière : pousse le pied contre la main.','Rapproche le pied de la fesse en poussant toujours.','Fentes avant-arrière sautées.'],
+ ['e4','Fléchisseurs de hanche','etir-hanche.jpg','Grande fente, genou arrière près du sol, bassin vers l’avant : tire le genou arrière vers l’avant sans le bouger.','Descends un peu le bassin en tirant toujours.','Montées de genoux.']];
+/* Catalogue de gammes : l'élève en choisit 4 (20 à 30 m, retour en trottinant). */
+const DF_GAMMES=[
+ ['g1','Talons-fesses','gamme-talons-fesses.jpg','Buste droit, talons ramenés sous les fesses.','Le talon touche presque la fesse, le genou reste vers le bas.'],
+ ['g2','Montées de genoux','gamme-montees-genoux.jpg','Cuisse à l’horizontale, bras actifs.','Je reste grand, je ne me penche pas en arrière.'],
+ ['g3','Skipping bas','gamme-skipping-bas.jpg','Petits pas très rapides sur l’avant du pied.','Fréquence élevée, talons jamais au sol.'],
+ ['g4','Foulées griffées (« le cheval »)','gamme-griffe.jpg','Genou haut, la jambe se déplie puis griffe le sol vers l’arrière.','Le pied se pose sous le bassin, sur l’avant du pied.'],
+ ['g5','Foulées bondissantes','gamme-bondissantes.jpg','Sauter loin d’un pied sur l’autre.','Cheville, genou et hanche tendus à chaque poussée.'],
+ ['g6','Course sur la plante des pieds','gamme-plante-pieds.jpg','Courir en ressort sans poser le talon.','Rebond souple, pas de bruit au sol.'],
+ ['g7','Mise en tension du pied','gamme-tension-pied.jpg','Jambes presque tendues, seule la cheville travaille, pointe relevée.','Pose active de l’avant du pied.'],
+ ['g8','Enjamber le bâtonnet','gamme-batonnet.jpg','À chaque pas, le pied passe au-dessus de la cheville opposée.','Cycle de jambe complet et régulier.'],
+ ['g9','Jambes tendues','gamme-jambes-tendues.jpg','Jambes raides lancées vers l’avant, pose sous le bassin.','Bassin haut, pas de recul du buste.'],
+ ['g10','Pas chassés','gamme-pas-chasses.jpg','De côté, les pieds ne se croisent jamais.','Bassin de face, appuis légers.'],
+ ['g11','Pas croisés','gamme-pas-croises.jpg','De côté, le pied passe devant puis derrière.','Les épaules restent de face, les hanches tournent.'],
+ ['g12','Course arrière','gamme-course-arriere.jpg','Courir à reculons sur l’avant du pied.','Regard par-dessus l’épaule, trajectoire droite.'],
+ ['g13','Skipping marché','gamme-skipping-marche.jpg','En marchant, monte le genou, pose le pied activement sous toi.','Jambe d’appui toujours tendue.'],
+ ['g14','Montée de genou puis extension','gamme-genou-extension.jpg','Monte le genou, déplie la jambe, griffe le sol.','Enchaînement fluide, sans à-coups.'],
+ ['g15','Rebonds pieds joints','gamme-rebonds.jpg','Petits sauts réactifs, chevilles toniques.','Temps de contact très court.'],
+ ['g16','Pas sautillés','gamme-pas-sautilles.jpg','Sautille d’un pied sur l’autre, genou opposé qui monte, bras en opposition.','Rythme régulier, buste droit.'],
+ ['g17','Montées de genoux latérales','gamme-genoux-lateral.jpg','De côté, monte le genou à chaque pas.','Bassin de face, pieds qui ne se croisent pas.'],
+ ['g18','Cloche-pied alterné','gamme-cloche-pied.jpg','3 bonds sur un pied, 3 sur l’autre, en avançant.','Réception sur l’avant du pied, bassin stable.'],
+ ['g19','Fentes marchées','gamme-fentes-marchees.jpg','Grand pas, genou arrière proche du sol, et on enchaîne.','Genou avant au-dessus de la cheville, buste droit.'],
+ ['g20','Balancés de jambe en marchant','gamme-balances.jpg','Lance la jambe tendue devant, main opposée vers le pied.','Jambe d’appui tendue, mouvement contrôlé.'],
+ ['g21','Course au ralenti','gamme-ralenti.jpg','Cours très lentement en décomposant chaque phase : genou qui monte, jambe qui se déplie, pied qui se pose sous le bassin.','Mouvement complet et contrôlé, buste droit.'],
+ ['g22','Coordination bras-jambes','gamme-coordination.jpg','Cours en insistant sur les bras : bras opposé à la jambe qui monte, coudes à 90°, mains des hanches au menton.','Les bras rythment la foulée, les épaules restent basses.'],
+ ['g23','Rythme de foulée (cibles au sol)','gamme-rythme-foulee.jpg','Cerceaux ou coupelles à espacement régulier : un appui dans chaque cible, sans changer de rythme.','Appuis dans les cibles, foulée régulière, regard devant.']];
+DF_WARM[4]=DF_GAMMES.map(g=>[g[0],g[1]]);
