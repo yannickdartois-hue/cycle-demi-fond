@@ -147,6 +147,14 @@ Object.assign(SCH,{
   texts:[{x:PIN.x,y:PIN.y-4,t:'200 m et 400 m : départ sur la ligne',cls:'w'},{x:PIN.x,y:PIN.y+14,t:'toutes les arrivées sur la ligne',cls:'w'}],
   cap:'100 m et 300 m partent en face de la ligne (100 m après elle), 250 m à 150 m après la ligne, 200 m et 400 m de la ligne. Le coach annonce le passage à mi-course et l’écart à l’arrivée.'}
 });
+SCH.d125={alt:'125 m à l’allure du 1’30',plots:'10',
+  cones:[{s:75,t:'départ 125 m',cls:'o',toff:10.5}],runners:[{s:78,l:'A'},{s:192,l:'B',team:'n',off:-6}],runs:[{a:80,b:196}],
+  texts:[{x:PIN.x,y:PIN.y-4,t:'départ : 75 m après la ligne',cls:'w'},{x:PIN.x,y:PIN.y+14,t:'retour au départ par la pelouse',cls:'w'}],
+  cap:'Le plot de départ est 125 m avant la ligne (75 m après elle). Le coach, sur la pelouse à hauteur de la ligne, baisse le bras en lançant son chrono : c’est le départ. Arrivée sur la ligne, retour au plot en trottinant par la pelouse.'};
+SCH.d400={alt:'400 m puis 200 m : départs et arrivées sur la ligne',plots:'50',
+  cones:[{s:0,t:'',cls:'o'},{s:100,t:'mi-course du 200 m',toff:10.5}],runners:[{s:4,l:'A'},{s:190,l:'B',team:'n',off:-6}],runs:[{a:6,b:194}],
+  texts:[{x:PIN.x,y:PIN.y-4,t:'400 m = 2 tours · 200 m = 1 tour',cls:'w'},{x:PIN.x,y:PIN.y+14,t:'départs et arrivées sur la ligne',cls:'w'}],
+  cap:'Départ et arrivée sur la ligne. Le coach, sur la pelouse à hauteur de la ligne, annonce le passage au 200 m du 400 m (moitié du temps visé) et l’écart à l’arrivée.'};
 SCH.projetS=Object.assign({},SCH.projet,{alt:'1’30 avec projet : zones d’arrivée de Seconde',
   cap:'Le coureur place son plot de départ à sa distance projet avant la ligne d’arrivée. Au sifflet de 1’30, il s’arrête sur place : la zone donne les points d’efficacité de Seconde : Z4 (à 5 m de la ligne) = 3 pts ; Z3 (5 à 15 m après) = 2 ; Z2 (5 à 15 m avant) = 1 ; Z1 (plus de 15 m) = 0.'});
 const EVAL_SHORT={afl1:'AFL1 · performance (/8) et efficacité du projet sur 1’30 (/4)',afl2:'AFL2 · s’entraîner : carnet, préparation, projet de course',afl3:'AFL3 · coach, chronométreur, juge'};
@@ -212,7 +220,7 @@ const SESSIONS=[
   bilan:'Classement du jour des binômes (points des deux challenges). VMA de travail = grands plots jaunes franchis pendant le 3’ rapide (au demi-plot près). Chacun recopie sa ligne du tableau « Mes cibles » dans le carnet. Groupes de vitesse (G1 moins de 10 km/h, G2 10 à 11,5, G3 12 à 13,5, G4 14 et plus) ; coureur et coach dans deux groupes différents. Retour au calme : marche, étirements doux.'},
 
  {id:'s2',n:'S2',short:'36’’, 1’30',title:'Découvrir le 36’’/36’’ et mesurer son 1’30',lv:1,tab:'cour',
-  lead:'Premier contact avec les deux situations du cycle : le 36’’/36’’ au plot cible (la VMA de travail donne le numéro du plot) et le 1’30 mesuré, qui fournit la distance du premier projet. Échauffement guidé, mais ce sont les élèves qui annoncent l’étape suivante.',
+  lead:'Premier contact avec deux situations du cycle : le 36’’/36’’ au plot cible (la VMA de travail donne le numéro du plot ; il revient une seule fois, en S5) et le 1’30 mesuré, qui fournit la distance du premier projet. Échauffement guidé, mais ce sont les élèves qui annoncent l’étape suivante.',
   tl:[['Échauffement guidé',22,'warm'],['36’’/36’’ au plot cible à 100 %',24,'i36'],['Récupération active',6,'ra'],['Le 1’30 mesuré',18,'p130'],['Bilan et carnet',20,'bilan']],
   warm:'Les élèves annoncent la partie suivante et vérifient les 3 signes. Fin d’échauffement : 2 × 36’’ « pour voir » sur les plots plats.',
   eval:[['afl1','Le 1’30 mesuré donne la première distance du projet de l’épreuve.'],['afl3','Le coach juge les arrivées au plot cible et mesure le 1’30.']],
@@ -227,19 +235,31 @@ const SESSIONS=[
   bilan:'Carnet : répétitions « pile » au 36’’, distance du 1’30 et sa note repère (barème de Seconde). Premier projet pour S3 : distance du 1’30 mesuré, ± 10 m selon le ressenti.'},
 
  {id:'s3',n:'S3',short:'Premier projet',title:'Le 3’ au plot et le premier 1’30 avec projet',lv:2,tab:'cour',
-  lead:'Les deux courses de l’épreuve, chacune seule : le 3’ avec mi-course marquée pour apprendre la régularité, puis le premier 1’30 avec plot de départ et zones d’arrivée. Échauffement semi-guidé : le binôme suit la fiche, le professeur ne donne que les tops.',
-  tl:[['Échauffement semi-guidé',20,'warm'],['36’’/36’’ au plot cible à 100 %',20,'i36'],['Le 3’ au plot',16,'c3'],['1’30 avec projet',18,'proj'],['Bilan et carnet',16,'bilan']],
-  warm:'Fin d’échauffement : 2 accélérations de 60 m à l’allure du 36’’/36’’.',
+  lead:'D’abord sentir l’allure du 1’30 sur 12 × 125 m. Puis les deux courses de l’épreuve, chacune seule : le 3’ avec mi-course marquée pour apprendre la régularité, et le premier 1’30 avec plot de départ et zones d’arrivée. Échauffement semi-guidé : le binôme suit la fiche, le professeur ne donne que les tops.',
+  tl:[['Échauffement semi-guidé',20,'warm'],['12 × 125 m à l’allure du 1’30',22,'r125'],['Le 3’ au plot',16,'c3'],['1’30 avec projet',18,'proj'],['Bilan et carnet',14,'bilan']],
+  warm:'Fin d’échauffement : 2 accélérations de 60 m à l’allure du 1’30.',
   eval:[['afl1','Les deux courses de l’épreuve sont là : distance du 3’, zone du 1’30.'],['afl2','Projet construit à partir d’une mesure (S2), pas au hasard.'],['afl3','Le coach marque la mi-course du 3’ et juge la zone du 1’30.']],
-  ex:{i36:S_I36(100,6,{t:'36’’/36’’ au plot cible à 100 % (2e fois)',reus:'5 répétitions sur 6 à 1 plot près : mieux qu’en S2.'}),c3:S_3MIN(),proj:S_PROJ({avant:['Projet = distance du 1’30 mesuré en S2, ± 10 m selon le ressenti.','Au moins 8 min après le 3’ : vague A, 3 min de placement, vague B.']})},
+  ex:{r125:{t:'12 × 125 m à l’allure du 1’30',k:'Fil rouge 1 · courir au temps',sch:'d125',
+    disp:'Départ au plot orange 125 m avant la ligne (75 m après elle), arrivée sur la ligne. Allure du 1’30 : 108 % de la VMA de travail. Temps visé = 125 × 3,6 ÷ (1,08 × VMA) : VMA 10 → 42’’ ; VMA 12 → 35’’ ; VMA 14 → 30’’. 12 répétitions chacun, en alternance dans le binôme.',
+    four:'Coureur : annonce son temps avant chaque 125 m, part au signal de son coach, écoute l’écart. Coach : sur la pelouse à hauteur de la ligne, lève le bras puis le baisse en lançant son chrono (c’est le départ), annonce le temps et l’écart, coche dans le carnet. Celui qui vient d’arriver devient coach ; l’autre est déjà au départ. Professeur : circule, vérifie quelques temps et les départs.',
+    deroul:['Avant le 1er : temps visé lu dans le tableau et écrit dans le carnet.','Après chaque 125 m : retour au plot de départ en trottinant par la pelouse (environ 1’15) pendant que le partenaire court.','Après chaque passage : temps, écart, et ce qu’on change (« 1 seconde trop vite »).','Après le 12e : pouls 15’’ × 4 et ressenti de 1 à 5.'],
+    cons:['Allure du 1’30, pas un sprint : je dois pouvoir la tenir 1’30.','Les 20 premiers mètres décident du temps : se lancer tout de suite à l’allure.','Ressenti : 3 sur 5 ; on ne parle plus mais on récupère pendant le retour. Pouls sous 140 avant de repartir.','Sécurité : retour par la pelouse, jamais dans le couloir 1 ; on ne part qu’au signal de son coach.'],
+    reus:'9 répétitions sur 12 à 2 secondes près du temps annoncé.',moins:'8 répétitions ; temps visé à 100 % de la VMA.',plus:'Les 4 dernières sans annonce du coach : le coureur estime son temps avant de l’entendre.'},
+   c3:S_3MIN(),proj:S_PROJ({avant:['Projet = distance du 1’30 mesuré en S2, ± 10 m selon le ressenti.','Au moins 8 min après le 3’ : vague A, 3 min de placement, vague B.']})},
   bilan:'Carnet : distance du 3’ et régularité (2e moitié − 1re), zone du 1’30 et écart en mètres. Retour au calme : marche et étirements doux.'},
 
  {id:'s4',n:'S4',short:'1’30 fatigué',title:'Tenir son projet en étant fatigué',lv:2,tab:'cour',
-  lead:'Même travail qu’en S3, une seule variable change : le 1’30 avec projet arrive juste après le 3’, avec seulement 6 min de récupération. Faut-il retirer quelques mètres au projet ? Le binôme décide et le justifie.',
-  tl:[['Échauffement semi-guidé',18,'warm'],['36’’/36’’ au plot cible à 100 %',20,'i36'],['Le 3’ au plot',14,'c3'],['1’30 avec projet, après 6 min',16,'proj'],['Récupération active',6,'ra'],['Bilan et carnet',16,'bilan']],
+  lead:'Même travail qu’en S3, une seule variable change : le 1’30 avec projet arrive juste après le 3’, avec seulement 6 min de récupération. Faut-il retirer quelques mètres au projet ? Le binôme décide et le justifie. Puis l’épreuve en miniature : 2 × (400 m + 200 m), pour courir juste en étant fatigué.',
+  tl:[['Échauffement semi-guidé',18,'warm'],['Le 3’ au plot',14,'c3'],['1’30 avec projet, après 6 min',16,'proj'],['Récupération active',6,'ra'],['2 × (400 m + 200 m)',20,'mini'],['Bilan et carnet',16,'bilan']],
   warm:'Le binôme choisit ses 4 exercices de renforcement et sa fin d’échauffement.',
   eval:[['afl1','Préparer C2 : courir le 1’30 sans être frais.'],['afl2','Ajuster son projet à la fatigue : décision écrite dans le carnet.']],
-  ex:{i36:S_I36(100,6,{t:'36’’/36’’ au plot cible à 100 % (3e fois)',reus:'6 répétitions sur 6 à 1 plot près.'}),c3:S_3MIN(),proj:S_PROJ({t:'1’30 avec projet, 6 min après le 3’',avant:['Vague A : 3’ à 0’, puis 1’30 à 9’ (6 min après la fin du 3’) ; vague B : 3’ à 5’, 1’30 à 14’.','Projet ajusté à la fatigue : − 5 à − 10 m par rapport à S3 ? Le binôme décide et écrit pourquoi.']}),ra:S_RA},
+  ex:{c3:S_3MIN(),proj:S_PROJ({t:'1’30 avec projet, 6 min après le 3’',avant:['Vague A : 3’ à 0’, puis 1’30 à 9’ (6 min après la fin du 3’) ; vague B : 3’ à 5’, 1’30 à 14’.','Projet ajusté à la fatigue : − 5 à − 10 m par rapport à S3 ? Le binôme décide et écrit pourquoi.']}),ra:S_RA,
+   mini:{t:'2 × (400 m + 200 m) : l’épreuve en miniature',k:'Fil rouge 2 · courir juste en étant fatigué',sch:'d400',
+    disp:'400 m à 100 % de la VMA de travail, 1 min de récupération, 200 m à 108 % ; 5 min de récupération ; on recommence. Départs et arrivées sur la ligne (400 m = 2 tours, 200 m = 1 tour). Le binôme alterne : A fait son bloc pendant que B le chronomètre, puis on inverse.',
+    four:'Coureur : vise ses deux temps. Coach : sur la pelouse à hauteur de la ligne, donne le départ, annonce le passage au 200 m du 400 m (moitié du temps visé) et l’écart à l’arrivée ; note temps et pouls. Professeur : surveille l’enchaînement et la sécurité de la piste.',
+    deroul:['A : 400 m, 1 min, 200 m (4 min environ) ; puis B pendant que A récupère ; A repart au bout de 5 min, puis B (17 min en tout).','Temps visés : 400 m = 1 440 ÷ VMA (VMA 10 → 2’24 ; 12 → 2’00 ; 14 → 1’43) ; 200 m à 108 % (VMA 10 → 1’07 ; 12 → 56’’ ; 14 → 48’’).','Après chaque course : temps, écart, pouls. Le 2e bloc doit ressembler au 1er.'],
+    cons:['C’est la logique de l’épreuve : courir juste en étant fatigué. Le 200 m ne se court pas plus vite pour « rattraper » le 400 m.','Ressenti : 4 sur 5 au 2e 200 m ; pouls à l’arrivée 170 à 190, sous 130 avant de repartir.','Sécurité : celui qui récupère reste sur la pelouse ou dans le couloir 4 ; on double par l’extérieur.'],
+    reus:'3 courses sur 4 à 3 secondes près ; le 2e 200 m pas plus lent de 3 secondes que le 1er.',moins:'Un seul bloc 400 m + 200 m, ou 400 m à 95 %.',plus:'Récupération de 5 min ramenée à 4 ; 200 m à 110 %.'}},
   bilan:'Carnet : zone du 1’30 fatigué comparée à S3. La décision prise sur le projet était-elle la bonne ?'},
 
  {id:'s5',n:'S5',short:'Régularité',title:'Régularité sur 3’ et allure au-dessus de la VMA',lv:3,tab:'cour',
@@ -247,7 +267,7 @@ const SESSIONS=[
   tl:[['Échauffement autonome (fiche)',15,'warm'],['36’’/36’’ au plot cible à 105 %',20,'i36'],['2 × 3’ au plot',24,'c3'],['1’30 avec projet',16,'proj'],['Bilan et carnet',15,'bilan']],
   warm:'Le binôme écrit son échauffement (durées des 3 parties, 4 exercices, gammes) avant de commencer.',
   eval:[['afl1','Régularité du 3’ : 1 point de l’efficacité à l’épreuve.'],['afl2','Échauffement construit et écrit par le binôme.']],
-  ex:{i36:S_I36(105,6),c3:S_3MIN({t:'2 × 3’ au plot',disp:'Deux 3’ par vague, 5 min de récupération entre les deux : vague A à 0’, vague B à 4’, vague A à 8’, vague B à 12’. Départ groupé sur la ligne au sifflet, mi-course sifflée à 1’30, arrêt à 3’. Le coach pose le plot violet de mi-course à chaque 3’.',deroul:['Le 2e 3’ doit être à 20 m près du 1er : c’est reproduire une allure. Même distance visée, même mi-course visée.','Distance = tours × 200 m + plot d’arrêt ; régularité = 2e moitié − 1re moitié, pour chacun des deux 3’.','Entre les deux : marcher, boire, regarder avec son coach la mi-course du 1er.','Pouls 15’’ × 4 après chaque 3’ : le 2e ne doit pas dépasser le 1er de plus de 10 pulsations.'],reus:'Deux 3’ à 20 m près l’un de l’autre, et réguliers (2e moitié ≥ 1re, à 10 m près).'}),proj:S_PROJ()},
+  ex:{i36:S_I36(105,6,{t:'36’’/36’’ au plot cible à 105 % (2e et dernière fois)',reus:'5 répétitions sur 6 à 1 plot près : mieux qu’en S2.'}),c3:S_3MIN({t:'2 × 3’ au plot',disp:'Deux 3’ par vague, 5 min de récupération entre les deux : vague A à 0’, vague B à 4’, vague A à 8’, vague B à 12’. Départ groupé sur la ligne au sifflet, mi-course sifflée à 1’30, arrêt à 3’. Le coach pose le plot violet de mi-course à chaque 3’.',deroul:['Le 2e 3’ doit être à 20 m près du 1er : c’est reproduire une allure. Même distance visée, même mi-course visée.','Distance = tours × 200 m + plot d’arrêt ; régularité = 2e moitié − 1re moitié, pour chacun des deux 3’.','Entre les deux : marcher, boire, regarder avec son coach la mi-course du 1er.','Pouls 15’’ × 4 après chaque 3’ : le 2e ne doit pas dépasser le 1er de plus de 10 pulsations.'],reus:'Deux 3’ à 20 m près l’un de l’autre, et réguliers (2e moitié ≥ 1re, à 10 m près).'}),proj:S_PROJ()},
   bilan:'Carnet : écart entre les deux 3’, régularité, zone du 1’30. Le coach écrit un conseil pour l’épreuve blanche.'},
 
  {id:'s6',n:'S6',short:'Épreuve blanche',title:'Épreuve blanche : 3’, 10 min, 1’30',lv:3,tab:'evs',
@@ -279,18 +299,22 @@ const SESSIONS=[
   bilan:'Chacun calcule sa note blanche (outil « Évaluation ») et choisit son travail pour S7 : allure trop rapide au départ du 3’, 1’30 hors zone, ou chute de vitesse. Grands plots du 3’ = nouvelle VMA de travail : chacun met à jour ses cibles (page 2 du carnet) et se situe sur les degrés AFL2 et AFL3 (page « Je me situe »).'},
 
  {id:'s7',n:'S7',short:'Réglage',title:'Travailler son point faible et ajuster son projet',lv:4,tab:'cour',
-  lead:'Le 36’’/36’’ passe à 110 %. Chaque binôme travaille le point faible repéré à l’épreuve blanche, puis court un dernier 1’30 avec le projet de l’évaluation. Échauffement seul, sans fiche.',
-  tl:[['Échauffement autonome sans fiche',18,'warm'],['36’’/36’’ au plot cible à 110 %',20,'i36'],['Mon point faible',22,'choix'],['1’30 avec projet final',15,'proj'],['Bilan et carnet',15,'bilan']],
+  lead:'Chaque binôme travaille le point faible repéré à l’épreuve blanche, puis vit la routine de l’épreuve : 3’ à 95 %, 10 min de récupération organisée, 1’30 avec le projet final. Échauffement seul, sans fiche.',
+  tl:[['Échauffement autonome sans fiche',18,'warm'],['Mon point faible',22,'choix'],['Répétition générale : 3’ à 95 %',12,'rg'],['1’30 avec projet final, 10 min après',18,'proj'],['Bilan et carnet',20,'bilan']],
   warm:'Sans fiche. Le professeur observe avec la grille de l’outil « Échauffement » et rend un retour à chacun.',
   eval:[['afl1','Projet final du 1’30 et distance visée sur 3’.'],['afl2','Choisir son travail à partir de ses données : premier pas vers la séance construite de Terminale.']],
-  ex:{i36:S_I36(110,6),
+  ex:{
    choix:{t:'Mon point faible',k:'Au choix du binôme',sch:'s3min',
     disp:'Trois ateliers sur la même piste, chacun choisit le sien. A. Départ du 3’ trop rapide : 2 × 1’30 à l’allure du 3’ (VMA × 25 m, soit 300 m pour une VMA de 12), 2 min de marche entre les deux. B. 1’30 hors zone : 3 × 45’’ à l’allure du projet (moitié du projet en 45’’), 1’30 de marche entre. C. Chute de vitesse : 3 × 300 m à l’allure du 1’30, 2’30 de récupération.',
     four:'Coureur : choisit l’atelier à partir de sa feuille d’épreuve blanche et écrit sa cible chiffrée dans le carnet. Coach : donne le départ, chronomètre, mesure (plots plats) et annonce l’écart après chaque répétition. Professeur : valide le choix de chaque binôme avant le départ.',
     deroul:['A : départ de la ligne ; à 45’’, le coach annonce l’écart à la moitié de la cible (150 m pour 300 m) ; arrêt au signal du coach à 1’30, lecture du plot.','B : plot de départ à la moitié du projet avant la ligne (projet 330 m → 165 m avant la ligne, soit 35 m après elle) ; arrêt à 45’’, lecture de l’écart à la ligne.','C : départ en face de la ligne (100 m après elle), arrivée sur la ligne. Temps visé = 300 × 90 ÷ projet (projet 330 m → 1’22) ; passage au 150 m à la moitié.','10 min par coureur, puis on inverse.'],
     cons:['Un seul atelier : celui qui répond au problème de l’épreuve blanche, pas celui qu’on préfère.','Sécurité : les coachs restent sur la pelouse ; à l’arrêt, on sort vers la pelouse en regardant derrière.','Pouls 15’’ × 4 après la dernière répétition, noté avec les écarts.'],
     reus:'Écart à la cible réduit d’une répétition à l’autre ; dernière répétition à 5 m près (A, B) ou à 2 secondes près (C).',moins:'Une répétition de moins.',plus:'Aucune annonce du coach : le coureur estime son écart avant de l’entendre.'},
-   proj:S_PROJ({t:'1’30 avec projet final'})},
+   rg:S_3MIN({t:'Répétition générale : 3’ à 95 %',k:'Routine de l’épreuve · C1',
+    disp:'Comme à l’épreuve : départ groupé sur la ligne, vague A au sifflet (0’), vague B à 4’. Le professeur siffle la mi-course (1’30) et l’arrêt (3’). 3’ à 95 % de la VMA de travail, distance et mi-course annoncées avant (VMA 12 → 570 m, mi-course 285 m). Le 1’30 avec projet final suit 10 min après chaque 3’.',
+    avant:['Distance visée = VMA × 50 × 0,95 ; mi-course = la moitié. Les deux sont écrites avant le départ.','Après le 3’ : 10 min de récupération organisée comme à l’épreuve (marche, trot très lent, boire, projet du 1’30 ajusté avec le coach).'],
+    reus:'Distance à 20 m près de l’annonce ; 2e moitié ≥ 1re moitié.',moins:'Viser 90 %.',plus:'Aucune annonce de temps pendant la course.'}),
+   proj:S_PROJ({t:'1’30 avec projet final, 10 min après le 3’',avant:['Vague A à 13’, vague B à 17’ : 10 min après la fin de son 3’, comme à l’épreuve.','Projet final ajusté après le 3’ : le binôme l’écrit et le justifie par ses chiffres.']})},
   bilan:'Projet final dans le carnet : distance visée sur 3’ et projet du 1’30, justifiés par l’épreuve blanche et la séance du jour.'},
 
  {id:'s8',n:'S8',short:'Évaluation',title:'Évaluation : 3’, 10 min, 1’30',lv:4,tab:'evs',status:'eval',
