@@ -483,7 +483,7 @@ button.tab.cycle.cs[aria-selected="true"] b{color:var(--act-fonce)}
   <header>
     <h1><img class="appicon" src="icon-192.png" alt="" width="40" height="40">Cycles demi-fond · Seconde et Terminale</h1>
     <details class="about"><summary>À propos de l’outil</summary>
-    <p>Huit séances de 90 min de pratique (accès direct à la piste) pour une classe de Seconde de 35 élèves sur la piste de 200 m du lycée Georges Pompidou. Trois objectifs : courir au temps de façon régulière, annoncer et tenir un projet de distance, s’échauffer seul et coacher son binôme. Deux fils rouges à chaque séance : le 36’’/36’’ au plot cible, le 3’ et le 1’30 avec projet. Épreuve de Seconde : 3’ au plot, 10 min, 1’30 avec projet (blanche en S6, évaluation en S8) ; elle prépare la C3 de l’épreuve de Terminale sans reprendre les 500 m. Le cycle de Terminale (9 séances) suit ton carnet de course de Terminale 2025 : leçons 1 à 6, épreuve blanche en T7, séance construite par l’élève en T8 (AFL2), épreuve CCF en T9.</p>
+    <p>Huit séances de 90 min de pratique (accès direct à la piste) pour une classe de Seconde de 35 élèves sur la piste de 200 m du lycée Georges Pompidou. Trois objectifs : courir au temps de façon régulière, annoncer et tenir un projet de distance, s’échauffer seul et coacher son binôme. Un fil rouge à chaque séance : courir au temps (4 allures, 400 m, 125 m, 300 m) et les deux courses de l’épreuve, le 3’ et le 1’30 avec projet ; pas de 36’’/36’’ en Seconde. Épreuve de Seconde : 3’ au plot, 10 min, 1’30 avec projet (blanche en S6, évaluation en S8) ; elle prépare la C3 de l’épreuve de Terminale sans reprendre les 500 m. Le cycle de Terminale (9 séances) suit le même plan que les applis élève et prof (re-test de VMA en T5), épreuve blanche en T7, séance construite par l’élève en T8 (AFL2), épreuve CCF en T9.</p>
     <div class="meta"><span class="tag">Piste 200 m</span><span class="tag">35 élèves · binômes coureur / coach</span><span class="tag">90 min · échauffement + 2 exercices + situation finale</span><span class="tag">CA1 · AFL1 /12 · AFL2+AFL3 /8</span></div>
     </details>
   <a class="tb pri noprint" href="./" style="margin-top:10px;text-decoration:none;display:inline-flex">‹ Revenir à l’écran de cours</a>
@@ -617,16 +617,16 @@ Object.assign(TABS,{
   cols:[colTP(500,1.05),colTP(500,1.1),colTP(500,1.15),{h:'1’30 à 110 %',f:v=>fD(dist(90,v*1.1))},{h:'1’30 à 115 %',f:v=>fD(dist(90,v*1.15))},{h:'1’30 à 120 %',f:v=>fD(dist(90,v*1.2))}]},
  t1:{t:'T1 · repères de vitesse',rows:'v',rowh:'Vitesse (km/h)',note:'Pas encore de VMA : lire la ligne de sa vitesse. Le 500 m de référence situe chacun dans le barème.',
   cols:[{h:'temps au tour (200 m)',f:v=>fT(tSec(200,v))},{h:'500 m',f:v=>fT(tSec(500,v))},{h:'1 000 m',f:v=>fT(tSec(1000,v))},{h:'2,5 km<br><small>(sa part du 5 km)</small>',f:v=>fT(tSec(2500,v))},{h:'5 km à deux',f:v=>fT(tSec(5000,v))}]},
- t3:{t:'T3 · travail du 1er 500 m',note:'Leçon 3 du carnet de Terminale 2025. Temps à viser (passage à mi-course). 36’’ : plot plat cible.',
-  cols:[colTP(500,0.9),colTP(400,0.95),colT(300,1),colT(200,1.1),colT(100,1.2),colT(100,1.3),{h:'36’’ à 110 %<br><small>plot plat</small>',f:v=>fP(v*1.1)},{h:'36’’ à 120 %<br><small>plot plat</small>',f:v=>fP(v*1.2)}]},
- t4:{t:'T4 · intermittent long et pyramide',note:'Leçon 4 du carnet. 1’12 : distance du plot cible. Pyramide : temps à viser.',
-  cols:[{h:'1’12 à 80 %<br><small>coupelle n° · distance</small>',f:v=>fP(v*0.8)+' · '+fD(dist(72,v*0.8))},{h:'2’ à 50 %<br><small>distance</small>',f:v=>fD(dist(120,v*0.5),10)},colT(250,0.95),colT(375,1),colT(500,1.1),colT(375,1.15),colT(250,1.2),colT(125,1.3)]},
- t5:{t:'T5 · travail du 2e 500 m et du 1’30',note:'Leçon 5 du carnet. 300 m à 110 % ; 1’30 : distance et moitié à 45’’.',
-  cols:[colT(300,1.1),{h:'3’ à 70 %<br><small>plots 50 m</small>',f:v=>fP(v*0.7)},{h:'1’30 à 110 %',f:v=>fD(dist(90,v*1.1))},{h:'1’30 à 115 %',f:v=>fD(dist(90,v*1.15))},{h:'45’’ à 115 %',f:v=>fD(dist(45,v*1.15))},{h:'1’30 à 120 %',f:v=>fD(dist(90,v*1.2))}]},
- t6:{t:'T6 · travail du dernier 500 m (résistance)',note:'Leçon 6 du carnet (sans le 500 m à 130 %). Colonne « 115 % » pour la variable « − ».',
-  cols:[colT(100,1),colT(200,1.05),colT(250,1.1),colT(300,1.2),colT(400,1.25),colT(400,1.15),{h:'1’30 à 115 %',f:v=>fD(dist(90,v*1.15))},{h:'1’30 à 120 %',f:v=>fD(dist(90,v*1.2))}]},
- t8:{t:'T8 · construire sa séance',note:'Puissance : 6’ au plot (distance). Capacité : 36’’/36’’ (plot plat). Allure spécifique : 500 m et ses fractions.',
-  cols:[{h:'6’ à 90 %',f:v=>fD(dist(360,v*0.9),10)},{h:'6’ à 95 %',f:v=>fD(dist(360,v*0.95),10)},{h:'36’’ à 100 %',f:v=>fP(v)},{h:'36’’ à 110 %',f:v=>fP(v*1.1)},{h:'36’’ à 120 %',f:v=>fP(v*1.2)},{h:'500 m à 110 %<br><small>100 m · 250 m</small>',f:v=>fT(tSec(500,v*1.1))+' ('+fT(tSec(100,v*1.1))+' · '+fT(tSec(250,v*1.1))+')'},{h:'500 m à 115 %',f:v=>fT(tSec(500,v*1.15))}]}
+ t3:{t:'T3 · travail du 1er 500 m',note:'Temps à viser (passage à mi-course). 250 m : allure visée du 500 m. 36’’ : plot plat cible.',
+  cols:[colTP(500,0.9),colTP(400,0.95),colT(300,1),colT(200,1.1),colT(100,1.2),colT(100,1.3),colT(250,1.15),{h:'36’’ à 110 %<br><small>plot plat</small>',f:v=>fP(v*1.1)},{h:'36’’ à 120 %<br><small>plot plat</small>',f:v=>fP(v*1.2)}]},
+ t4:{t:'T4 · intermittent long et pyramide',note:'1’12 : coupelle cible. Pyramide 125 à 500 m : temps à viser.',
+  cols:[{h:'1’12 à 95 %<br><small>coupelle n° · distance</small>',f:v=>fP(v*0.95)+' · '+fD(dist(72,v*0.95))},{h:'3’ à 70 %<br><small>grands plots</small>',f:v=>fP(v*0.7)},colT(125,0.9),colT(250,0.95),colT(375,1),colT(500,1.1),colT(375,1.15),colT(250,1.2),colT(125,1.3)]},
+ t5:{t:'T5 · re-test et travail du 2e 500 m',note:'Re-test 36’’/24’’ : nouvelle VMA. 3 × (300 m + 200 m) à 115 %. 1’30 : distance et moitié à 45’’.',
+  cols:[colT(300,1.15),colT(200,1.15),{h:'1’30 à 110 %',f:v=>fD(dist(90,v*1.1))},{h:'1’30 à 115 %',f:v=>fD(dist(90,v*1.15))},{h:'45’’ à 115 %',f:v=>fD(dist(45,v*1.15))},{h:'1’30 à 120 %',f:v=>fD(dist(90,v*1.2))}]},
+ t6:{t:'T6 · travail du dernier 500 m (résistance)',note:'Résistance 100 à 300 m, puis deux 500 m à 10 min d’écart. Colonne « 300 m à 115 % » pour la variable « − ».',
+  cols:[colT(100,1),colT(200,1.05),colT(250,1.1),colT(300,1.2),colT(300,1.15),colTP(500,1.1),colTP(500,1.05)]},
+ t8:{t:'T8 · construire sa séance',note:'Une semaine avant l’épreuve : 110 % de la VMA au plus, 1 500 m rapides au plus. Puissance : 6’ au plot (distance). Capacité : 36’’/36’’ (plot plat). Allure spécifique : 500 m et ses fractions.',
+  cols:[{h:'6’ à 90 %',f:v=>fD(dist(360,v*0.9),10)},{h:'36’’ à 100 %',f:v=>fP(v)},{h:'36’’ à 110 %',f:v=>fP(v*1.1)},{h:'300 m à 105 %',f:v=>fT(tSec(300,v*1.05))},{h:'500 m à 110 %<br><small>100 m · 250 m</small>',f:v=>fT(tSec(500,v*1.1))+' ('+fT(tSec(100,v*1.1))+' · '+fT(tSec(250,v*1.1))+')'}]}
 });
 
 /* ---------- Seconde : épreuve 3’ + 1’30 ---------- */
@@ -648,13 +648,13 @@ Object.assign(SCH,{
 });
 Object.assign(TABS,{
  ref1:{t:'S1 · mon 3’ rapide donne ma VMA de travail',rows:'v',rowh:'Grands plots en 3’ (= km/h)',note:'Les grands plots jaunes (50 m) franchis en 3’ donnent la vitesse : c’est la VMA de travail du cycle. On lit ensuite sur sa ligne ses premières cibles.',
-  cols:[{h:'distance en 3’',f:v=>fD(dist(180,v),10)},{h:'70 % : grands plots en 3’',f:v=>fP(v*0.7)},{h:'36’’ à 100 %<br><small>plot plat cible</small>',f:v=>fP(v)},{h:'1’30 à 105 %<br><small>distance</small>',f:v=>fD(dist(90,v*1.05))},{h:'temps au tour',f:v=>fT(tSec(200,v))}]},
- cour:{t:'Mes cibles (VMA de travail = vitesse du 3’ de S1)',note:'36’’ : n° du plot plat cible. 3’ : distance visée et, entre parenthèses, distance à la mi-course (1’30). 1’30 : distance projet, à placer avant la ligne.',
-  cols:[{h:'36’’ à 100 %',f:v=>fP(v)},{h:'36’’ à 105 %',f:v=>fP(v*1.05)},{h:'36’’ à 110 %',f:v=>fP(v*1.1)},{h:'3’ à 95 %',f:v=>fD(dist(180,v*0.95),10)+' ('+fD(dist(90,v*0.95),10)+')'},{h:'3’ à 100 %',f:v=>fD(dist(180,v),10)+' ('+fD(dist(90,v),10)+')'},{h:'1’30 à 105 %',f:v=>fD(dist(90,v*1.05))},{h:'1’30 à 110 %',f:v=>fD(dist(90,v*1.1))},{h:'1’30 à 115 %',f:v=>fD(dist(90,v*1.15))}]}
+  cols:[{h:'distance en 3’',f:v=>fD(dist(180,v),10)},{h:'70 % : grands plots en 3’',f:v=>fP(v*0.7)},{h:'1’30 à 105 %<br><small>distance</small>',f:v=>fD(dist(90,v*1.05))},{h:'temps au tour',f:v=>fT(tSec(200,v))}]},
+ cour:{t:'Mes cibles (VMA de travail = vitesse du 3’ de S2)',note:'Temps visés des séries. 3’ : distance visée et, entre parenthèses, distance à la mi-course (1’30). 1’30 : distance projet, à placer avant la ligne.',
+  cols:[{h:'125 m à 108 %',f:v=>fT(tSec(125,v*1.08))},{h:'300 m à 95 %',f:v=>fT(tSec(300,v*0.95))},{h:'400 m à 100 %',f:v=>fT(tSec(400,v))},{h:'3’ à 95 %',f:v=>fD(dist(180,v*0.95),10)+' ('+fD(dist(90,v*0.95),10)+')'},{h:'3’ à 100 %',f:v=>fD(dist(180,v),10)+' ('+fD(dist(90,v),10)+')'},{h:'1’30 à 105 %',f:v=>fD(dist(90,v*1.05))},{h:'1’30 à 110 %',f:v=>fD(dist(90,v*1.1))},{h:'1’30 à 115 %',f:v=>fD(dist(90,v*1.15))}]}
 });
 /* ---------- Le cycle de Seconde : 8 séances de 90 min (accès direct à la piste) ----------
    Épreuve de Seconde : 3’ au plot, 10 min, 1’30 avec projet de distance.
-   Deux fils rouges : le 36’’/36’’ au plot cible, le 3’ et le 1’30 de l’épreuve. */
+   Fil rouge : courir au temps, le 3’ et le 1’30 de l’épreuve (pas de 36’’/36’’ en Seconde). */
 
 
 
@@ -712,7 +712,7 @@ function renderWarm(){
     <p><b>Étirements dynamiques</b> (pas d’étirement tenu longtemps avant de courir) : balancés de jambe avant-arrière et latéraux × 10, fentes marchées avec rotation du buste × 6, montées de genou attrapées × 6.</p></section>
    <section class="hi"><h3><span class="teq-step">3</span>Gammes et accélérations · 5 à 6 min</h3>
     <p><b>3 à 4 gammes</b> sur 20 m, retour en marchant (${state.c==='t'?'rappelées par le professeur en T1':'montrées par le professeur en S1 et S2'}).</p>
-    <p><b>2 à 3 accélérations progressives</b> de 60 à 100 m : la dernière à l’allure de la séance (${state.c==='t'?'allure du 36’’, du 300 m, du 500 m…':'allure du 36’’, du 3’ ou du 1’30'}).</p>
+    <p><b>2 à 3 accélérations progressives</b> de 60 à 100 m : la dernière à l’allure de la séance (${state.c==='t'?'allure du 36’’, du 300 m, du 500 m…':'allure du 3’ ou du 1’30'}).</p>
     <p><b>Puis 2 min de repos actif</b> : marcher, boire, relire son projet.</p></section>
    <section><h3>Retour au calme · 5 min</h3><p>3 min de marche ou de footing très lent, puis étirements doux de 10 à 15’’ : mollets, ischio-jambiers, quadriceps, fessiers. Boire.</p><p class="small muted">Douleur vive (différente de la brûlure ou de la fatigue musculaire) : on arrête et on prévient le professeur.</p></section>
   </div>
@@ -737,7 +737,7 @@ function renderPiste(){
   return `<div class="panel"><span class="status st-next">Outil</span><h2>La piste et ses plots</h2><p class="lead">Piste de 200 m (cahier « Piste plots et zones » de tes dossiers). Trois rangées de plots suffisent pour toutes les séances : on ne calcule plus, on compte.</p>
   <figure class="evalfig" style="max-width:720px;margin-top:14px"><div class="schema">${piste(SCH.piste)}</div><figcaption>${SCH.piste.cap}</figcaption></figure>
   <div class="tablewrap"><table><thead><tr><th>Plots</th><th>Écart</th><th>Je cours…</th><th>1 plot franchi =</th><th>Séances</th></tr></thead><tbody>
-   <tr><td>Plats (coupelles)</td><td class="num">10 m</td><td>36’’</td><td><b>1 km/h</b></td><td>${state.c==='t'?'T2 test, T3 36’’/36’’, T4 1’12, placer son plot du 1’30':'36’’/36’’ (S2 à S7), lire le plot d’arrêt, placer son plot du 1’30'}</td></tr>
+   <tr><td>Plats (coupelles)</td><td class="num">10 m</td><td>36’’</td><td><b>1 km/h</b></td><td>${state.c==='t'?'T2 test, T3 36’’/36’’, T4 1’12, placer son plot du 1’30':'lire le plot d’arrêt du 3’ et du 1’30, placer son plot du 1’30'}</td></tr>
    <tr><td>Coupelles orange</td><td class="num">20 m</td><td>1’12</td><td><b>1 km/h</b></td><td>${state.c==='t'?'T4 1’12/1’12':'non utilisées en Seconde'}</td></tr>
    <tr><td>Plats + grands jaunes</td><td class="num">10 et 50 m</td><td>1’30</td><td><b>distance ÷ 25</b></td><td>${state.c==='t'?'mesurer sa distance sur 1’30 (T5, T6)':'S2 le 1’30 mesuré'}</td></tr>
    <tr><td>Grands jaunes</td><td class="num">50 m</td><td>3’</td><td><b>1 km/h</b></td><td>${state.c==='t'?'T2 tours, récupération active à 70 %':'S1 les 4 allures et le 3’ rapide, le 3’ au plot (S3 à S8), récupération active'}</td></tr>
@@ -773,15 +773,15 @@ function renderCalc(){
     const pl=x=>plotPlace(Math.round(dist(90,v*x)/5)*5);
     if(state.c==='t') body=`<div class="mycards">
      ${card('T1 · T2 · repères',[['Temps au tour à 90 %',fT(tSec(200,v*0.9))],['3’ à 70 % (grands plots)',fP(v*0.7)],['Allure 80 % / 100 %',fV(v*0.8)+' / '+fV(v)+' km/h'],['Allure 110 % / 120 %',fV(v*1.1)+' / '+fV(v*1.2)+' km/h']])}
-     ${card('T3 · 1er 500',[['500 m à 90 %',fT(tSec(500,v*0.9))+' (250 : '+fT(tSec(250,v*0.9))+')'],['400 m à 95 %',fT(tSec(400,v*0.95))],['300 m à 100 %',fT(tSec(300,v))],['200 m à 110 %',fT(tSec(200,v*1.1))],['100 m à 120 / 130 %',fT(tSec(100,v*1.2))+' / '+fT(tSec(100,v*1.3))],['36’’ à 110 / 120 % : plot',fP(v*1.1)+' / '+fP(v*1.2)]])}
-     ${card('T4 · intermittent, pyramide',[['1’12 à 80 % : coupelle n°',fP(v*0.8)+' · '+fD(dist(72,v*0.8))],['250 m à 95 %',fT(tSec(250,v*0.95))],['375 m à 100 %',fT(tSec(375,v))],['500 m à 110 %',fT(tSec(500,v*1.1))+' (250 : '+fT(tSec(250,v*1.1))+')'],['375 m à 115 %',fT(tSec(375,v*1.15))],['250 / 125 m à 120 / 130 %',fT(tSec(250,v*1.2))+' / '+fT(tSec(125,v*1.3))]])}
-     ${card('T5 · 2e 500, 1’30',[['300 m à 110 %',fT(tSec(300,v*1.1))],['1’30 à 115 %',fD(dist(90,v*1.15))],['45’’ à 115 %',fD(dist(45,v*1.15))],['plot du 1’30 à 115 %',pl(1.15)]])}
-     ${card('T6 · dernier 500',[['100 m à 100 %',fT(tSec(100,v))],['200 m à 105 %',fT(tSec(200,v*1.05))],['250 m à 110 %',fT(tSec(250,v*1.1))],['300 m à 120 %',fT(tSec(300,v*1.2))],['400 m à 125 %',fT(tSec(400,v*1.25))]])}
+     ${card('T3 · 1er 500',[['500 m à 90 %',fT(tSec(500,v*0.9))+' (250 : '+fT(tSec(250,v*0.9))+')'],['400 m à 95 %',fT(tSec(400,v*0.95))],['300 m à 100 %',fT(tSec(300,v))],['200 m à 110 %',fT(tSec(200,v*1.1))],['100 m à 120 / 130 %',fT(tSec(100,v*1.2))+' / '+fT(tSec(100,v*1.3))],['250 m à 115 %',fT(tSec(250,v*1.15))],['36’’ à 110 / 120 % : plot',fP(v*1.1)+' / '+fP(v*1.2)]])}
+     ${card('T4 · intermittent, pyramide',[['1’12 à 95 % : coupelle n°',fP(v*0.95)+' · '+fD(dist(72,v*0.95))],['125 m à 90 %',fT(tSec(125,v*0.9))],['250 m à 95 %',fT(tSec(250,v*0.95))],['375 m à 100 %',fT(tSec(375,v))],['500 m à 110 %',fT(tSec(500,v*1.1))+' (250 : '+fT(tSec(250,v*1.1))+')'],['375 m à 115 %',fT(tSec(375,v*1.15))],['250 / 125 m à 120 / 130 %',fT(tSec(250,v*1.2))+' / '+fT(tSec(125,v*1.3))]])}
+     ${card('T5 · re-test, 2e 500, 1’30',[['300 m + 200 m à 115 %',fT(tSec(300,v*1.15))+' + '+fT(tSec(200,v*1.15))],['1’30 à 115 %',fD(dist(90,v*1.15))],['45’’ à 115 %',fD(dist(45,v*1.15))],['plot du 1’30 à 115 %',pl(1.15)]])}
+     ${card('T6 · dernier 500',[['100 m à 100 %',fT(tSec(100,v))],['200 m à 105 %',fT(tSec(200,v*1.05))],['250 m à 110 %',fT(tSec(250,v*1.1))],['300 m à 120 %',fT(tSec(300,v*1.2))],['deux 500 m à 110 %',fT(tSec(500,v*1.1))+' (250 : '+fT(tSec(250,v*1.1))+')']])}
      ${card('T7 · T9 · épreuve',[['500 m à 105 %',fT(tSec(500,v*1.05))+' (250 : '+fT(tSec(250,v*1.05))+')'],['500 m à 110 %',fT(tSec(500,v*1.1))+' (250 : '+fT(tSec(250,v*1.1))+')'],['500 m à 115 %',fT(tSec(500,v*1.15))+' (250 : '+fT(tSec(250,v*1.15))+')'],['1’30 à 120 %',fD(dist(90,v*1.2))],['plot du 1’30 à 120 %',pl(1.2)]])}
     </div>`;
     else body=`<div class="mycards">
-     ${card('S1 · ma VMA de travail',[['Grands plots en 3’ (= km/h)',fV(v)],['Distance du 3’ rapide',fD(dist(180,v),10)],['3’ à 70\u00a0% (grands plots)',fP(v*0.7)],['Temps au tour à 100\u00a0%',fT(tSec(200,v))]])}
-     ${card('Fil rouge 1 · 36’’/36’’',[['à 100\u00a0% : plot plat',fP(v)],['à 105\u00a0% : plot plat',fP(v*1.05)],['à 110\u00a0% : plot plat',fP(v*1.1)]])}
+     ${card('S1 · S2 · ma VMA de travail',[['Grands plots en 3’ (= km/h)',fV(v)],['Distance du 3’',fD(dist(180,v),10)],['Récupération 3’ (grands plots)',fP(v*0.86*0.7)],['Temps au tour à 100\u00a0%',fT(tSec(200,v))]])}
+     ${card('Courir au temps',[['400 m (S2)',fT(tSec(400,v*0.86*0.85))],['125 m à 108\u00a0% (S3)',fT(tSec(125,v*1.08))],['400 m + 200 m (S4)',fT(tSec(400,v))+' + '+fT(tSec(200,v*1.08))],['300 m à 95\u00a0% (S5)',fT(tSec(300,v*0.95))],['300 m à 105\u00a0% (S7, atelier C)',fT(tSec(300,v*1.05))]])}
      ${card('Fil rouge 2 · le 3’',[['3’ à 95\u00a0% (mi-course)',fD(dist(180,v*0.95),10)+' ('+fD(dist(90,v*0.95),10)+')'],['3’ à 100\u00a0% (mi-course)',fD(dist(180,v),10)+' ('+fD(dist(90,v),10)+')']])}
      ${card('Fil rouge 2 · le 1’30',[['1’30 à 105\u00a0%',fD(dist(90,v*1.05))],['1’30 à 110\u00a0%',fD(dist(90,v*1.1))],['1’30 à 115\u00a0%',fD(dist(90,v*1.15))],['plot du 1’30 à 110\u00a0%',pl(1.1)]])}
     </div>`;
@@ -819,12 +819,12 @@ function renderCoach(){
   <div class="tablewrap"><table><thead><tr><th>Intensité (% VMA)</th><th>Ressenti</th><th>Ce qu’on travaille</th><th>Dans le cycle</th></tr></thead><tbody>
    <tr><td class="num">60-70 %</td><td>Je parle en phrases</td><td>Échauffement, récupération active</td><td>Partie 1 de l’échauffement, 3’ à 70 %</td></tr>
    <tr><td class="num">80-90 %</td><td>Je parle par mots</td><td>Endurance, allures longues</td><td>${state.c==='t'?'500 m à 90 % (T3), 1’12 à 80 % (T4)':'3’ à 95 % (S3 à S5)'}</td></tr>
-   <tr><td class="num">95-105 %</td><td>Je ne parle plus</td><td>Développer la VMA (intermittent court)</td><td>${state.c==='t'?'375 m à 100 % (T4), 300 m à 100 % (T3)':'36’’/36’’ à 100 % (S2 à S4), 3’ rapide (S1)'}</td></tr>
-   <tr><td class="num">105-130 %</td><td>Essoufflement fort, jambes qui brûlent à la fin</td><td>Allure des 500 m et du 1’30</td><td>${state.c==='t'?'36’’/36’’ à 110-120 % (T3), 300 m à 110 % (T5), résistance (T6)':'36’’/36’’ à 105-110 % (S5, S7), 1’30 avec projet'}</td></tr>
+   <tr><td class="num">95-105 %</td><td>Je ne parle plus</td><td>Développer la VMA (intermittent court)</td><td>${state.c==='t'?'1’12 à 95 % et 375 m à 100 % (T4), 300 m à 100 % (T3)':'3’ rapide (S1), 3’ à fond (S2), 400 m à 100 % (S4), 300 m à 95 % (S5)'}</td></tr>
+   <tr><td class="num">105-130 %</td><td>Essoufflement fort, jambes qui brûlent à la fin</td><td>Allure des 500 m et du 1’30</td><td>${state.c==='t'?'36’’/36’’ à 110-120 % (T3), 300 m + 200 m à 115 % (T5), résistance (T6)':'125 m à 108 % (S3), 200 m à 108 % (S4), 1’30 avec projet'}</td></tr>
   </tbody></table></div>
   <div class="teq-grid" style="margin-top:14px">
    <section><h3>Durée et allure</h3><p>On tient en moyenne 6 min environ à 100 % de la VMA, entre 3 et 9 min selon les personnes [1]. Un 500 m (1’50 à 3’) se court donc au-dessus de la VMA. Selon les documents de collègues, l’allure du 3 × 500 m va de 107 % (élève de VMA 15, lycée Prévert) à 120-130 % de la VMA (lycée Herriot, Lyon) [2][3]. ${state.c==='t'?'Le 500 m de T4 donne le vrai pourcentage de chaque élève.':'En Seconde, le 3’ rapide de S1 sert de VMA de travail : sur 3’ on court un peu au-dessus de la VMA (on la tient environ 6 min), donc cette « VMA de travail » est légèrement haute, ce qui reste cohérent avec des cibles de 100 à 110 %.'}</p></section>
-   <section><h3>${state.c==='t'?'Le test 36’’/24’’':'Mesurer sa vitesse sans test (Seconde)'}</h3><p>${state.c==='t'?`Plots plats tous les 10 m : 36’’ = un centième d’heure, donc 1 plot (10 m) = 1 km/h ; c’est le balisage de Lemire (10 m → 36’’, 20 m → 1’12, 50 m → 3’) [4]. Sur 1’30, sans repère de 25 m : vitesse = distance ÷ 25. VMA = somme des 10 répétitions ÷ 10 (ton carnet de Terminale). Les tests intermittents surestiment la VMA d’un test continu : de plus de 2 km/h pour le 45/15, d’environ 4 km/h pour le 30-15 IFT [5]. Je n’ai pas trouvé de mesure pour le 36/24, mais il laisse encore plus de récupération. Conséquence : un 500 m à 110 % de cette VMA correspond sans doute à 120 % ou plus d’une VMA de test continu, ce qui rejoint les repères de collègues.`:`Balisage de Lemire [4] : 10 m → 36’’, 20 m → 1’12, 50 m → 3’ ; dans chaque cas 1 repère franchi = 1 km/h. Le 3’ rapide de S1 donne donc la vitesse sans calcul (grands plots franchis), et c’est aussi la course C1 de l’épreuve : l’élève apprend avec l’outil qui l’évaluera. Sur 1’30, sans repère de 25 m : vitesse = distance ÷ 25. Les tests intermittents surestiment la VMA d’un test continu de 2 à 4 km/h [5] : le 3’ continu évite ce biais.`}</p></section>
+   <section><h3>${state.c==='t'?'Le test 36’’/24’’':'Mesurer sa vitesse sans test (Seconde)'}</h3><p>${state.c==='t'?`Plots plats tous les 10 m : 36’’ = un centième d’heure, donc 1 plot (10 m) = 1 km/h ; c’est le balisage de Lemire (10 m → 36’’, 20 m → 1’12, 50 m → 3’) [4]. Sur 1’30, sans repère de 25 m : vitesse = distance ÷ 25. VMA = somme des 10 répétitions ÷ 10 (ton carnet de Terminale). Les tests intermittents surestiment la VMA d’un test continu : de plus de 2 km/h pour le 45/15, d’environ 4 km/h pour le 30-15 IFT [5]. Je n’ai pas trouvé de mesure pour le 36/24, mais il laisse encore plus de récupération. Conséquence : un 500 m à 110 % de cette VMA correspond sans doute à 120 % ou plus d’une VMA de test continu, ce qui rejoint les repères de collègues.`:`Balisage de Lemire [4] : 10 m → 36’’, 20 m → 1’12, 50 m → 3’ ; dans chaque cas 1 repère franchi = 1 km/h. Le 3’ rapide de S1, puis le 3’ à fond de S2, donnent donc la vitesse sans calcul (grands plots franchis), et c’est aussi la course C1 de l’épreuve : l’élève apprend avec l’outil qui l’évaluera. Sur 1’30, sans repère de 25 m : vitesse = distance ÷ 25. Les tests intermittents surestiment la VMA d’un test continu de 2 à 4 km/h [5] : le 3’ continu évite ce biais.`}</p></section>
    <section><h3>Récupérer</h3><p>Entre deux fractions courtes : marche ou trot. Entre deux courses de l’épreuve (10 min) : environ 5 min de marche, étirements courts (10’’), puis trot léger et quelques accélérations avant de repartir, pouls vers 120 [3] ; boire ; ne pas s’asseoir longtemps. Une récupération moitié active, moitié passive serait aussi efficace qu’une récupération entièrement active [6] : c’est un bon choix à faire tester dans le carnet (AFL2).</p></section>
    <section><h3>Répartir son effort</h3><p>Courir la 2e moitié au moins aussi vite que la 1re (règle de l’épreuve nationale). Un départ trop rapide se paie dans le dernier 150 m. ${state.c==='t'?'Le temps de passage au 250 m est le premier outil de régulation.':'En Seconde, la mi-course du 3’ (plot violet) et la distance à 45’’ du 1’30 sont les outils de régulation.'}</p></section>
    <section><h3>Sécurité</h3><ul><li>Sens de course unique, corde à gauche ; on double par l’extérieur ; personne ne traverse la piste pendant une vague.</li><li>Malaise, douleur dans la poitrine, vertige, pâleur : arrêt immédiat, allonger, prévenir.</li><li>Asthmatiques : ventoline au bord de la piste. Chaleur : eau à disposition, courses tôt.</li></ul></section>
@@ -1010,18 +1010,18 @@ function renderCheck(){
    ['Autoévaluation sur les degrés (page « Je me situe »)','S6 et S8','ok','']
   ];
   if(state.c==='t'){R.length=0;R.push(
-   ['AFL1 · performance 500 m (/8, C1 et C2)','T1 (référence), T3 (500 m à 90 %), T4 (500 m à 110 %), T5 (300 m répétés : le 2e 500), T6 (résistance), T7 (épreuve blanche), T9','ok',''],
-   ['AFL1 · performance 1’30 (/8, C3)','T3 (36’’ à 120 %), T5 (travail du 1’30), T6 (1’30 fatigué), T7, T9','ok',''],
-   ['AFL1 · efficacité : zone du 1’30 (/4)','T5, T6, T7, T9 : zones matérialisées','ok','Quatre 1’30 avec projet avant l’épreuve : c’est peu si un élève n’a pas fait le cycle de Seconde.'],
-   ['10 min de récupération entre les courses','T7 (épreuve blanche), T9','warn','Une seule répétition complète avant l’épreuve.'],
-   ['Passage au 250 m donné par le binôme','T1, T3, T4, T7, T9','ok',''],
+   ['AFL1 · performance 500 m (/8, C1 et C2)','T1 (référence), T3 (500 m à 90 %), T4 (500 m à 110 %), T5 (300 m + 200 m : le 2e 500), T6 (résistance et deux 500 m), T7 (épreuve blanche), T9','ok',''],
+   ['AFL1 · performance 1’30 (/8, C3)','T1 (1’30 estimé), T3 (36’’ à 120 %), T5 (1’30 avec projet), T7, T9','ok',''],
+   ['AFL1 · efficacité : zone du 1’30 (/4)','T5, T7, T9 : zones matérialisées','warn','Deux 1’30 avec projet avant l’épreuve (T5, T7), plus le 1’30 estimé de T1 : c’est peu si un élève n’a pas fait le cycle de Seconde.'],
+   ['10 min de récupération entre les courses','T6 (deux 500 m), T7 (épreuve blanche), T9','ok','Deux répétitions avant l’épreuve.'],
+   ['Passage au 250 m donné par le binôme','T1, T3, T4, T6, T7, T9','ok',''],
    ['AFL2 · carnet et performances stables','Toutes les séances : prévu et réalisé sur chaque course (carnet de Terminale 2025)','ok',''],
    ['AFL2 · séance construite avec les paramètres de la charge','T8 (thème choisi après l’épreuve blanche)','ok','Une seule séance : à évaluer avec la fiche du carnet, pas seulement en observant.'],
    ['AFL2 · échauffement individualisé','Sans fiche à partir de T3, observé en T7 et T9','ok',''],
    ['AFL3 · coach / observateur ou juge / chronométreur','Toutes les séances ; rôle tenu noté dans chaque bilan ; binômes fixes après T3 (référentiel)','ok',''],
    ['AFL2 et AFL3 au fil de la séquence','Étoiles ★ AFL2 / ★ AFL3 validées dans le bilan de chaque séance','ok',''],
    ['Projets tenus (¼, ⅓, ⅔, ¾ des tentatives)','Compté dans chaque bilan, total en page « Ma progression »','ok','C’est l’indicateur chiffré du degré AFL2 du référentiel.'],
-   ['Deux mesures de VMA','T2 (test 36’’/24’’) et re-test court en T6 : cibles mises à jour','ok','Nancy-Metz impose au moins deux tests de VMA dans la séquence.'],
+   ['Deux mesures de VMA','T2 (test 36’’/24’’) et re-test en T5 : cibles mises à jour','ok','Nancy-Metz impose au moins deux tests de VMA dans la séquence.'],
    ['Choix des points AFL2 / AFL3 (2, 4 ou 6)','Autoévaluation « Je me situe » en T7, choix annoncé avant l’épreuve, définitif','ok','Le choix ne peut plus changer une fois l’épreuve commencée (référentiel national).'],
    ['Récupération entre les courses planifiée','T7 et T9 (carnet)','ok',''])}
   return `<div class="panel"><span class="status st-next">Outil</span><h2>Lien avec l’évaluation</h2><p class="lead">Chaque élément du référentiel CA1 demi-fond du lycée, et les séances qui le préparent.</p>
@@ -1140,7 +1140,7 @@ const PREP=['piste','roles','coach','bank','diff','evalf','check'];
 const navC=document.getElementById('nav-cycles'),navT=document.getElementById('nav-tools'),navS=document.getElementById('nav-sessions'),navP=document.getElementById('nav-prep');
 const CYCLES={
  s:{label:'Seconde',pre:'2de',sessions:SESSIONS,start:'s1',n:'8 séances',bin:BIN,
-  cover:'CA1 · 8 séances de 90 min (accès direct à la piste) · piste de 200 m · 35 élèves en binômes coureur / coach · VMA de travail mesurée sur le 3’ rapide de S1 · deux fils rouges : 36’’/36’’ au plot cible, 3’ et 1’30 avec projet · épreuve de Seconde : 3’, 10 min, 1’30 avec projet (blanche en S6, évaluation en S8).'},
+  cover:'CA1 · 8 séances de 90 min (accès direct à la piste) · piste de 200 m · 35 élèves en binômes coureur / coach · VMA de travail mesurée sur le 3’ (S1, puis S2) · courir au temps et les deux courses de l’épreuve : 3’ et 1’30 avec projet · épreuve de Seconde : 3’, 10 min, 1’30 avec projet (blanche en S6, évaluation en S8).'},
  t:{label:'Terminale',pre:'Tle',sessions:T_SESSIONS,start:'t1',n:'9 séances',bin:'Binômes coureur / coach (un trio si l’effectif est impair), coureur et coach dans deux groupes de vitesse différents, binômes fixes après T3 (référentiel). La vague A court pendant que la vague B coache, puis on inverse.',
   cover:'CA1 · 9 séances de 90 min (accès direct à la piste) · piste de 200 m · binômes coureur / coach · trame : carnet de course de Terminale 2025 · test VMA en T2 · épreuve blanche en T7 · séance construite par l’élève en T8 · épreuve CCF en T9 (500 m, 500 m, 1’30, 10 min entre les courses).'}
 };
