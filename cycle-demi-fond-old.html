@@ -1132,11 +1132,12 @@ const TOOLDEF={
  coach:{n:'Repères d’entraîneur',short:'intensités · récup · sécurité',render:renderCoach},
  bank:{n:'Banque de situations',short:'16 situations · N1–N4',render:renderBank},
  diff:{n:'Travail par niveaux',short:'groupes G1–G4 · inaptes',render:renderDiff},
- evalf:{n:'Évaluation',short:'barème · calcul de la note',render:renderEval},
+ evalf:{n:'Évaluation',short:'barème · calcul de la note',render:()=>renderEval()+`<div class="panel">${marcheBareme(state.c)}</div>`},
+ marche:{n:'Parcours marche',short:'asthme · 1000 m et 3’ · barème',render:()=>`<div class="panel"><span class="status st-next">Outil</span><h2>Parcours marche</h2><p class="lead">Pour les élèves qui ne peuvent pas courir (asthme, avis médical) : mêmes séances, même binôme, une épreuve de marche.</p>${marcheOutil(state.c)}</div>`},
  check:{n:'Lien avec l’éval',short:'référentiel Pompidou',render:renderCheck}
 };
 const PRIMARY=['calc','warm','tables'];
-const PREP=['piste','roles','coach','bank','diff','evalf','check'];
+const PREP=['piste','roles','coach','bank','diff','marche','evalf','check'];
 const navC=document.getElementById('nav-cycles'),navT=document.getElementById('nav-tools'),navS=document.getElementById('nav-sessions'),navP=document.getElementById('nav-prep');
 const CYCLES={
  s:{label:'Seconde',pre:'2de',sessions:SESSIONS,start:'s1',n:'8 séances',bin:BIN,
@@ -1172,7 +1173,7 @@ function show(id,scroll){
   state.id=id;renderNav();
   const s=curSessions().find(x=>x.id===id);
   document.documentElement.setAttribute('data-cycle',state.c);
-  main.innerHTML=`<div class="cyband">${CYCLES[state.c].label} · demi-fond</div>`+(s?printBar(s)+renderSession(s):TOOLDEF[id].render());
+  main.innerHTML=`<div class="cyband">${CYCLES[state.c].label} · demi-fond</div>`+(s?printBar(s)+renderSession(s)+`<div class="panel"><div class="mch"><h3>🚶 Parcours marche</h3>${marcheTableau(s,-1)}</div></div>`:TOOLDEF[id].render());
   wire();
   try{history.replaceState(null,'','#'+state.c+'-'+id)}catch(e){}
   try{localStorage.setItem('df2-tab',state.c+'-'+id)}catch(e){}
